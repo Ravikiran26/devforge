@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+:root {
+  --bg:        #0D1117;
+  --surface:   #161B22;
+  --surface-2: #21262D;
+  --surface-3: #2D333B;
+  --border:    #30363D;
+  --border-2:  #3D444D;
+  --text:      #E6EDF3;
+  --text-2:    #8B949E;
+  --text-3:    #6E7681;
+  --accent:    #3B82F6;
+  --accent-2:  #2563EB;
+  --green:     #3FB950;
+  --red:       #F85149;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+::selection { background: rgba(59,130,246,0.25); color: var(--text); }
+
+.wrap {
+  width: 100%;
+  max-width: 1152px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+}
+
+@media (max-width: 640px) {
+  .wrap { padding-left: 1.25rem; padding-right: 1.25rem; }
+}

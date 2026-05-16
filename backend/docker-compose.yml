@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: devforge_db
+    restart: always
+    environment:
+      POSTGRES_USER: devforge
+      POSTGRES_PASSWORD: devforge123
+      POSTGRES_DB: devforge
+    ports:
+      - '5432:5432'
+    volumes:
+      - devforge_pgdata:/var/lib/postgresql/data
+
+volumes:
+  devforge_pgdata:

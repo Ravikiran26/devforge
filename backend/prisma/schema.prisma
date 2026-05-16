@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum Plan {
+  SELF_PACED
+  LIVE_COHORT
+  MENTORED
+}
+
+enum StudentStatus {
+  ACTIVE
+  AT_RISK
+  COMPLETED
+  INACTIVE
+}
+
+enum CohortStatus {
+  UPCOMING
+  ACTIVE
+  COMPLETED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TicketStatus {
+  UPCOMING
+  ACTIVE
+  IN_REVIEW
+  REVIEWED
+}
+
+enum PRStatus {
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  NEEDS_CHANGES
+}
+
+enum LessonPublishStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum AnnouncementType {
+  SPRINT
+  SESSION
+  GENERAL
+  UPDATE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PARTIAL
+  FAILED
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  password     String
+  name         String
+  role         Role           @default(STUDENT)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  student      Student?
+  refreshTokens RefreshToken[]
+}
+
+model Student {
+  id          Int           @id @default(autoincrement())
+  userId      Int           @unique
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cohortId    Int?
+  cohort      Cohort?       @relation(fields: [cohortId], references: [id])
+  college     String?
+  location    String?
+  githubUrl   String?
+  bio         String?
+  plan        Plan          @default(LIVE_COHORT)
+  currentWeek Int           @default(1)
+  status      StudentStatus @default(ACTIVE)
+
+  prSubmissions  PRSubmission[]
+  lessonProgress LessonProgress[]
+  payments       Payment[]
+}
+
+model Cohort {
+  id            Int          @id @default(autoincrement())
+  name          String       @unique
+  startDate     DateTime
+  endDate       DateTime
+  status        CohortStatus @default(UPCOMING)
+  maxStudents   Int          @default(15)
+  createdAt     DateTime     @default(now())
+
+  students      Student[]
+  tickets       Ticket[]
+  lessons       Lesson[]
+  announcements Announcement[]
+}
+
+model Ticket {
+  id          Int          @id @default(autoincrement())
+  ticketCode  String       @unique
+  title       String
+  description String?
+  week        Int
+  priority    Priority     @default(MEDIUM)
+  status      TicketStatus @default(UPCOMING)
+  storyPoints Int          @default(3)
+  cohortId    Int?
+  cohort      Cohort?      @relation(fields: [cohortId], references: [id])
+  createdAt   DateTime     @default(now())
+
+  submissions PRSubmission[]
+}
+
+model PRSubmission {
+  id         Int      @id @default(autoincrement())
+  studentId  Int
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  ticketId   Int
+  ticket     Ticket   @relation(fields: [ticketId], references: [id])
+  prUrl      String
+  score      Int?
+  feedback   String?
+  status     PRStatus @default(IN_REVIEW)
+  submittedAt DateTime @default(now())
+  reviewedAt  DateTime?
+
+  aiReview     String?
+  aiReviewedAt DateTime?
+  verdict      String?
+
+  @@unique([studentId, ticketId])
+}
+
+model Lesson {
+  id          Int                 @id @default(autoincrement())
+  lessonCode  String              @unique
+  title       String
+  week        Int
+  duration    String
+  description String?
+  videoUrl    String?
+  status      LessonPublishStatus @default(DRAFT)
+  cohortId    Int?
+  cohort      Cohort?             @relation(fields: [cohortId], references: [id])
+  createdAt   DateTime            @default(now())
+
+  progress  LessonProgress[]
+}
+
+model LessonProgress {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  lessonId  Int
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  watched   Boolean  @default(false)
+  watchedAt DateTime?
+
+  @@unique([studentId, lessonId])
+}
+
+model Announcement {
+  id        Int              @id @default(autoincrement())
+  title     String
+  body      String
+  type      AnnouncementType @default(GENERAL)
+  audience  String           @default("All")
+  pinned    Boolean          @default(false)
+  cohortId  Int?
+  cohort    Cohort?          @relation(fields: [cohortId], references: [id])
+  createdAt DateTime         @default(now())
+}
+
+model Payment {
+  id        Int           @id @default(autoincrement())
+  txnId     String        @unique
+  studentId Int
+  student   Student       @relation(fields: [studentId], references: [id])
+  plan      Plan
+  amount    Int
+  method    String
+  status    PaymentStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
