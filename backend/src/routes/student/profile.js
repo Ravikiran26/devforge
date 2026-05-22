@@ -85,4 +85,17 @@ router.put('/password', [
   }
 })
 
+// POST /api/student/profile/onboarding/complete
+router.post('/onboarding/complete', async (req, res) => {
+  try {
+    await prisma.student.update({
+      where: { userId: req.user.userId },
+      data: { onboardingCompleted: true },
+    })
+    res.json({ message: 'Onboarding completed' })
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
 module.exports = router

@@ -5,6 +5,14 @@ const bcrypt = require('bcryptjs')
 const prisma = new PrismaClient()
 const content = require('./lesson-content')
 
+// Returns the Friday of the given week number, relative to Cohort 3 start (June 2, 2025)
+const COHORT3_START = new Date('2025-06-02')
+function weekFriday(week) {
+  const d = new Date(COHORT3_START)
+  d.setDate(d.getDate() + (week - 1) * 7 + 4)
+  return d
+}
+
 async function main() {
   console.log('🌱 Seeding database...')
 
@@ -15,7 +23,7 @@ async function main() {
     create: {
       name: 'Cohort 3',
       startDate: new Date('2025-06-02'),
-      endDate: new Date('2025-07-25'),
+      endDate: new Date('2025-08-25'),   // 12 weeks from Jun 2
       status: 'ACTIVE',
       maxStudents: 25,
     }
@@ -52,16 +60,16 @@ async function main() {
 
   // ── Students ─────────────────────────────────────────────────────────────────
   const studentData = [
-    { name:'Ravikiran',     email:'ravi@devforge.com',    college:'JNTU Hyderabad',     week:4, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Priya Sharma',  email:'priya@devforge.com',   college:'NIT Warangal',        week:4, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Rahul Verma',   email:'rahul@devforge.com',   college:'BITS Pilani',          week:4, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Sneha Kapur',   email:'sneha@devforge.com',   college:'VIT Vellore',          week:3, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Amit Rajan',    email:'amit@devforge.com',    college:'DTU Delhi',            week:4, status:'ACTIVE',    plan:'MENTORED',    cohortId: cohort3.id },
-    { name:'Divya Nair',    email:'divya@devforge.com',   college:'CUSAT Kerala',         week:2, status:'AT_RISK',   plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Vikram Singh',  email:'vikram@devforge.com',  college:'Thapar University',    week:4, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Ananya Roy',    email:'ananya@devforge.com',  college:'Jadavpur University',  week:4, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Karan Mehta',   email:'karan@devforge.com',   college:'IIIT Hyderabad',       week:8, status:'COMPLETED', plan:'LIVE_COHORT', cohortId: cohort2.id },
-    { name:'Nisha Patel',   email:'nisha@devforge.com',   college:'Nirma University',     week:8, status:'COMPLETED', plan:'LIVE_COHORT', cohortId: cohort2.id },
+    { name:'Ravikiran',     email:'ravi@devforge.com',    college:'JNTU Hyderabad',     week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
+    { name:'Priya Sharma',  email:'priya@devforge.com',   college:'NIT Warangal',        week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
+    { name:'Rahul Verma',   email:'rahul@devforge.com',   college:'BITS Pilani',          week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
+    { name:'Sneha Kapur',   email:'sneha@devforge.com',   college:'VIT Vellore',          week:6, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
+    { name:'Amit Rajan',    email:'amit@devforge.com',    college:'DTU Delhi',            week:7, status:'ACTIVE',    plan:'MENTORED',    cohortId: cohort3.id },
+    { name:'Divya Nair',    email:'divya@devforge.com',   college:'CUSAT Kerala',         week:5, status:'AT_RISK',   plan:'LIVE_COHORT', cohortId: cohort3.id },
+    { name:'Vikram Singh',  email:'vikram@devforge.com',  college:'Thapar University',    week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
+    { name:'Ananya Roy',    email:'ananya@devforge.com',  college:'Jadavpur University',  week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
+    { name:'Karan Mehta',   email:'karan@devforge.com',   college:'IIIT Hyderabad',       week:12, status:'COMPLETED', plan:'LIVE_COHORT', cohortId: cohort2.id },
+    { name:'Nisha Patel',   email:'nisha@devforge.com',   college:'Nirma University',     week:12, status:'COMPLETED', plan:'LIVE_COHORT', cohortId: cohort2.id },
   ]
 
   const pwd = await bcrypt.hash('Student@123', 10)
@@ -88,88 +96,243 @@ async function main() {
   console.log('✓ Students seeded  →  any student email / Student@123')
 
   // ── Lessons ──────────────────────────────────────────────────────────────────
+  await prisma.lessonProgress.deleteMany({})
+  await prisma.lesson.deleteMany({})
+
   const lessonsRaw = [
-    // Week 1 — Foundation prerequisites (pre-day lessons)
-    { lessonCode:'L01', week:1, title:'Foundation — Git and the Terminal',         duration:'35 mins', status:'PUBLISHED', description: content['L01'] },
-    { lessonCode:'L02', week:1, title:'Foundation — Frontend & Backend Overview', duration:'40 mins', status:'PUBLISHED', description: content['L02'] },
-    { lessonCode:'L03', week:1, title:'Foundation — JavaScript Essentials',        duration:'30 mins', status:'PUBLISHED', description: content['L03'] },
-    // Week 1 — Mini Lead Manager (7-day curriculum)
-    {
-      lessonCode:'W1D1', week:1, title:'Day 1 — GitHub Workflow and First Pull Request', duration:'40 mins', status:'PUBLISHED',
-      description: content['W1D1'],
-    },
-    {
-      lessonCode:'W1D2', week:1, title:'Day 2 — React Frontend Foundation', duration:'50 mins', status:'PUBLISHED',
-      description: content['W1D2'],
-    },
-    {
-      lessonCode:'W1D3', week:1, title:'Day 3 — Express Backend Foundation', duration:'45 mins', status:'PUBLISHED',
-      description: content['W1D3'],
-    },
-    {
-      lessonCode:'W1D4', week:1, title:'Day 4 — PostgreSQL and Prisma', duration:'55 mins', status:'PUBLISHED',
-      description: content['W1D4'],
-    },
-    {
-      lessonCode:'W1D5', week:1, title:'Day 5 — Full-Stack Connection', duration:'45 mins', status:'PUBLISHED',
-      description: content['W1D5'],
-    },
-    {
-      lessonCode:'W1D6', week:1, title:'Day 6 — Authentication and Protected Routes', duration:'50 mins', status:'PUBLISHED',
-      description: content['W1D6'],
-    },
-    {
-      lessonCode:'W1D7', week:1, title:'Day 7 — Deployment, Demo, and Final Submission', duration:'40 mins', status:'PUBLISHED',
-      description: content['W1D7'],
-    },
-    // Week 2 — InvoiceWala backend
-    { lessonCode:'L04', week:2, title:'Express.js from scratch — routes and middleware', duration:'28 mins', status:'PUBLISHED' },
-    { lessonCode:'L05', week:2, title:'Prisma ORM — schema, migrations, and queries',  duration:'31 mins', status:'PUBLISHED' },
-    { lessonCode:'L06', week:2, title:'JWT authentication — access and refresh tokens', duration:'26 mins', status:'PUBLISHED' },
-    // Week 3 — InvoiceWala features
-    { lessonCode:'L07', week:3, title:'GST rules for Indian developers',               duration:'18 mins', status:'PUBLISHED' },
-    { lessonCode:'L08', week:3, title:'Generating PDFs with pdf-lib',                  duration:'22 mins', status:'PUBLISHED' },
-    { lessonCode:'L09', week:3, title:'express-validator — input validation patterns', duration:'15 mins', status:'PUBLISHED' },
-    // Week 4 — InvoiceWala frontend + ClassPro kickoff
-    { lessonCode:'L10', week:4, title:'React with TanStack Query — useQuery and useMutation', duration:'31 mins', status:'PUBLISHED' },
-    { lessonCode:'L11', week:4, title:'Building forms in React — controlled inputs + validation', duration:'24 mins', status:'PUBLISHED' },
-    { lessonCode:'L12', week:4, title:'Multi-role auth — RBAC middleware patterns',    duration:'20 mins', status:'PUBLISHED' },
-    // Week 5 — ClassPro features
-    { lessonCode:'L13', week:5, title:'Razorpay integration — orders, verify, webhooks', duration:'32 mins', status:'PUBLISHED' },
-    { lessonCode:'L14', week:5, title:'HMAC-SHA256 signature verification in Node.js', duration:'18 mins', status:'PUBLISHED' },
-    { lessonCode:'L15', week:5, title:'Bulk operations and transactions in Prisma',    duration:'22 mins', status:'PUBLISHED' },
-    // Week 6 — ClassPro frontend + DeliverDesk kickoff
-    { lessonCode:'L16', week:6, title:'MongoDB and Mongoose — schema design for documents', duration:'28 mins', status:'DRAFT' },
-    { lessonCode:'L17', week:6, title:'Cloudinary — upload, transform, and CDN delivery', duration:'24 mins', status:'DRAFT' },
-    { lessonCode:'L18', week:6, title:'Building data-heavy dashboards in React',       duration:'30 mins', status:'DRAFT' },
-    // Week 7 — DeliverDesk backend
-    { lessonCode:'L19', week:7, title:'Socket.io — rooms, auth, and event patterns',  duration:'35 mins', status:'DRAFT' },
-    { lessonCode:'L20', week:7, title:'Magic link auth — stateless and stateful approaches', duration:'20 mins', status:'DRAFT' },
-    // Week 8 — DeliverDesk frontend + deploy
-    { lessonCode:'L21', week:8, title:'Deploying to Railway and Vercel — production setup', duration:'28 mins', status:'DRAFT' },
-    { lessonCode:'L22', week:8, title:'White labeling — custom domains and branding',  duration:'18 mins', status:'DRAFT' },
+    // ── WEEK 1 — Git, JavaScript, APIs & Developer Workflow ──────────────────
+    { lessonCode:'W1D1', week:1, title:'Day 1 — Terminal and Git',                              duration:'40 mins', status:'PUBLISHED', description: content['W1D1'] },
+    { lessonCode:'W1D2', week:1, title:'Day 2 — JavaScript Fundamentals (Part 1)',              duration:'45 mins', status:'PUBLISHED', description: content['W1D2'] },
+    { lessonCode:'W1D3', week:1, title:'Day 3 — JavaScript Fundamentals (Part 2)',              duration:'45 mins', status:'PUBLISHED', description: content['W1D3'] },
+    { lessonCode:'W1D4', week:1, title:'Day 4 — Async JavaScript and APIs',                     duration:'40 mins', status:'PUBLISHED', description: content['W1D4'] },
+    { lessonCode:'W1D5', week:1, title:'Day 5 — Frontend vs Backend + Git Branch Workflow',     duration:'35 mins', status:'PUBLISHED', description: content['W1D5'] },
+
+    // ── WEEK 2 — Node.js, Express, PostgreSQL & Prisma ──────────────────────
+    { lessonCode:'W2D1', week:2, title:'Day 1 — Node.js and npm',                               duration:'35 mins', status:'PUBLISHED', description: content['W2D1'] },
+    { lessonCode:'W2D2', week:2, title:'Day 2 — Express and Routes',                            duration:'45 mins', status:'PUBLISHED', description: content['W2D2'] },
+    { lessonCode:'W2D3', week:2, title:'Day 3 — PostgreSQL and Prisma Setup',                   duration:'50 mins', status:'PUBLISHED', description: content['W2D3'] },
+    { lessonCode:'W2D4', week:2, title:'Day 4 — Full CRUD with Prisma',                         duration:'50 mins', status:'PUBLISHED', description: content['W2D4'] },
+    { lessonCode:'W2D5', week:2, title:'Day 5 — Error Handling and Project Structure',          duration:'40 mins', status:'PUBLISHED', description: content['W2D5'] },
+
+    // ── WEEK 3 — React ────────────────────────────────────────────────────────
+    { lessonCode:'W3D1', week:3, title:'Day 1 — React Basics and Components',                   duration:'40 mins', status:'PUBLISHED', description: content['W3D1'] },
+    { lessonCode:'W3D2', week:3, title:'Day 2 — State with useState',                           duration:'40 mins', status:'PUBLISHED', description: content['W3D2'] },
+    { lessonCode:'W3D3', week:3, title:'Day 3 — Fetching Data from Your Own API',               duration:'45 mins', status:'PUBLISHED', description: content['W3D3'] },
+    { lessonCode:'W3D4', week:3, title:'Day 4 — React Router and Navigation',                   duration:'40 mins', status:'PUBLISHED', description: content['W3D4'] },
+    { lessonCode:'W3D5', week:3, title:'Day 5 — TanStack Query (React Query)',                  duration:'45 mins', status:'PUBLISHED', description: content['W3D5'] },
+
+    // ── WEEK 4 — Authentication + Project Kickoff ────────────────────────────
+    { lessonCode:'W4D1', week:4, title:'Day 1 — Auth Concepts and Backend Implementation',      duration:'50 mins', status:'PUBLISHED', description: content['W4D1'] },
+    { lessonCode:'W4D2', week:4, title:'Day 2 — Protected Routes and Frontend Auth',            duration:'45 mins', status:'PUBLISHED', description: content['W4D2'] },
+    { lessonCode:'W4D3', week:4, title:'Day 3 — Refresh Tokens and Role-Based Access',          duration:'45 mins', status:'PUBLISHED', description: content['W4D3'] },
+    { lessonCode:'W4D4', week:4, title:'Day 4 — Restaurant Flow Kickoff',                       duration:'40 mins', status:'PUBLISHED', description: content['W4D4'] },
+
+    // ── WEEK 5 — Project 1: Restaurant Flow (Backend + Payments) ─────────────
+    { lessonCode:'W5L1', week:5, title:'Restaurant Flow — Schema and Project Setup',            duration:'30 mins', status:'PUBLISHED' },
+    { lessonCode:'W5L2', week:5, title:'Menu API and Order Placement',                          duration:'40 mins', status:'PUBLISHED' },
+    { lessonCode:'W5L3', week:5, title:'Razorpay Payment Integration',                          duration:'45 mins', status:'PUBLISHED' },
+    { lessonCode:'W5L4', week:5, title:'Order Status Management and Transitions',               duration:'35 mins', status:'PUBLISHED' },
+    { lessonCode:'W5L5', week:5, title:'React — Menu Browsing and Cart',                        duration:'40 mins', status:'PUBLISHED' },
+
+    // ── WEEK 6 — Project 1: Restaurant Flow (Real-time + Deploy) ─────────────
+    { lessonCode:'W6L1', week:6, title:'Socket.io — Real-Time Order Updates',                   duration:'40 mins', status:'PUBLISHED' },
+    { lessonCode:'W6L2', week:6, title:'React — Customer Order Tracking Page',                  duration:'35 mins', status:'PUBLISHED' },
+    { lessonCode:'W6L3', week:6, title:'React — Kitchen Dashboard with Live Orders',            duration:'35 mins', status:'PUBLISHED' },
+    { lessonCode:'W6L4', week:6, title:'Socket.io in Production — CORS and Deployment',         duration:'30 mins', status:'PUBLISHED' },
+    { lessonCode:'W6L5', week:6, title:'Deploying Restaurant Flow — Vercel + Railway',          duration:'40 mins', status:'PUBLISHED' },
+
+    // ── WEEK 7 — Project 2: Lead Bill (Backend + GST) ─────────────────────────
+    { lessonCode:'W7L1', week:7, title:'Lead Bill — Schema Design and Express Setup',           duration:'30 mins', status:'DRAFT' },
+    { lessonCode:'W7L2', week:7, title:'Client Management API with Soft Delete',                duration:'40 mins', status:'DRAFT' },
+    { lessonCode:'W7L3', week:7, title:'Invoice API — Line Items and Server-Side Totals',       duration:'45 mins', status:'DRAFT' },
+    { lessonCode:'W7L4', week:7, title:'GST Logic — Same-State vs Different-State Calculation', duration:'40 mins', status:'DRAFT' },
+    { lessonCode:'W7L5', week:7, title:'Input Validation with express-validator',               duration:'35 mins', status:'DRAFT' },
+
+    // ── WEEK 8 — Project 2: Lead Bill (PDF + React) ───────────────────────────
+    { lessonCode:'W8L1', week:8, title:'PDF Invoice Generation with pdf-lib',                   duration:'40 mins', status:'DRAFT' },
+    { lessonCode:'W8L2', week:8, title:'Payment Tracking and Overdue Detection',                duration:'35 mins', status:'DRAFT' },
+    { lessonCode:'W8L3', week:8, title:'React — Client Management UI with TanStack Query',     duration:'40 mins', status:'DRAFT' },
+    { lessonCode:'W8L4', week:8, title:'Loading Skeletons and Error States in React',           duration:'30 mins', status:'DRAFT' },
+    { lessonCode:'W8L5', week:8, title:'Optimistic Updates with useMutation',                   duration:'35 mins', status:'DRAFT' },
+
+    // ── WEEK 9 — Project 2: Lead Bill (Invoice Form + Deploy) ─────────────────
+    { lessonCode:'W9L1', week:9, title:'React — Advanced Form State with React Hook Form',      duration:'40 mins', status:'DRAFT' },
+    { lessonCode:'W9L2', week:9, title:'Live GST Calculation in the Browser',                   duration:'35 mins', status:'DRAFT' },
+    { lessonCode:'W9L3', week:9, title:'Dashboard Data and Prisma Aggregation Queries',         duration:'35 mins', status:'DRAFT' },
+    { lessonCode:'W9L4', week:9, title:'Cloudinary PDF Uploads from React',                     duration:'30 mins', status:'DRAFT' },
+    { lessonCode:'W9L5', week:9, title:'Deploying Lead Bill — Vercel + Railway',                duration:'40 mins', status:'DRAFT' },
+
+    // ── WEEK 10 — Project 3: ClientDesk AI (Backend + Claude) ─────────────────
+    { lessonCode:'W10L1', week:10, title:'ClientDesk AI — Schema and Express Setup',            duration:'30 mins', status:'DRAFT' },
+    { lessonCode:'W10L2', week:10, title:'Ticket CRUD API and Agent Authentication',            duration:'40 mins', status:'DRAFT' },
+    { lessonCode:'W10L3', week:10, title:'Claude AI Auto-Reply Integration',                    duration:'45 mins', status:'DRAFT' },
+    { lessonCode:'W10L4', week:10, title:'Email Notifications with Nodemailer',                 duration:'35 mins', status:'DRAFT' },
+    { lessonCode:'W10L5', week:10, title:'React — Customer Support Portal',                    duration:'40 mins', status:'DRAFT' },
+
+    // ── WEEK 11 — Project 3: ClientDesk AI (React + CI/CD + Deploy) ───────────
+    { lessonCode:'W11L1', week:11, title:'React — Agent Dashboard',                             duration:'40 mins', status:'DRAFT' },
+    { lessonCode:'W11L2', week:11, title:'GitHub Actions — Writing Your First CI Pipeline',     duration:'40 mins', status:'DRAFT' },
+    { lessonCode:'W11L3', week:11, title:'Production Deploy — ClientDesk AI',                   duration:'35 mins', status:'DRAFT' },
+    { lessonCode:'W11L4', week:11, title:'Production Monitoring and Health Checks',             duration:'30 mins', status:'DRAFT' },
+    { lessonCode:'W11L5', week:11, title:'Final Portfolio Review',                              duration:'35 mins', status:'DRAFT' },
+
+    // ── WEEK 12 — Career Week ─────────────────────────────────────────────────
+    { lessonCode:'W12D1', week:12, title:'Day 1 — GitHub Profile and Project Presentation',    duration:'40 mins', status:'DRAFT' },
+    { lessonCode:'W12D2', week:12, title:'Day 2 — Writing Your Developer Resume',              duration:'45 mins', status:'DRAFT' },
+    { lessonCode:'W12D3', week:12, title:'Day 3 — LinkedIn for Developer Job Hunting',         duration:'35 mins', status:'DRAFT' },
+    { lessonCode:'W12D4', week:12, title:'Day 4 — Technical Interview Preparation',            duration:'50 mins', status:'DRAFT' },
+    { lessonCode:'W12D5', week:12, title:'Day 5 — Job Application Strategy',                   duration:'40 mins', status:'DRAFT' },
   ]
 
   const lessons = []
   for (const l of lessonsRaw) {
-    const lesson = await prisma.lesson.upsert({
-      where: { lessonCode: l.lessonCode },
-      update: { description: l.description ?? null, title: l.title, status: l.status },
-      create: { ...l, cohortId: cohort3.id }
+    const lesson = await prisma.lesson.create({
+      data: { ...l, cohortId: cohort3.id }
     })
     lessons.push(lesson)
   }
 
-  console.log('✓ Lessons seeded')
+  console.log(`✓ Lessons seeded  (${lessons.length} lessons across 12 weeks)`)
 
   // ── Tickets ──────────────────────────────────────────────────────────────────
   const ticketsRaw = [
-    // ── PRODUCT 1: InvoiceWala ──────────────────────────────────────────────────
+
+    // ── PROJECT 1: Restaurant Flow (Jira project key: RF) — Weeks 5–6 ─────────
     {
-      ticketCode: 'P1-001',
+      ticketCode: 'RF-1',
+      title: 'Restaurant + Menu Schema Setup',
+      week: 5, priority: 'LOW', status: 'REVIEWED', storyPoints: 2,
+      description: `Set up the PostgreSQL schema and Express server for Restaurant Flow. Design models for restaurant, menu, orders, and payments.
+
+Acceptance Criteria:
+1. Express server connects to PostgreSQL via Prisma — DATABASE_URL from .env, never hardcoded
+2. Prisma schema defines: Restaurant (name, address, phone, logoUrl), MenuCategory (restaurantId, name, displayOrder), MenuItem (categoryId, name, description, price, available), Order (restaurantId, customerName, customerPhone, status, totalAmount, createdAt), OrderItem (orderId, menuItemId, quantity, unitPrice, subtotal)
+3. All prices stored as integers (paise) — no floating point anywhere in schema
+4. Order status enum: PENDING | CONFIRMED | PREPARING | READY | DELIVERED | CANCELLED
+5. npm run db:push applies schema — no migration errors
+6. Prisma client exported from src/lib/prisma.js — not instantiated in route files
+7. GET /api/health returns { status: "ok", timestamp: ISO string }
+8. .env.example lists all required variable names — no hardcoded values anywhere`,
+    },
+    {
+      ticketCode: 'RF-2',
+      title: 'Menu API + Place Order API',
+      week: 5, priority: 'HIGH', status: 'REVIEWED', storyPoints: 5,
+      description: `Build the public menu browsing API and the order placement endpoint. Customers don't need accounts — they browse and order.
+
+Acceptance Criteria:
+1. GET /api/menu/:restaurantId — returns full menu grouped by category. Each item includes: id, name, description, price (paise), available
+2. Only available: true items returned — out-of-stock items excluded
+3. POST /api/orders — place an order. Body: { restaurantId, customerName, customerPhone, items: [{ menuItemId, quantity }] }
+4. Server calculates subtotal per item: unitPrice * quantity — client never sends prices
+5. totalAmount calculated server-side as sum of all item subtotals — never sent by client
+6. Order number auto-generated: ORD-YYYYMMDD-XXXX (e.g. ORD-20240101-0001). Sequential per day
+7. POST /api/orders returns { orderId, orderNumber, status: "PENDING", totalAmount }
+8. GET /api/orders/:id — returns order with all items and status. Available without auth (customer tracks by ID)`,
+    },
+    {
+      ticketCode: 'RF-3',
+      title: 'Razorpay Payment Integration',
+      week: 5, priority: 'HIGH', status: 'IN_REVIEW', storyPoints: 5,
+      description: `Customers pay online using Razorpay before their order is confirmed. Payment must be verified server-side using HMAC-SHA256 before marking any order as paid.
+
+Acceptance Criteria:
+1. POST /api/orders/:id/payment/create — creates a Razorpay order. Returns { razorpayOrderId, amount, currency: "INR", keyId }
+2. Amount for Razorpay order matches order.totalAmount in DB — never a different value
+3. POST /api/orders/:id/payment/verify — verifies payment. Body: { razorpayOrderId, razorpayPaymentId, razorpaySignature }
+4. HMAC-SHA256 verification: expected = HMAC(razorpayOrderId + "|" + razorpayPaymentId, RAZORPAY_KEY_SECRET). Signature mismatch → 400
+5. Order updated to CONFIRMED only after successful verification — NEVER before
+6. Payment record created with: orderId, razorpayOrderId, razorpayPaymentId, amount, status: PAID, paidAt
+7. RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET loaded from .env — never hardcoded
+8. Failed payment → order stays PENDING, no status change`,
+    },
+    {
+      ticketCode: 'RF-4',
+      title: 'Order Status Management API',
+      week: 5, priority: 'MEDIUM', status: 'ACTIVE', storyPoints: 3,
+      description: `Restaurant staff update order status as orders progress from kitchen to delivery. Status transitions are enforced — you cannot skip steps.
+
+Acceptance Criteria:
+1. PUT /api/orders/:id/status — update order status. Body: { status }. Requires staff JWT
+2. Valid transitions enforced: CONFIRMED → PREPARING → READY → DELIVERED. Invalid transitions return 400
+3. PENDING orders cannot go to PREPARING — must be CONFIRMED (paid) first
+4. CANCELLED only allowed from PENDING or CONFIRMED — not from PREPARING or later
+5. GET /api/orders?status=PREPARING — filter orders by status. Staff only
+6. GET /api/orders?restaurantId=X&date=YYYY-MM-DD — filter by restaurant and date
+7. Each status change recorded with timestamp: confirmedAt, preparingAt, readyAt, deliveredAt on Order model
+8. Response includes updated order with new status and relevant timestamp`,
+    },
+    {
+      ticketCode: 'RF-5',
+      title: 'Socket.io Real-Time Order Updates',
+      week: 6, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
+      description: `Customers see live order status updates without refreshing. Kitchen staff see new orders arrive in real time. Socket.io rooms keyed by orderId and restaurantId.
+
+Acceptance Criteria:
+1. Socket.io server initialized on the same HTTP server as Express — not a separate server
+2. Two room types: order:{orderId} (customer tracks their order), restaurant:{restaurantId} (staff sees all orders)
+3. Staff must send JWT in socket handshake — unauthenticated staff connections rejected. Customers join with orderId only
+4. New order placed → emit new_order to room restaurant:{restaurantId} with { orderId, orderNumber, customerName, totalAmount, items }
+5. Order status updated → emit order_status_updated to room order:{orderId} with { status, updatedAt }
+6. Order status updated → also emit order_status_updated to room restaurant:{restaurantId}
+7. DB write completes BEFORE socket event emitted — if socket fails, DB record is still updated
+8. CORS configured for Socket.io matching Express CORS settings — CLIENT_URL from .env`,
+    },
+    {
+      ticketCode: 'RF-6',
+      title: 'React — Customer Ordering Page',
+      week: 6, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
+      description: `Customer-facing page to browse the menu, build a cart, and place + pay for an order. Mobile-friendly, no account needed.
+
+Acceptance Criteria:
+1. /menu/:restaurantId — fetch and display menu grouped by category using TanStack Query
+2. Add to cart button on each item — cart state managed in React (no API call per add)
+3. Cart panel shows: item name, quantity controls, item subtotal, cart total in ₹ format (Intl.NumberFormat en-IN)
+4. Place Order form collects: customerName, customerPhone — validated before submit
+5. POST /api/orders on submit — on success redirect to /order/:id (tracking page)
+6. /order/:id — fetches initial order. Connects to Socket.io room order:{orderId} for live updates
+7. Status timeline: PENDING → CONFIRMED → PREPARING → READY → DELIVERED — current status highlighted
+8. Razorpay checkout widget opens after order placed — payment must complete before order is confirmed`,
+    },
+    {
+      ticketCode: 'RF-7',
+      title: 'React — Kitchen Dashboard (Real-Time)',
+      week: 6, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
+      description: `Staff dashboard showing live incoming orders and status controls. New orders appear instantly via Socket.io — no page refresh required.
+
+Acceptance Criteria:
+1. /kitchen — protected route, requires staff JWT. Redirects to /login if unauthenticated
+2. On mount: fetch all active orders (not DELIVERED or CANCELLED) via GET /api/orders?status=ACTIVE
+3. Socket.io: join room restaurant:{restaurantId}. Listen for new_order events
+4. new_order event → add order to top of list with a "NEW" badge — no page refresh
+5. Order card shows: order number, customer name, phone, items, total, time since placed, current status
+6. Status buttons on each card: Confirm → Preparing → Ready → Delivered. Calls PUT /api/orders/:id/status
+7. Status change optimistically updates the card — reverts on API error with error toast
+8. Orders auto-sorted: PENDING/CONFIRMED first, then PREPARING, then READY — DELIVERED hidden`,
+    },
+    {
+      ticketCode: 'RF-8',
+      title: 'Full Stack Deploy — Railway + Vercel',
+      week: 6, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
+      description: `Deploy Restaurant Flow to production. Backend on Railway, frontend on Vercel, PostgreSQL on Neon. Razorpay and Socket.io must work in production.
+
+Acceptance Criteria:
+1. Backend deployed to Railway — npm start script runs the production server
+2. PostgreSQL on Neon or Supabase — NEVER Railway ephemeral filesystem
+3. All env vars set in Railway: DATABASE_URL, JWT_SECRET, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, CLIENT_URL
+4. Frontend deployed to Vercel — VITE_API_URL points to Railway backend URL
+5. Socket.io CORS configured for production Vercel domain — connections not blocked
+6. GET https://{railway-url}/api/health returns { status: "ok" }
+7. .env.example documents every required variable
+8. End-to-end test in production: browse menu → place order → pay via Razorpay → staff sees order in kitchen → status updates in real time on customer page`,
+    },
+
+    // ── PROJECT 2: Lead Bill (Jira project key: LB) — Weeks 7–9 ───────────────
+    {
+      ticketCode: 'LB-1',
       title: 'Express Server + Prisma Setup',
-      week: 2, priority: 'LOW', status: 'REVIEWED', storyPoints: 2,
-      description: `Bootstrap the InvoiceWala backend. Create the Express server with proper folder structure and connect it to PostgreSQL using Prisma.
+      week: 7, priority: 'LOW', status: 'UPCOMING', storyPoints: 2,
+      description: `Bootstrap the Lead Bill backend. Create the Express server with proper folder structure and connect it to PostgreSQL using Prisma.
 
 Acceptance Criteria:
 1. Express server starts on port from .env — NOT hardcoded port number
@@ -182,9 +345,9 @@ Acceptance Criteria:
 8. Prisma client exported from a single src/lib/prisma.js file — not instantiated in every route file`,
     },
     {
-      ticketCode: 'P1-002',
+      ticketCode: 'LB-2',
       title: 'Client Management API',
-      week: 2, priority: 'MEDIUM', status: 'REVIEWED', storyPoints: 3,
+      week: 7, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
       description: `Build the full CRUD API for managing clients. A client stores details needed for GST-correct invoicing: name, GST number, address, state.
 
 Acceptance Criteria:
@@ -198,9 +361,9 @@ Acceptance Criteria:
 8. Consistent response shape: { success: true, data: {...} } or { success: false, error: "message" }`,
     },
     {
-      ticketCode: 'P1-003',
+      ticketCode: 'LB-3',
       title: 'Invoice Creation API with GST Calculation',
-      week: 2, priority: 'HIGH', status: 'REVIEWED', storyPoints: 5,
+      week: 7, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Build the invoice API that auto-calculates GST correctly. Same-state: CGST + SGST (9%+9% for 18%). Different-state: IGST (18%). System detects this automatically from stored state fields.
 
 Acceptance Criteria:
@@ -215,9 +378,9 @@ Acceptance Criteria:
 9. PUT /api/invoices/:id/status — update status: DRAFT | SENT | PAID | OVERDUE. Only owner can update`,
     },
     {
-      ticketCode: 'P1-004',
+      ticketCode: 'LB-4',
       title: 'PDF Invoice Generation',
-      week: 3, priority: 'HIGH', status: 'IN_REVIEW', storyPoints: 5,
+      week: 8, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Generate a professional PDF invoice on demand using pdf-lib. The PDF must look like a real invoice: logo area, invoice number, GST breakdown, bank details, itemized table.
 
 Acceptance Criteria:
@@ -230,9 +393,9 @@ Acceptance Criteria:
 7. Response headers: Content-Disposition: attachment; filename="INV-2024-0001.pdf"`,
     },
     {
-      ticketCode: 'P1-005',
+      ticketCode: 'LB-5',
       title: 'Payment Tracking + Overdue Detection',
-      week: 3, priority: 'MEDIUM', status: 'ACTIVE', storyPoints: 3,
+      week: 8, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
       description: `Track which invoices are paid and which are overdue. Add a dashboard summary endpoint.
 
 Acceptance Criteria:
@@ -245,9 +408,9 @@ Acceptance Criteria:
 7. Payment history preserved — do NOT overwrite previous payment records, append each payment`,
     },
     {
-      ticketCode: 'P1-006',
+      ticketCode: 'LB-6',
       title: 'React — Client Management UI',
-      week: 4, priority: 'MEDIUM', status: 'ACTIVE', storyPoints: 5,
+      week: 8, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 5,
       description: `Build the client management page in React. Add clients, see the list, edit details. Clean and instant — no page reloads.
 
 Acceptance Criteria:
@@ -261,9 +424,9 @@ Acceptance Criteria:
 8. Edit client opens inline form or modal — not a separate page`,
     },
     {
-      ticketCode: 'P1-007',
+      ticketCode: 'LB-7',
       title: 'React — Invoice Form with Live GST Preview',
-      week: 4, priority: 'HIGH', status: 'UPCOMING', storyPoints: 8,
+      week: 9, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Dynamic invoice creation form. Pick client, add line items, select GST rate, see live GST breakdown. GST type (CGST+SGST vs IGST) shows automatically based on selected client's state.
 
 Acceptance Criteria:
@@ -277,9 +440,9 @@ Acceptance Criteria:
 8. Form state preserved if API call fails — user does not lose their entered data`,
     },
     {
-      ticketCode: 'P1-008',
+      ticketCode: 'LB-8',
       title: 'React — Dashboard with Outstanding Summary',
-      week: 4, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
+      week: 9, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
       description: `The freelancer's home screen. Shows total outstanding, overdue invoices, this month's revenue, and recent invoices. All real data from the API.
 
 Acceptance Criteria:
@@ -293,269 +456,138 @@ Acceptance Criteria:
 8. Page loads with skeleton → data → no loading flash after first successful fetch (TanStack Query cache)`,
     },
 
-    // ── PRODUCT 2: ClassPro ─────────────────────────────────────────────────────
+    // ── PROJECT 3: ClientDesk AI (Jira project key: CA) — Weeks 10–11 ─────────
     {
-      ticketCode: 'P2-001',
-      title: 'Multi-Role Auth System (Owner / Teacher / Parent)',
-      week: 4, priority: 'HIGH', status: 'UPCOMING', storyPoints: 8,
-      description: `ClassPro has 3 roles: Owner (full access), Teacher (manage batches/attendance/marks), Parent (read-only). Build JWT auth supporting all three roles.
+      ticketCode: 'CA-1',
+      title: 'Support Desk Schema + Express Setup',
+      week: 10, priority: 'LOW', status: 'UPCOMING', storyPoints: 2,
+      description: `Design the PostgreSQL schema for ClientDesk AI — a support desk where customers submit tickets and AI generates the first draft reply. Agents review and approve before it is sent.
 
 Acceptance Criteria:
-1. POST /api/auth/register — supports role field: OWNER | TEACHER | PARENT. Default role: TEACHER
-2. POST /api/auth/login — returns JWT containing { userId, role, centerId } in payload
-3. roleGuard(roles) middleware — accepts array of allowed roles, returns 403 if caller's role not in list
-4. Owner routes use roleGuard(['OWNER']) — teachers cannot access them
-5. Parent routes use roleGuard(['PARENT', 'OWNER']) — teachers cannot see parent portal data
-6. Passwords hashed with bcrypt (cost factor >= 10) — never stored plain
-7. JWT secret from .env — not hardcoded
-8. /api/auth/me endpoint returns current user with role — used by frontend to decide which nav to show
-9. Refresh token flow implemented — access token expires in 15m, refresh token in 7d`,
+1. Prisma schema: Company (name, domain), Agent (companyId, email, passwordHash, role: ADMIN|AGENT), Customer (companyId, email, name), SupportTicket (companyId, customerId, subject, status, priority, createdAt), Message (ticketId, authorEmail, body, isAI, sentAt), AiDraft (ticketId, body, promptUsed, approved, agentId)
+2. SupportTicket status enum: OPEN | WAITING_REPLY | REPLIED | CLOSED
+3. SupportTicket priority enum: LOW | MEDIUM | HIGH | URGENT
+4. Prisma client exported from src/lib/prisma.js
+5. Express server starts on PORT from .env — GET /api/health returns { status: "ok" }
+6. npm run db:push applies schema without errors
+7. .env.example documents: DATABASE_URL, JWT_SECRET, ANTHROPIC_API_KEY, PORT, CLIENT_URL
+8. .gitignore includes node_modules/, .env, *.log`,
     },
     {
-      ticketCode: 'P2-002',
-      title: 'Student Enrollment + Batch Management API',
-      week: 4, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
-      description: `Owner creates batches and enrolls students. A student can be in multiple batches. Parent accounts are linked to student records at enrollment time.
+      ticketCode: 'CA-2',
+      title: 'Ticket CRUD API + Agent Auth',
+      week: 10, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
+      description: `Customers submit support tickets without accounts (email only). Agents log in and manage tickets. Different auth flows for each type of user.
 
 Acceptance Criteria:
-1. POST /api/batches — create batch. Required: name, subject, schedule, monthlyFee. Owner only
-2. GET /api/batches — list all batches for this center. Teachers see all; Parents see only their child's batches
-3. POST /api/students — enroll student. Required: name, phone, batchId, parentEmail. Owner/Teacher only
-4. Student enrollment auto-creates a Parent User account if parentEmail doesn't exist yet
-5. GET /api/students — list students. Owner/Teacher sees all; Parent sees ONLY their own child's record
-6. POST /api/students/:id/batches — add student to another batch
-7. GET /api/batches/:id/students — list all students in a batch with their fee status
-8. Student profile includes: name, phone, parentName, parentPhone, batchIds, enrolledAt, feeStatus`,
+1. POST /api/tickets — public endpoint. Body: { customerEmail, subject, body }. Creates ticket + customer if email is new. Returns { ticketId, ticketNumber }
+2. Ticket number auto-generated: TKT-XXXX (e.g. TKT-0047). Sequential, never repeated
+3. POST /api/auth/login — agent login. Returns JWT with { agentId, role, companyId }
+4. GET /api/tickets — agents only. Paginated, newest first. Filter by status and priority
+5. GET /api/tickets/:id — agents only. Returns ticket with full message thread
+6. PUT /api/tickets/:id/status — agents only. Valid transitions enforced
+7. GET /api/tickets/:id/messages — all messages: customer, agent, AI replies
+8. POST /api/tickets/:id/messages — agent posts a reply. Status auto-updates to REPLIED`,
     },
     {
-      ticketCode: 'P2-003',
-      title: 'Attendance Marking API',
-      week: 5, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
-      description: `Teachers mark attendance for each class session. Parents see if their child attended. System generates daily and monthly attendance reports.
+      ticketCode: 'CA-3',
+      title: 'Claude AI Auto-Reply Generation',
+      week: 10, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
+      description: `When a new ticket arrives, automatically generate an AI draft reply using the Claude API. The agent reviews, edits if needed, and approves before it is sent to the customer.
 
 Acceptance Criteria:
-1. POST /api/attendance — mark attendance for a session. Body: { batchId, date, records: [{studentId, present: bool}] }
-2. Bulk attendance — one API call marks all students in the batch for that session
-3. GET /api/attendance/batch/:batchId?month=YYYY-MM — returns attendance matrix: rows=students, cols=dates
-4. GET /api/attendance/student/:studentId?month=YYYY-MM — returns attendance % and day-by-day record
-5. Duplicate attendance prevention — cannot mark attendance twice for the same batch+date combination
-6. Parents can only see their own child's attendance — enforced server-side, 403 otherwise
-7. Attendance percentage computed server-side: present_count / total_sessions * 100
-8. Missing attendance (no record for a date) treated as absent in percentage calculation`,
+1. After POST /api/tickets, trigger AI draft generation asynchronously — customer gets ticketId immediately, AI runs in background
+2. Claude API called with: system prompt (agent persona, company name, helpful tone), user message (customer subject + body)
+3. Model: claude-haiku-4-5-20251001 — balance of quality and speed for auto-replies
+4. AiDraft created in DB: ticketId, body (Claude response), promptUsed (log exact prompt for debugging), approved: false
+5. PUT /api/ai-drafts/:id/approve — agent approves. Creates Message with isAI: true. AiDraft.approved = true, agentId recorded
+6. PUT /api/ai-drafts/:id — agent edits draft body before approving. Original prompt preserved
+7. ANTHROPIC_API_KEY loaded from .env — never hardcoded
+8. If Claude API fails: AiDraft created with body: null and error field — ticket still works, agent replies manually`,
     },
     {
-      ticketCode: 'P2-004',
-      title: 'Fee Management + Razorpay Integration',
-      week: 5, priority: 'HIGH', status: 'UPCOMING', storyPoints: 8,
-      description: `Handle fee collection with Razorpay. Track paid/partial/due status per student per month. Auto-generate PDF receipts.
+      ticketCode: 'CA-4',
+      title: 'Email Notifications via Nodemailer',
+      week: 10, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
+      description: `Send email to customers: ticket received confirmation and reply notification. Use Nodemailer with SMTP — Mailtrap for testing.
 
 Acceptance Criteria:
-1. POST /api/fees/orders — create Razorpay order for a student's monthly fee. Returns { orderId, amount, currency }
-2. POST /api/fees/verify — verify Razorpay payment. HMAC-SHA256 signature verified server-side using razorpay_order_id + "|" + razorpay_payment_id — any signature mismatch returns 400
-3. Fee record created in DB only after successful payment verification — NEVER before
-4. GET /api/fees/student/:studentId — list all fee records with paid/due/partial status per month
-5. GET /api/fees/center?month=YYYY-MM — owner view: total collected, total due, per-student breakdown
-6. GET /api/fees/:feeId/receipt — download PDF receipt (Content-Type: application/pdf)
-7. Razorpay keys (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET) loaded from .env — never hardcoded
-8. Partial fee payment supported — student pays 50% now, 50% later — both recorded`,
+1. Ticket created → email customer: subject "We received your request — TKT-XXXX", body includes ticket number and tracking link
+2. Agent replies → email customer: subject "Reply to your request TKT-XXXX", body includes agent's reply text
+3. Nodemailer configured from env: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS — never hardcoded
+4. Email sending is async (non-blocking) — API response is not delayed by SMTP call
+5. If SMTP not configured, log a warning and continue — app does not crash
+6. Email failures caught and logged — do not cause the ticket or reply API to return 500
+7. FROM address from SMTP_FROM env var — defaults to "ClientDesk AI <noreply@clientdesk.ai>"
+8. HTML email template — not plain text. Minimal but professional: ticket number, message, link`,
     },
     {
-      ticketCode: 'P2-005',
-      title: 'Batch Announcements System',
-      week: 5, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
-      description: `Teachers post announcements to specific batches. Parents only see announcements for their child's batch. Replaces WhatsApp groups with targeted communication.
+      ticketCode: 'CA-5',
+      title: 'GitHub Actions CI/CD Pipeline',
+      week: 11, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
+      description: `Set up GitHub Actions to run tests on every push. PRs that fail checks do not get merged. Passing CI triggers Railway auto-deploy.
 
 Acceptance Criteria:
-1. POST /api/announcements — create announcement. Body: { title, body, batchId, pinned }. Teacher/Owner only
-2. GET /api/announcements?batchId=X — list announcements for a batch, newest first
-3. Parents can only GET announcements for their child's batch — enforced server-side, 403 otherwise
-4. Pinned announcements always appear at top regardless of date
-5. DELETE /api/announcements/:id — only the creator or Owner can delete an announcement
-6. Announcement has audience field: "All" means all batches in center, or specific batchId
-7. GET /api/announcements/center — Owner sees all announcements across all batches
-8. PUT /api/announcements/:id/pin — toggle pin status. Owner only`,
+1. .github/workflows/ci.yml — runs on: push to main, pull_request to main
+2. Steps: checkout → setup-node@v4 (Node 20) → npm ci → npm run lint → npm test
+3. npm test runs at least 3 integration tests: POST /api/tickets creates ticket, POST /api/auth/login returns JWT, GET /api/health returns 200
+4. Tests use a real test database (TEST_DATABASE_URL) — no mocked DB queries
+5. Railway auto-deploy triggered after CI passes via Railway GitHub integration or deploy webhook
+6. Secrets in GitHub Actions secrets: TEST_DATABASE_URL, RAILWAY_TOKEN, ANTHROPIC_API_KEY — not in YAML
+7. Failing test → CI fails → Railway deployment does NOT trigger
+8. Branch protection rule: "ci" check must pass before merge is allowed`,
     },
     {
-      ticketCode: 'P2-006',
-      title: 'Test Marks + Progress Reports API',
-      week: 6, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 5,
-      description: `Teachers record test scores for students. System calculates averages and generates progress report cards visible to parents.
+      ticketCode: 'CA-6',
+      title: 'React — Customer Support Portal',
+      week: 11, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
+      description: `Customer-facing page to submit tickets and track status. No account needed — customers track by ticket number and email.
 
 Acceptance Criteria:
-1. POST /api/tests — create a test. Body: { batchId, testName, date, maxMarks }. Teacher/Owner only
-2. POST /api/tests/:id/marks — bulk submit marks. Body: [{ studentId, marksObtained }]
-3. Mark validation: marksObtained must be between 0 and test.maxMarks — reject invalid values
-4. GET /api/tests/student/:studentId — list all tests with marks for that student
-5. Percentage calculated server-side: (marksObtained / maxMarks) * 100
-6. GET /api/reports/student/:studentId — full report: attendance %, average test score, fee status
-7. Parents can only access their own child's report — 403 for others
-8. Report data aggregated via Prisma aggregation functions, not manual JS loops`,
+1. / — "Submit a Support Request" form. Fields: name, email, subject, message. All required
+2. Form validation with React Hook Form + Zod before submit
+3. POST /api/tickets on submit — on success: "Ticket received! Your number is TKT-0047. Track at /track/TKT-0047"
+4. /track/:ticketNumber — customer enters email to verify ownership. Fetches ticket and message thread
+5. Thread shows: customer messages (right), agent replies (left), AI replies labeled "[AI Assistant]"
+6. Status badge: OPEN (blue), WAITING_REPLY (orange), REPLIED (green), CLOSED (grey)
+7. Page auto-refreshes thread every 30 seconds — customer sees reply without manual refresh
+8. All API calls through src/lib/api.js — no raw fetch`,
     },
     {
-      ticketCode: 'P2-007',
-      title: 'React — Teacher Dashboard',
-      week: 6, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
-      description: `The main screen teachers use daily. Shows today's attendance status across batches, fee defaulters list, and upcoming tests.
+      ticketCode: 'CA-7',
+      title: 'React — Agent Dashboard',
+      week: 11, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
+      description: `Agent dashboard to manage support tickets. Shows queue, AI drafts awaiting approval, and ability to reply to customers.
 
 Acceptance Criteria:
-1. /dashboard (Teacher role) — fetches and shows: today's attendance status per batch, total students, pending fee payments, this month's collection
-2. Mark Attendance quick action — opens batch selector → shows student list with Present/Absent toggle → one-click submit
-3. Fee defaulters section — shows students with overdue fees, name + amount due + days overdue
-4. Data fetched using TanStack Query — no useEffect(() => fetch(...)) pattern
-5. All API calls use the api.js axios instance — not raw fetch
-6. Role check on mount: if not TEACHER or OWNER → redirect to /login
-7. Loading state shown for each section independently — one slow section doesn't block the whole page
-8. Batch selector persists in local state — switching batches doesn't re-fetch all data, only the batch-specific query`,
+1. /agent/login — login page. POST /api/auth/login. Stores JWT in Zustand store. Redirects to /agent/tickets
+2. /agent/tickets — protected. Ticket list with filter tabs: All / Open / Replied / Closed
+3. List shows: ticket number, customer email, subject, priority badge, status badge, time since created
+4. Click ticket → /agent/tickets/:id — full ticket view with message thread
+5. AI draft panel: if unreviewed AiDraft exists, show draft with Edit and "Approve & Send" buttons
+6. Approve calls PUT /api/ai-drafts/:id/approve — on success, draft appears in thread with "[AI]" label
+7. Manual reply box — POST /api/tickets/:id/messages. Reply appears instantly (optimistic update)
+8. Priority and status dropdowns allow updates without leaving the page`,
     },
     {
-      ticketCode: 'P2-008',
-      title: 'React — Parent Portal',
-      week: 6, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 5,
-      description: `Read-only portal for parents. Shows child's attendance, fee status, test marks, and batch announcements. Clean and mobile-friendly.
+      ticketCode: 'CA-8',
+      title: 'Production Deploy + Health Monitoring',
+      week: 11, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
+      description: `Final ticket. Deploy ClientDesk AI to production with CI/CD active. Confirm the full system works end-to-end in production including AI replies and email.
 
 Acceptance Criteria:
-1. /parent route — protected, accessible only with PARENT role JWT
-2. Attendance section — shows monthly attendance percentage with a visual calendar showing P/A per day
-3. Fee status section — shows this month's fee status (PAID/DUE/PARTIAL) with amount and payment button if due
-4. Razorpay payment widget integrated — parent can pay directly from portal
-5. Test marks section — list of tests with score and percentage, average at top
-6. Announcements — shows last 5 announcements from child's batch
-7. Mobile responsive layout — readable on a 375px width screen without horizontal scrolling
-8. Parent sees ONLY their child's data — no selector for "choose student" — locked to their child from JWT`,
-    },
-
-    // ── PRODUCT 3: DeliverDesk ──────────────────────────────────────────────────
-    {
-      ticketCode: 'P3-001',
-      title: 'MongoDB Setup + Project Workspace Schema',
-      week: 6, priority: 'LOW', status: 'UPCOMING', storyPoints: 3,
-      description: `Switch to MongoDB for DeliverDesk. Design Mongoose schemas for project workspaces, deliverables, feedback, and activity logs.
-
-Acceptance Criteria:
-1. Express server connects to MongoDB using MONGODB_URI from .env — not hardcoded
-2. Project schema: title, clientEmail, clientName, agencyId (ref User), status (enum: BRIEF|IN_PROGRESS|REVIEW|APPROVED|DELIVERED), revisionLimit, revisionsUsed, createdAt
-3. Deliverable schema: projectId (ref Project), version, filename, cloudinaryUrl, uploadedAt, notes
-4. Feedback schema: deliverableId (ref Deliverable), authorEmail, message, annotationX, annotationY, createdAt
-5. Activity schema: projectId, action (string), actorEmail, timestamp — append-only log
-6. All schemas have proper validation: required fields, enum values, field types
-7. Mongoose connection exported from src/lib/db.js — not initialized in every route
-8. npm run dev starts with nodemon — MongoDB connection error is logged clearly if URI is wrong`,
-    },
-    {
-      ticketCode: 'P3-002',
-      title: 'File Upload to Cloudinary + Versioning',
-      week: 6, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
-      description: `Agencies upload deliverables to Cloudinary. Each upload creates a new version — old versions never deleted.
-
-Acceptance Criteria:
-1. POST /api/projects/:id/deliverables — multipart upload endpoint. File goes to Cloudinary, URL stored in DB
-2. Cloudinary keys (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) from .env — never hardcoded
-3. Files stored in Cloudinary folder: deliverdesk/{projectId}/ — organized, not flat
-4. Version number auto-incremented: first upload is v1, second is v2 — never overwrites previous version
-5. GET /api/projects/:id/deliverables — list all versions for a project, newest first
-6. Activity log entry created on every upload: "Agency uploaded v2: filename.pdf"
-7. File size limit enforced: reject files > 50MB with 413 error before sending to Cloudinary
-8. Only the project owner (agencyId) can upload — 403 for others`,
-    },
-    {
-      ticketCode: 'P3-003',
-      title: 'Client Magic Link Authentication',
-      week: 7, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
-      description: `Clients access their project via a magic link emailed to them — no password, no account creation. Link expires after 7 days.
-
-Acceptance Criteria:
-1. POST /api/auth/magic-link — agency calls this with { clientEmail, projectId }. Sends email with unique link
-2. Magic link format: /client/token/{unique_token} — token is a UUID or cryptographically random 32-byte hex
-3. Token stored in DB with: token, clientEmail, projectId, expiresAt (7 days), usedAt (null until clicked)
-4. GET /api/auth/magic-link/verify?token=XXX — validates token, checks not expired, returns short-lived JWT (1 hour). Token marked usedAt = now() but NOT invalidated (client can reuse within 7 days)
-5. Client JWT payload: { role: 'CLIENT', clientEmail, projectId } — scope is single project only
-6. Client using another project's token → 403 (token's projectId doesn't match requested project)
-7. Expired token → 401 with message "Link expired — please request a new one"
-8. Email sending uses nodemailer with SMTP_* env vars — graceful error if SMTP not configured (logs warning, doesn't crash)`,
-    },
-    {
-      ticketCode: 'P3-004',
-      title: 'Approval and Feedback System',
-      week: 7, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
-      description: `Clients view deliverables, leave annotated feedback (click on image to comment), and Approve or Request Changes. All actions logged with timestamps.
-
-Acceptance Criteria:
-1. POST /api/deliverables/:id/feedback — client submits feedback. Body: { message, annotationX?, annotationY? }. Client JWT required
-2. annotationX and annotationY are percentage values (0–100) representing click position on the deliverable image
-3. PUT /api/projects/:id/approval — client submits decision. Body: { decision: 'APPROVED' | 'CHANGES_REQUESTED' }. Client JWT required
-4. APPROVED → project status set to APPROVED. Activity log: "Client approved the project"
-5. CHANGES_REQUESTED → project.revisionsUsed incremented. If revisionsUsed >= revisionLimit → return 400 "Revision limit reached"
-6. GET /api/deliverables/:id/feedback — list all feedback. Agency sees all; Client sees all feedback
-7. Agency can reply to feedback: POST /api/feedback/:id/reply with { message }. Agency JWT required
-8. Every approval/feedback action writes an Activity log entry before returning response (durability: log first, then respond)`,
-    },
-    {
-      ticketCode: 'P3-005',
-      title: 'Socket.io Real-Time Notifications',
-      week: 7, priority: 'HIGH', status: 'UPCOMING', storyPoints: 8,
-      description: `Both agency and client get instant notifications when the other party acts. Built with Socket.io rooms keyed by projectId.
-
-Acceptance Criteria:
-1. Socket.io server initialized on the same HTTP server as Express — not a separate server
-2. Authentication: client must send JWT in socket handshake (auth.token) — unauthenticated connections rejected
-3. Each user joins a room named by their projectId: socket.join("project:" + projectId) on connection
-4. Agency uploads deliverable → emit deliverable_uploaded to room project:{id} with { version, filename, uploadedAt }
-5. Client submits feedback → emit feedback_received to room project:{id} with { message, annotationX, annotationY, timestamp }
-6. Client approves/requests changes → emit approval_decision to room project:{id} with { decision, timestamp }
-7. Activity log written to DB BEFORE socket event emitted — if socket emit fails, the log still exists
-8. CORS configured for Socket.io matching the Express CORS settings — same CLIENT_URL from .env`,
-    },
-    {
-      ticketCode: 'P3-006',
-      title: 'React — Agency Project Dashboard',
-      week: 8, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
-      description: `Agency's main workspace. Create projects, upload deliverables, send magic links to clients, and see all client activity in real time.
-
-Acceptance Criteria:
-1. /projects — list all projects for the authenticated agency. Status badge for each project
-2. Create Project modal — fields: project title, client name, client email, revision limit (default 3)
-3. Individual project page /projects/:id — shows: current deliverable (latest version), version history, feedback thread, activity timeline, approval status
-4. File upload component — drag & drop or click to select. Shows upload progress bar. Calls POST /api/projects/:id/deliverables
-5. Send Magic Link button — calls POST /api/auth/magic-link. Shows success toast "Email sent to client@example.com"
-6. Socket.io connection on project page mount — listens for feedback_received and approval_decision events. New events appear in activity feed without page refresh
-7. Feedback items show annotation marker position visually on the deliverable image preview (small dot at annotationX%, annotationY%)
-8. All API calls through src/lib/api.js axios instance — no raw fetch`,
-    },
-    {
-      ticketCode: 'P3-007',
-      title: 'React — Client Review Portal',
-      week: 8, priority: 'HIGH', status: 'UPCOMING', storyPoints: 8,
-      description: `Client opens a magic link, sees their deliverable, leaves annotated feedback by clicking on the image, and approves or requests changes. Zero setup for the client.
-
-Acceptance Criteria:
-1. /client/token/:token — verifies magic link token via GET /api/auth/magic-link/verify?token=X, stores returned JWT in sessionStorage (not localStorage)
-2. Client sees: project title, current deliverable file (image preview if image, download link if not), version history, revision counter ("2 of 3 revisions used")
-3. Image annotation — clicking on the deliverable image captures click coordinates as percentage (clientX/offsetWidth * 100), opens a comment input at that position
-4. POST /api/deliverables/:id/feedback called on comment submit — x/y percentages sent
-5. Annotation dots shown on image at correct position for all existing feedback items
-6. Approve button → calls PUT /api/projects/:id/approval with APPROVED. Button disabled after approval (can't un-approve)
-7. Request Changes button → calls with CHANGES_REQUESTED. Shows revision limit warning if at limit
-8. Socket.io: client joins project room. When agency uploads new version → deliverable_uploaded event → show toast "Agency uploaded a new version — refresh to view"`,
-    },
-    {
-      ticketCode: 'P3-008',
-      title: 'White Label + Deploy to Railway + Vercel',
-      week: 8, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 5,
-      description: `Final ticket. Configure DeliverDesk for white-label use (agency's logo and domain) and deploy the full stack to Railway (backend + MongoDB) and Vercel (frontend).
-
-Acceptance Criteria:
-1. Agency profile endpoint: PUT /api/agency/branding — stores: agencyName, logoUrl, primaryColor (hex), customDomain
-2. GET /api/projects/:id response includes agency branding fields — client portal uses these to show agency's logo/colors
-3. Client portal reads branding from project response and applies: agency logo in header, primary color as CSS custom property --brand-color
-4. Backend Dockerfile or Railway config deploys correctly — npm start runs production build
-5. All environment variables documented in .env.example — no secrets in code or Dockerfile
-6. Frontend deployed to Vercel: VITE_API_URL env var points to Railway backend URL
-7. GET /api/health returns { status: "ok" } on the deployed Railway URL
-8. MongoDB Atlas used for production DB — not Railway's ephemeral filesystem — MONGODB_URI points to Atlas connection string`,
+1. Backend deployed to Railway — env vars set: DATABASE_URL, JWT_SECRET, ANTHROPIC_API_KEY, SMTP_* vars, CLIENT_URL
+2. PostgreSQL on Neon or Supabase — not Railway ephemeral storage
+3. Frontend deployed to Vercel — VITE_API_URL points to Railway backend
+4. GitHub Actions CI pipeline passes on main — badge shown in README
+5. GET /api/health returns { status: "ok", db: "connected", timestamp: ISO string } — db field confirms Prisma can query
+6. End-to-end test in production: submit ticket → AI draft generated → agent approves → customer receives email reply
+7. .env.example documents all variables — another developer can deploy from scratch without asking
+8. README has: project description, local setup instructions, deployed URL, CI badge`,
     },
   ]
 
-  // Remove any old tickets not in the current ticket bank (cascade delete submissions first)
+  // Remove old tickets not in the current ticket bank
   const validCodes = ticketsRaw.map(t => t.ticketCode)
   const oldTickets = await prisma.ticket.findMany({ where: { ticketCode: { notIn: validCodes } }, select: { id: true } })
   if (oldTickets.length > 0) {
@@ -567,23 +599,25 @@ Acceptance Criteria:
   const tickets = []
   for (const t of ticketsRaw) {
     const { cohortId: _ignore, ...updateData } = t
+    const due = weekFriday(t.week)
     const ticket = await prisma.ticket.upsert({
       where: { ticketCode: t.ticketCode },
-      update: updateData,
-      create: { ...t, cohortId: cohort3.id }
+      update: { ...updateData, dueDate: due },
+      create: { ...t, cohortId: cohort3.id, dueDate: due }
     })
     tickets.push(ticket)
   }
 
-  console.log('✓ Tickets seeded  (24 tickets across 3 products)')
+  console.log('✓ Tickets seeded  (24 tickets: RF-001→008, LB-001→008, CA-001→008)')
 
   // ── PR Submissions (for Ravikiran = students[0]) ──────────────────────────────
+  // Ravi is on Week 7 — Restaurant Flow complete, starting Lead Bill
   const ravi = students[0]
   const submissionsData = [
-    { ticketId: tickets[0].id, prUrl:'https://github.com/ravi/invoicewala/pull/1',  score:94, status:'APPROVED',   feedback:'Clean setup. Prisma exported correctly from lib/, nodemon configured. Excellent start.' },
-    { ticketId: tickets[1].id, prUrl:'https://github.com/ravi/invoicewala/pull/3',  score:89, status:'APPROVED',   feedback:'CRUD looks solid. Soft delete implemented correctly. Validation runs before DB queries.' },
-    { ticketId: tickets[2].id, prUrl:'https://github.com/ravi/invoicewala/pull/6',  score:85, status:'APPROVED',   feedback:'GST logic correct. Server-side calculation only. invoiceNumber format matches spec.' },
-    { ticketId: tickets[3].id, prUrl:'https://github.com/ravi/invoicewala/pull/9',  score:null, status:'IN_REVIEW', feedback:null },
+    { ticketId: tickets[0].id, prUrl:'https://github.com/ravi/restaurantflow/pull/1',  score:92, status:'APPROVED',   feedback:'Clean schema setup. Prisma exported from lib/. All prices stored as paise integers. Health endpoint correct.' },
+    { ticketId: tickets[1].id, prUrl:'https://github.com/ravi/restaurantflow/pull/3',  score:88, status:'APPROVED',   feedback:'Menu API grouped by category correctly. Order placement calculates server-side. Order number format matches spec.' },
+    { ticketId: tickets[2].id, prUrl:'https://github.com/ravi/restaurantflow/pull/6',  score:85, status:'APPROVED',   feedback:'Razorpay HMAC verification implemented correctly. Payment only confirmed after verification passes. Keys from .env.' },
+    { ticketId: tickets[3].id, prUrl:'https://github.com/ravi/restaurantflow/pull/9',  score:null, status:'IN_REVIEW', feedback:null },
   ]
 
   for (const s of submissionsData) {
@@ -597,28 +631,32 @@ Acceptance Criteria:
   console.log('✓ PR submissions seeded')
 
   // ── Lesson progress for Ravikiran ─────────────────────────────────────────────
-  // Delete all existing progress first so re-seeding gives a clean state
-  await prisma.lessonProgress.deleteMany({ where: { studentId: ravi.id } })
-
-  // Week 1 is intentionally left at 0% so students can experience it fresh.
-  // Mark only 3 Week 2 lessons as watched (L04, L05, L06 → index 10, 11, 12 in lessons[])
-  // Lesson order: L01(0), L02(1), L03(2), W1D1(3)…W1D7(9), L04(10), L05(11), L06(12)…
-  for (let i = 10; i <= 12; i++) {
-    if (lessons[i]) {
+  // Weeks 1-4 foundation complete, Weeks 5-6 (Restaurant Flow) complete, now on Week 7
+  const doneCodesRavi = [
+    'W1D1','W1D2','W1D3','W1D4','W1D5',
+    'W2D1','W2D2','W2D3','W2D4','W2D5',
+    'W3D1','W3D2','W3D3','W3D4','W3D5',
+    'W4D1','W4D2','W4D3','W4D4',
+    'W5L1','W5L2','W5L3','W5L4','W5L5',
+    'W6L1','W6L2','W6L3','W6L4','W6L5',
+  ]
+  for (const code of doneCodesRavi) {
+    const lesson = lessons.find(l => l.lessonCode === code)
+    if (lesson) {
       await prisma.lessonProgress.create({
-        data: { studentId: ravi.id, lessonId: lessons[i].id, watched: true, watchedAt: new Date() }
+        data: { studentId: ravi.id, lessonId: lesson.id, watched: true, watchedAt: new Date() }
       })
     }
   }
 
-  console.log('✓ Lesson progress seeded  (Week 1 fresh, Week 2 partially done)')
+  console.log('✓ Lesson progress seeded  (Weeks 1-6 done, Week 7 in progress)')
 
   // ── Announcements ────────────────────────────────────────────────────────────
   const announcementsRaw = [
-    { title:'InvoiceWala Week 4 Sprint is Live!', body:"Hey Cohort 3! Your Week 4 tickets for InvoiceWala are live on the Task Board. Focus on P1-007 (Invoice Form with GST Preview) first — it's the hardest ticket this week. PR deadline is Friday 11:59 PM.", audience:'Cohort 3', type:'SPRINT', pinned:true, cohortId:cohort3.id },
-    { title:'Live Session: Building the Invoice Form — Friday 6 PM', body:'Week 4 live session — we will build the invoice creation form together with live GST calculation. Join link in Discord 30 mins before. Attendance mandatory.', audience:'Cohort 3', type:'SESSION', pinned:true, cohortId:cohort3.id },
-    { title:'Cohort 2 Graduates — Congratulations!', body:'Cohort 2 has officially wrapped up! 18 students completed all 3 products. Average grade: 88%. Placement support begins next week. Alumni Discord channel now open.', audience:'All', type:'GENERAL', pinned:false, cohortId:null },
-    { title:'ClassPro Preview — Week 5 Preview', body:'Starting next week you move to ClassPro — a coaching center management system with Razorpay integration. Watch L13 (Razorpay integration) and L14 (HMAC-SHA256) this weekend to prepare.', audience:'Cohort 3', type:'UPDATE', pinned:false, cohortId:cohort3.id },
+    { title:'Lead Bill Week 7 Sprint is Live!', body:"Hey Cohort 3! Your Week 7 tickets for Lead Bill are now live on the board — LB-001, LB-002, LB-003. Start with LB-001 (Express Server + Prisma Setup) first. Make sure your .env has DATABASE_URL before running db:push. PR deadline is Friday 11:59 PM.", audience:'Cohort 3', type:'SPRINT', pinned:true, cohortId:cohort3.id },
+    { title:'Live Session: GST Calculation Logic — Friday 6 PM', body:'Week 7 live session — we will implement same-state vs different-state GST logic together for LB-003. This is the trickiest part of Lead Bill. Join link in Discord 30 mins before. Attendance mandatory.', audience:'Cohort 3', type:'SESSION', pinned:true, cohortId:cohort3.id },
+    { title:'Cohort 2 Graduates — Congratulations!', body:'Cohort 2 has officially wrapped up! 18 students completed all 3 projects. Average grade: 88%. Placement support begins next week. Alumni Discord channel now open.', audience:'All', type:'GENERAL', pinned:false, cohortId:null },
+    { title:'Restaurant Flow Done — Pin It on GitHub Now', body:"Great work on Restaurant Flow everyone! Before starting Lead Bill, add your RF live link to your GitHub README and LinkedIn. Recruiters will see it. Takes 10 minutes, worth it.", audience:'Cohort 3', type:'UPDATE', pinned:false, cohortId:cohort3.id },
   ]
 
   for (const a of announcementsRaw) {
@@ -647,7 +685,7 @@ Acceptance Criteria:
   console.log('\n✅ Seed complete!\n')
   console.log('   Admin:   admin@devforge.com  /  Admin@123')
   console.log('   Student: ravi@devforge.com   /  Student@123\n')
-  console.log('   Products: InvoiceWala (P1, weeks 2-4) | ClassPro (P2, weeks 4-6) | DeliverDesk (P3, weeks 6-8)\n')
+  console.log('   Projects: Restaurant Flow (RF, weeks 5-6) | Lead Bill (LB, weeks 7-9) | ClientDesk AI (CA, weeks 10-11)\n')
 }
 
 main()

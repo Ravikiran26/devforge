@@ -17,6 +17,31 @@ const P_STYLE = {
   LOW:    { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0' },
 }
 
+function DueBadge({ dueDate, full = false }) {
+  const now  = new Date()
+  const due  = new Date(dueDate)
+  const days = Math.ceil((due - now) / 86400000)
+
+  let color, bg
+  if (days < 0)      { color = '#dc2626'; bg = '#fef2f2' }
+  else if (days <= 2){ color = '#dc2626'; bg = '#fef2f2' }
+  else if (days <= 5){ color = '#d97706'; bg = '#fffbeb' }
+  else               { color = '#6b7280'; bg = '#f9fafb' }
+
+  const label = full
+    ? due.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    : days < 0
+      ? `${Math.abs(days)}d overdue`
+      : days === 0 ? 'Due today'
+      : `${days}d left`
+
+  return (
+    <span style={{ fontSize: 10, fontWeight: 700, color, background: bg, padding: '2px 7px', borderRadius: 5, whiteSpace: 'nowrap' }}>
+      {label}
+    </span>
+  )
+}
+
 function Spinner() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300 }}>
@@ -124,6 +149,11 @@ function TicketCard({ ticket: t, col, isSelected, onClick }) {
           </span>
         )}
       </div>
+      {t.dueDate && t.status !== 'REVIEWED' && (
+        <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
+          <DueBadge dueDate={t.dueDate} />
+        </div>
+      )}
     </div>
   )
 }
@@ -187,7 +217,7 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
       </div>
 
       {/* Meta grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: sel.dueDate ? 10 : 20 }}>
         {[
           ['Priority', <span style={{ fontSize: 12, fontWeight: 700, color: ps.color }}>{sel.priority}</span>],
           ['Status',   <span style={{ fontSize: 12, color: '#374151' }}>{sel.status.replace('_', ' ')}</span>],
@@ -200,6 +230,17 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
           </div>
         ))}
       </div>
+      {sel.dueDate && (
+        <div style={{ background: '#f8fafc', borderRadius: 10, padding: '10px 12px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>Due Date</div>
+            <span style={{ fontSize: 12, color: '#374151' }}>
+              {new Date(sel.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </span>
+          </div>
+          {sel.status !== 'REVIEWED' && <DueBadge dueDate={sel.dueDate} />}
+        </div>
+      )}
 
       {/* Description */}
       {sel.description && (

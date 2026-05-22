@@ -1,24 +1,64 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import {
   CheckCircle, Lock, BookOpen, ChevronRight, ChevronLeft,
-  Copy, Check, Terminal, Code2, Monitor, Clock, ArrowLeft, Map,
+  Copy, Check, Terminal, Code2, Monitor, Clock, ArrowLeft, Map, Sun, Moon,
 } from 'lucide-react'
 import api from '../lib/api'
 
-const WEEK_LABELS = ['','Foundation — Mini Lead Manager','Backend Basics','Auth + React','Task Board Build','Advanced Features','Project 2 Start','Interview Prep','Final Mock']
+const C = {
+  bg:      '#0D1117',
+  surface: '#161B22',
+  surface2:'#21262D',
+  border:  '#30363D',
+  border2: '#3D444D',
+  text:    '#E6EDF3',
+  text2:   '#C9D1D9',
+  text3:   '#8B949E',
+  accent:  '#3B82F6',
+  green:   '#3FB950',
+  red:     '#F85149',
+}
+const glow = (color = '#3B82F6', size = 10) => `0 0 ${size}px ${color}44`
+
+const LIGHT = {
+  bg:      '#FFFFFF',
+  surface: '#F6F8FA',
+  surface2:'#EAEEF2',
+  border:  '#D0D7DE',
+  border2: '#BDC4CC',
+  text:    '#0D1117',
+  text2:   '#24292F',
+  text3:   '#57606A',
+}
+
+const WEEK_LABELS = [
+  '',
+  'Git, JavaScript, APIs & Developer Workflow',
+  'Node.js, Express, PostgreSQL & Prisma',
+  'React',
+  'Authentication + Project 1 Kickoff',
+  'Project 1 — Core Features',
+  'Project 1 — File Uploads, Cloudinary & Deploy',
+  'Project 2 — Payments with Razorpay',
+  'Project 2 — Real-time with Socket.io',
+  'Project 3 — Production Deployment & DevOps',
+  'Career Week',
+]
 
 const WEEK_THEMES = [
   '',
-  { emoji:'⚡', tag:'Week 1', color:'#3B82F6', bg:'rgba(59,130,246,0.08)',  border:'rgba(59,130,246,0.2)'  },
-  { emoji:'🛠', tag:'Week 2', color:'#60B8D4', bg:'rgba(96,184,212,0.08)',  border:'rgba(96,184,212,0.2)'  },
-  { emoji:'🔐', tag:'Week 3', color:'#A78BFA', bg:'rgba(167,139,250,0.08)', border:'rgba(167,139,250,0.2)' },
-  { emoji:'📋', tag:'Week 4', color:'#F4A942', bg:'rgba(244,169,66,0.08)',  border:'rgba(244,169,66,0.2)'  },
-  { emoji:'🚀', tag:'Week 5', color:'#E07070', bg:'rgba(224,112,112,0.08)', border:'rgba(224,112,112,0.2)' },
-  { emoji:'🌐', tag:'Week 6', color:'#3FB950', bg:'rgba(63,185,80,0.08)',  border:'rgba(63,185,80,0.2)'  },
-  { emoji:'🎤', tag:'Week 7', color:'#E879A0', bg:'rgba(232,121,160,0.08)', border:'rgba(232,121,160,0.2)' },
-  { emoji:'🏁', tag:'Week 8', color:'#D4954A', bg:'rgba(212,149,74,0.08)',  border:'rgba(212,149,74,0.2)'  },
+  { emoji:'⚡', tag:'Week 1',  color:'#3B82F6', bg:'rgba(59,130,246,0.08)',   border:'rgba(59,130,246,0.2)'   },
+  { emoji:'🛠',  tag:'Week 2',  color:'#60B8D4', bg:'rgba(96,184,212,0.08)',   border:'rgba(96,184,212,0.2)'   },
+  { emoji:'⚛️', tag:'Week 3',  color:'#A78BFA', bg:'rgba(167,139,250,0.08)',  border:'rgba(167,139,250,0.2)'  },
+  { emoji:'🔐', tag:'Week 4',  color:'#F4A942', bg:'rgba(244,169,66,0.08)',   border:'rgba(244,169,66,0.2)'   },
+  { emoji:'📦', tag:'Week 5',  color:'#3FB950', bg:'rgba(63,185,80,0.08)',    border:'rgba(63,185,80,0.2)'    },
+  { emoji:'☁️', tag:'Week 6',  color:'#E07070', bg:'rgba(224,112,112,0.08)',  border:'rgba(224,112,112,0.2)'  },
+  { emoji:'💳', tag:'Week 7',  color:'#22D3EE', bg:'rgba(34,211,238,0.08)',   border:'rgba(34,211,238,0.2)'   },
+  { emoji:'⚡', tag:'Week 8',  color:'#FBBF24', bg:'rgba(251,191,36,0.08)',   border:'rgba(251,191,36,0.2)'   },
+  { emoji:'🤖', tag:'Week 9',  color:'#E879A0', bg:'rgba(232,121,160,0.08)',  border:'rgba(232,121,160,0.2)'  },
+  { emoji:'🎯', tag:'Week 10', color:'#D4954A', bg:'rgba(212,149,74,0.08)',   border:'rgba(212,149,74,0.2)'   },
 ]
 
 const BLOCK_STYLES = {
@@ -54,7 +94,7 @@ function CopyButton({ text }) {
   return (
     <button
       onClick={() => { navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) }) }}
-      style={{ display:'flex', alignItems:'center', gap:4, padding:'4px 10px', borderRadius:6, border:'none', cursor:'pointer', background: copied ? '#166534' : 'rgba(255,255,255,0.1)', color: copied ? '#86efac' : 'rgba(255,255,255,0.7)', fontSize:11, fontWeight:600 }}
+      style={{ display:'flex', alignItems:'center', gap:4, padding:'4px 10px', border:`1px solid ${C.border2}`, cursor:'pointer', background: copied ? `${C.green}22` : C.surface2, color: copied ? C.green : C.text3, fontSize:11, fontWeight:600, fontFamily:'JetBrains Mono,monospace' }}
     >
       {copied ? <Check size={11}/> : <Copy size={11}/>} {copied ? 'Copied!' : 'Copy'}
     </button>
@@ -65,62 +105,62 @@ function CodeBlock({ blockType, code }) {
   const s = BLOCK_STYLES[blockType]
   const Icon = s.icon
   return (
-    <div style={{ background:s.bg, border:`1px solid ${s.border}`, borderRadius:12, overflow:'hidden', margin:'20px 0' }}>
+    <div style={{ background:s.bg, border:`1px solid ${s.border}`, overflow:'hidden', margin:'20px 0' }}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'8px 16px', background:'rgba(0,0,0,0.3)', borderBottom:`1px solid ${s.border}` }}>
-        <span style={{ display:'flex', alignItems:'center', gap:6, padding:'3px 10px', borderRadius:5, background:s.labelBg, color:s.labelColor, fontSize:11, fontWeight:800, letterSpacing:'0.07em' }}>
+        <span style={{ display:'flex', alignItems:'center', gap:6, padding:'3px 10px', background:s.labelBg, color:s.labelColor, fontSize:11, fontWeight:800, letterSpacing:'0.07em', fontFamily:'JetBrains Mono,monospace' }}>
           <Icon size={11}/>{s.label}
         </span>
         <CopyButton text={code}/>
       </div>
-      <pre style={{ margin:0, padding:'18px 22px', overflowX:'auto', fontFamily:'JetBrains Mono, Menlo, Consolas, monospace', fontSize:14, lineHeight:1.75, color:s.codeColor, whiteSpace:'pre-wrap', wordBreak:'break-word' }}>{code}</pre>
+      <pre style={{ margin:0, padding:'18px 22px', overflowX:'auto', fontFamily:'JetBrains Mono, Menlo, Consolas, monospace', fontSize:13, lineHeight:1.75, color:s.codeColor, whiteSpace:'pre-wrap', wordBreak:'break-word' }}>{code}</pre>
     </div>
   )
 }
 
-function renderTextLine(line, i) {
+function renderTextLine(line, i, R = C) {
   const t = line.trim()
   if (/^[A-Z][A-Z0-9\s\-]{3,}$/.test(t) && t.length < 55 && !t.startsWith('•') && !t.startsWith('☐'))
-    return <div key={i} style={{ fontSize:11, fontWeight:800, color:'#3B82F6', letterSpacing:'0.1em', marginTop: i===0 ? 0 : 32, marginBottom:10 }}>{t}</div>
+    return <div key={i} style={{ fontSize:11, fontWeight:800, color:'#3B82F6', letterSpacing:'0.1em', marginTop: i===0 ? 0 : 32, marginBottom:10, fontFamily:"'Inter', sans-serif" }}>{t}</div>
   if (/^─+$/.test(t))
-    return <hr key={i} style={{ border:'none', borderTop:'1px solid #30363D', margin:'24px 0' }}/>
+    return <hr key={i} style={{ border:'none', borderTop:`1px solid ${R.border}`, margin:'24px 0' }}/>
   if (t.startsWith('☐'))
-    return <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:10, padding:'8px 12px', background:'#21262D', borderRadius:8 }}>
-      <span style={{ fontSize:17, color:'#6E7681', marginTop:1, flexShrink:0 }}>☐</span>
-      <span style={{ fontSize:15, color:'#C9D1D9', lineHeight:1.6 }}>{t.slice(1).trim()}</span>
+    return <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:10, padding:'10px 14px', background: R.surface, border:`1px solid ${R.border}` }}>
+      <span style={{ fontSize:16, color: R.text3, marginTop:1, flexShrink:0 }}>☐</span>
+      <span style={{ fontSize:14, color: R.text2, lineHeight:1.6, fontFamily:"'Inter', sans-serif" }}>{t.slice(1).trim()}</span>
     </div>
   if (t.startsWith('•'))
     return <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:8 }}>
-      <span style={{ width:7, height:7, borderRadius:'50%', background:'#3B82F6', flexShrink:0, marginTop:9 }}/>
-      <span style={{ fontSize:15, color:'#C9D1D9', lineHeight:1.75 }}>{t.slice(1).trim()}</span>
+      <span style={{ width:6, height:6, background: C.accent, flexShrink:0, marginTop:10 }}/>
+      <span style={{ fontSize:14, color: R.text2, lineHeight:1.75, fontFamily:"'Inter', sans-serif" }}>{t.slice(1).trim()}</span>
     </div>
   if (/^\d+\./.test(t)) {
     const num = t.match(/^(\d+)\./)[1]
     const text = t.replace(/^\d+\.\s*/,'')
     return <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:14, marginBottom:10 }}>
-      <span style={{ width:26, height:26, borderRadius:'50%', background:'rgba(59,130,246,0.1)', color:'#3B82F6', fontSize:13, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:2 }}>{num}</span>
-      <span style={{ fontSize:15, color:'#C9D1D9', lineHeight:1.75 }}>{text}</span>
+      <span style={{ width:24, height:24, background:`${C.accent}18`, color: C.accent, fontSize:12, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:2, fontFamily:'JetBrains Mono,monospace' }}>{num}</span>
+      <span style={{ fontSize:14, color: R.text2, lineHeight:1.75, fontFamily:"'Inter', sans-serif" }}>{text}</span>
     </div>
   }
   if (line.startsWith('  ') && t.length > 0)
-    return <div key={i} style={{ background:'#21262D', border:'1px solid #30363D', borderRadius:7, padding:'3px 14px', margin:'3px 0', fontFamily:'JetBrains Mono, monospace', fontSize:13, color:'#C9D1D9', lineHeight:1.85 }}>{t}</div>
+    return <div key={i} style={{ background: R.surface, border:`1px solid ${R.border}`, borderLeft:`2px solid ${C.accent}`, padding:'4px 14px', margin:'3px 0', fontFamily:'JetBrains Mono, monospace', fontSize:13, color: R.text, lineHeight:1.85 }}>{t}</div>
   if (!t) return <div key={i} style={{ height:10 }}/>
   if (t.endsWith('?') || /^What |^Why |^How /.test(t))
-    return <div key={i} style={{ fontSize:17, fontWeight:700, color:'#E6EDF3', marginTop:20, marginBottom:8 }}>{t}</div>
-  return <p key={i} style={{ fontSize:15, color:'#C9D1D9', lineHeight:1.85, margin:'0 0 6px' }}>{t}</p>
+    return <div key={i} style={{ fontSize:16, fontWeight:700, color: R.text, marginTop:20, marginBottom:8, fontFamily:"'Inter', sans-serif" }}>{t}</div>
+  return <p key={i} style={{ fontSize:14, color: R.text2, lineHeight:1.85, margin:'0 0 6px', fontFamily:"'Inter', sans-serif" }}>{t}</p>
 }
 
 function Spinner() {
   return (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:300 }}>
-      <div style={{ width:36, height:36, border:'4px solid #30363D', borderTop:'4px solid #3B82F6', borderRadius:'50%', animation:'spin 0.8s linear infinite' }}/>
+      <div style={{ width:32, height:32, border:`3px solid ${C.border2}`, borderTop:`3px solid ${C.accent}`, borderRadius:'50%', animation:'spin 0.8s linear infinite' }}/>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 }
 
-// ── Map view — program overview grid ──────────────────────────────────────────
+// ── Map view ──────────────────────────────────────────────────────────────────
 function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
-  const weeks = Array.from({ length:8 }, (_, i) => i+1)
+  const weeks = Array.from({ length: 10 }, (_, i) => i + 1)
 
   const weekStatus = (w) => {
     const wl = byWeek[w] || []
@@ -129,95 +169,94 @@ function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
     return 'locked'
   }
 
-  // Find the first non-done available week (current focus)
   const currentWeek = weeks.find(w => weekStatus(w) === 'available') || 1
 
   return (
     <div>
-      <div style={{ marginBottom:28 }}>
+      <div style={{ marginBottom: 28 }}>
         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
           <Map size={18} color="#3B82F6"/>
-          <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:26, fontWeight:600, color:'#E6EDF3', margin:0, letterSpacing:'-0.02em' }}>Your Learning Journey</h2>
+          <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:26, fontWeight:600, color: C.text, margin:0, letterSpacing:'-0.02em' }}>Your Learning Journey</h2>
         </div>
-        <p style={{ fontSize:13, color:'#8B949E', margin:0, fontFamily:"'Inter', sans-serif" }}>10-week full-stack developer training · Click any week to open lessons</p>
+        <p style={{ fontSize: 13, color: C.text3, margin: 0, fontFamily: "'Inter', sans-serif" }}>
+          10-week full-stack developer training · Click any week to open lessons
+        </p>
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
         {weeks.map(w => {
-          const st     = weekStatus(w)
-          const wl     = byWeek[w] || []
-          const done   = wl.filter(l => l.watched).length
-          const total  = wl.length
-          const pct    = total ? Math.round((done / total) * 100) : 0
-          const locked = st === 'locked'
-          const isDone = st === 'done'
+          const st       = weekStatus(w)
+          const wl       = byWeek[w] || []
+          const done     = wl.filter(l => l.watched).length
+          const total    = wl.length
+          const pct      = total ? Math.round((done / total) * 100) : 0
+          const locked   = st === 'locked'
+          const isDone   = st === 'done'
           const isCurrent = w === currentWeek
-          const theme  = WEEK_THEMES[w]
+          const theme    = WEEK_THEMES[w]
 
-          const accent = isDone ? '#3FB950' : isCurrent ? theme.color : '#6E7681'
-          const cardBg = isDone ? 'rgba(63,185,80,0.07)' : isCurrent ? theme.bg : locked ? 'rgba(255,255,255,0.01)' : '#161B22'
-          const cardBorder = isDone ? 'rgba(63,185,80,0.25)' : isCurrent ? theme.border : '#30363D'
+          const accentColor = isDone ? C.green : isCurrent ? theme.color : C.text3
 
           return (
             <div
               key={w}
               onClick={() => !locked && onSelectWeek(w)}
               style={{
-                background: cardBg,
-                border: `1px solid ${cardBorder}`,
+                background: isDone ? 'rgba(63,185,80,0.07)' : isCurrent ? theme.bg : locked ? 'rgba(255,255,255,0.01)' : C.surface,
+                border: `1px solid ${isDone ? 'rgba(63,185,80,0.25)' : isCurrent ? theme.border : C.border}`,
                 padding: '20px',
                 cursor: locked ? 'not-allowed' : 'pointer',
                 opacity: locked ? 0.5 : 1,
-                transition: 'transform 0.15s, box-shadow 0.15s',
                 position: 'relative',
                 overflow: 'hidden',
+                transition: 'transform 0.15s, box-shadow 0.15s',
               }}
-              onMouseEnter={e => { if (!locked) { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.borderColor=isCurrent?theme.color:isDone?'rgba(63,185,80,0.4)':'#3D444D' }}}
-              onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.borderColor=cardBorder }}
+              onMouseEnter={e => { if (!locked) { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.borderColor = isCurrent ? theme.color : isDone ? 'rgba(63,185,80,0.4)' : C.border2 }}}
+              onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.borderColor = isDone ? 'rgba(63,185,80,0.25)' : isCurrent ? theme.border : C.border }}
             >
-              {/* Decorative week number watermark */}
-              <div style={{ position:'absolute', top:10, right:14, fontFamily:"'Inter', sans-serif", fontSize:44, fontWeight:700, color: accent, lineHeight:1, userSelect:'none', pointerEvents:'none', opacity:0.18 }}>{w}</div>
+              {/* Watermark number */}
+              <div style={{ position:'absolute', top:8, right:12, fontFamily:'JetBrains Mono,monospace', fontSize:48, fontWeight:700, color: accentColor, lineHeight:1, userSelect:'none', pointerEvents:'none', opacity:0.12 }}>{w}</div>
 
-              {/* Emoji + week tag */}
-              <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:8 }}>
-                <span style={{ fontSize:16 }}>{locked ? '🔒' : theme.emoji}</span>
-                <span style={{ fontSize:10, fontWeight:600, color: accent, letterSpacing:'0.1em', fontFamily:"'Inter', sans-serif" }}>{theme.tag}</span>
+              {/* Week tag */}
+              <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
+                <span style={{ fontSize:14 }}>{locked ? '🔒' : theme.emoji}</span>
+                <span style={{ fontSize:9, fontWeight:700, color: accentColor, letterSpacing:'0.12em', fontFamily:'JetBrains Mono,monospace' }}>{theme.tag}</span>
               </div>
 
-              {/* Status badge — own row */}
+              {/* Status badge */}
               {isCurrent && !isDone && (
                 <div style={{ marginBottom:8 }}>
-                  <span style={{ fontSize:10, fontWeight:600, color: theme.color, background:'rgba(0,0,0,0.4)', border:`1px solid ${theme.border}`, padding:'2px 9px', letterSpacing:'0.06em', fontFamily:"'Inter', sans-serif" }}>● CURRENT</span>
+                  <span style={{ fontSize:9, fontWeight:700, color: theme.color, border:`1px solid ${theme.border}`, padding:'2px 8px', letterSpacing:'0.08em', fontFamily:'JetBrains Mono,monospace' }}>● CURRENT</span>
                 </div>
               )}
               {isDone && (
                 <div style={{ marginBottom:8 }}>
-                  <span style={{ fontSize:10, fontWeight:600, color:'#3FB950', background:'rgba(0,0,0,0.4)', border:'1px solid rgba(63,185,80,0.3)', padding:'2px 9px', letterSpacing:'0.06em', fontFamily:"'Inter', sans-serif" }}>✓ DONE</span>
+                  <span style={{ fontSize:9, fontWeight:700, color: C.green, border:`1px solid ${C.green}44`, padding:'2px 8px', letterSpacing:'0.08em', fontFamily:'JetBrains Mono,monospace' }}>✓ DONE</span>
                 </div>
               )}
 
-              {/* Week label */}
-              <div style={{ fontSize:13, fontWeight:500, color: locked ? '#6E7681' : '#E6EDF3', lineHeight:1.4, marginBottom:16, minHeight:38, fontFamily:"'Inter', sans-serif" }}>
+              {/* Title */}
+              <div style={{ fontSize:12, fontWeight:600, color: locked ? C.text3 : C.text, lineHeight:1.45, marginBottom:16, minHeight:36, fontFamily:"'Inter', sans-serif" }}>
                 {WEEK_LABELS[w]}
               </div>
 
               {/* Progress */}
               {!locked && total > 0 ? (
                 <>
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
-                    <span style={{ fontSize:11, color:'#6E7681', fontFamily:"'Inter', sans-serif" }}>{done}/{total} lessons</span>
-                    <span style={{ fontSize:11, fontWeight:600, color: accent, fontFamily:"'Inter', sans-serif" }}>{pct}%</span>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:5 }}>
+                    <span style={{ fontSize:10, color: C.text3, fontFamily:'JetBrains Mono,monospace' }}>{done}/{total} lessons</span>
+                    <span style={{ fontSize:10, fontWeight:700, color: accentColor, fontFamily:'JetBrains Mono,monospace' }}>{pct}%</span>
                   </div>
-                  <div style={{ height:2, background:'#30363D' }}>
-                    <div style={{ width:`${pct}%`, height:'100%', background: accent, transition:'width 0.4s' }}/>
+                  <div style={{ height:2, background: C.border }}>
+                    <div style={{ width:`${pct}%`, height:'100%', background: accentColor, transition:'width 0.4s', boxShadow: pct > 0 ? glow(accentColor, 6) : 'none' }}/>
                   </div>
                 </>
               ) : locked ? (
-                <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:12, color:'#6E7681', fontFamily:"'Inter', sans-serif" }}>
-                  <Lock size={12}/> Complete earlier weeks
+                <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, color: C.text3, fontFamily:'JetBrains Mono,monospace' }}>
+                  <Lock size={11}/> Complete earlier weeks
                 </div>
               ) : (
-                <div style={{ fontSize:12, color:'#6E7681', fontFamily:"'Inter', sans-serif" }}>No lessons yet</div>
+                <div style={{ fontSize:11, color: C.text3, fontFamily:'JetBrains Mono,monospace' }}>No lessons yet</div>
               )}
             </div>
           )
@@ -227,7 +266,7 @@ function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
   )
 }
 
-// ── Browse view — lesson list for a selected week ─────────────────────────────
+// ── Browse view ───────────────────────────────────────────────────────────────
 function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap }) {
   const watched = weekLessons.filter(l => l.watched).length
   const total   = weekLessons.length
@@ -241,27 +280,28 @@ function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap }) {
     return (
       <div
         onClick={() => onSelectLesson(l.id)}
-        style={{ display:'flex', alignItems:'center', gap:16, padding:'15px 24px', borderBottom: last ? 'none' : '1px solid #21262D', cursor:'pointer', transition:'background 0.12s' }}
-        onMouseEnter={e => e.currentTarget.style.background='rgba(59,130,246,0.03)'}
-        onMouseLeave={e => e.currentTarget.style.background='transparent'}
+        style={{ display:'flex', alignItems:'center', gap:16, padding:'14px 24px', borderBottom: last ? 'none' : `1px solid ${C.border}`, cursor:'pointer', transition:'background 0.12s' }}
+        onMouseEnter={e => e.currentTarget.style.background = C.surface2}
+        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
       >
         <div style={{
-          width:10, height:10, flexShrink:0,
-          background: l.watched ? '#3FB950' : 'transparent',
-          border: `1px solid ${l.watched ? '#3FB950' : '#3D444D'}`,
+          width:9, height:9, flexShrink:0,
+          background: l.watched ? C.green : 'transparent',
+          border: `1px solid ${l.watched ? C.green : C.border2}`,
+          boxShadow: l.watched ? glow(C.green, 6) : 'none',
         }}/>
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontSize:14, fontWeight:500, color: l.watched ? '#6E7681' : '#E6EDF3', marginBottom:3, fontFamily:"'Inter', sans-serif" }}>{l.title}</div>
+          <div style={{ fontSize:13, fontWeight:500, color: l.watched ? C.text3 : C.text, marginBottom:3, fontFamily:"'Inter', sans-serif" }}>{l.title}</div>
           {l.duration && (
-            <div style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'#6E7681', fontFamily:"'Inter', sans-serif" }}>
-              <Clock size={11}/>{l.duration}
+            <div style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color: C.text3, fontFamily:'JetBrains Mono,monospace' }}>
+              <Clock size={10}/>{l.duration}
             </div>
           )}
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
-          {l.watched && <span style={{ fontSize:10, fontWeight:600, color:'#3FB950', letterSpacing:'0.06em', fontFamily:"'Inter', sans-serif" }}>✓ DONE</span>}
-          <span style={{ fontSize:11, fontWeight:500, color:'#8B949E', background:'#21262D', border:'1px solid #30363D', padding:'3px 9px', fontFamily:'JetBrains Mono, monospace' }}>{l.lessonCode}</span>
-          <ChevronRight size={14} color="#3D444D"/>
+          {l.watched && <span style={{ fontSize:9, fontWeight:700, color: C.green, letterSpacing:'0.08em', fontFamily:'JetBrains Mono,monospace' }}>✓ DONE</span>}
+          <span style={{ fontSize:10, fontWeight:500, color: C.text3, background: C.surface2, border:`1px solid ${C.border}`, padding:'3px 9px', fontFamily:'JetBrains Mono, monospace' }}>{l.lessonCode}</span>
+          <ChevronRight size={13} color={C.text3}/>
         </div>
       </div>
     )
@@ -269,7 +309,7 @@ function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap }) {
 
   function SectionLabel({ label }) {
     return (
-      <div style={{ padding:'8px 24px 6px', fontSize:10, fontWeight:600, color:'#6E7681', letterSpacing:'0.12em', background:'#21262D', borderBottom:'1px solid #30363D', borderTop:'1px solid #30363D', fontFamily:"'Inter', sans-serif" }}>
+      <div style={{ padding:'7px 24px', fontSize:9, fontWeight:700, color: C.text3, letterSpacing:'0.14em', background: C.surface, borderBottom:`1px solid ${C.border}`, borderTop:`1px solid ${C.border}`, fontFamily:'JetBrains Mono,monospace' }}>
         {label}
       </div>
     )
@@ -279,58 +319,52 @@ function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap }) {
     <div>
       {/* Breadcrumb */}
       <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:20 }}>
-        <button onClick={onBackToMap} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', border:'1px solid #30363D', background:'#21262D', color:'#8B949E', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:"'Inter', sans-serif" }}>
-          <Map size={13}/> All Weeks
+        <button onClick={onBackToMap} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', border:`1px solid ${C.border2}`, background: C.surface, color: C.text3, fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'JetBrains Mono,monospace' }}>
+          <Map size={12}/> All Weeks
         </button>
-        <ChevronRight size={14} color="#cbd5e1"/>
-        <span style={{ fontSize:13, fontWeight:700, color:'#E6EDF3' }}>{theme.emoji} Week {activeWeek} — {WEEK_LABELS[activeWeek]}</span>
+        <ChevronRight size={13} color={C.text3}/>
+        <span style={{ fontSize:12, fontWeight:700, color: C.text, fontFamily:"'Inter', sans-serif" }}>{theme.emoji} Week {activeWeek} — {WEEK_LABELS[activeWeek]}</span>
       </div>
 
-      <div style={{ background:'#161B22', border:'1px solid #30363D', overflow:'hidden' }}>
+      <div style={{ background: C.surface, border:`1px solid ${C.border2}`, overflow:'hidden', borderTop:`2px solid ${theme.color}` }}>
         {/* Header */}
-        <div style={{ padding:'20px 24px', borderBottom:'1px solid #30363D', background: theme.bg }}>
+        <div style={{ padding:'20px 24px', borderBottom:`1px solid ${C.border}`, background: theme.bg }}>
           <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:14 }}>
             <div>
-              <div style={{ fontFamily:"'Inter', sans-serif", fontSize:18, fontWeight:600, color:'#E6EDF3', letterSpacing:'-0.01em' }}>Week {activeWeek} — {WEEK_LABELS[activeWeek]}</div>
-              <div style={{ fontSize:12, marginTop:4, color: pct === 100 ? '#3FB950' : '#8B949E', fontFamily:"'Inter', sans-serif" }}>
+              <div style={{ fontFamily:"'Inter', sans-serif", fontSize:17, fontWeight:700, color: C.text, letterSpacing:'-0.01em' }}>Week {activeWeek} — {WEEK_LABELS[activeWeek]}</div>
+              <div style={{ fontSize:12, marginTop:4, color: pct === 100 ? C.green : C.text3, fontFamily:'JetBrains Mono,monospace' }}>
                 {pct === 100 ? '✓ All lessons complete' : `${watched} of ${total} lessons completed`}
               </div>
             </div>
             {total > 0 && (
-              <div style={{ fontFamily:"'Inter', sans-serif", fontSize:28, fontWeight:600, color: pct === 100 ? '#3FB950' : theme.color, lineHeight:1 }}>{pct}%</div>
+              <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:26, fontWeight:700, color: pct === 100 ? C.green : theme.color, lineHeight:1, textShadow: glow(pct === 100 ? C.green : theme.color, 12) }}>{pct}%</div>
             )}
           </div>
           {total > 0 && (
-            <div style={{ height:2, background:'#30363D' }}>
-              <div style={{ width:`${pct}%`, height:'100%', background: pct === 100 ? '#3FB950' : theme.color, transition:'width 0.4s ease' }}/>
+            <div style={{ height:2, background: C.border }}>
+              <div style={{ width:`${pct}%`, height:'100%', background: pct === 100 ? C.green : theme.color, transition:'width 0.4s ease', boxShadow: pct > 0 ? glow(pct === 100 ? C.green : theme.color, 8) : 'none' }}/>
             </div>
           )}
         </div>
 
-        {/* Foundation prerequisites */}
         {foundations.length > 0 && (
           <>
             <SectionLabel label="PREREQUISITES"/>
-            {foundations.map((l, i) => (
-              <LessonRow key={l.id} l={l} last={i === foundations.length - 1 && dailies.length === 0}/>
-            ))}
+            {foundations.map((l, i) => <LessonRow key={l.id} l={l} last={i === foundations.length - 1 && dailies.length === 0}/>)}
           </>
         )}
 
-        {/* Daily lessons */}
         {dailies.length > 0 && (
           <>
             {foundations.length > 0 && <SectionLabel label="DAILY LESSONS"/>}
-            {dailies.map((l, i) => (
-              <LessonRow key={l.id} l={l} last={i === dailies.length - 1}/>
-            ))}
+            {dailies.map((l, i) => <LessonRow key={l.id} l={l} last={i === dailies.length - 1}/>)}
           </>
         )}
 
         {weekLessons.length === 0 && (
-          <div style={{ padding:48, textAlign:'center', color:'#6E7681' }}>
+          <div style={{ padding:48, textAlign:'center', color: C.text3 }}>
             <BookOpen size={32} style={{ opacity:0.3, marginBottom:12 }}/>
-            <p style={{ fontSize:14 }}>No lessons for this week yet.</p>
+            <p style={{ fontSize:13, fontFamily:"'Inter', sans-serif" }}>No lessons for this week yet.</p>
           </div>
         )}
       </div>
@@ -338,8 +372,24 @@ function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap }) {
   )
 }
 
-// ── Reading view — full content ───────────────────────────────────────────────
+// ── Reading view ──────────────────────────────────────────────────────────────
 function ReadingView({ lesson, onBack, onMarkDone, isPending, weekLessons, onSelectLesson }) {
+  const [bgMode, setBgMode] = useState('dark')
+  const R = bgMode === 'light' ? LIGHT : C
+  const scrollRef = useRef(null)
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el || lesson.watched) return
+    const handleScroll = () => {
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+        onMarkDone(lesson.id)
+      }
+    }
+    el.addEventListener('scroll', handleScroll)
+    return () => el.removeEventListener('scroll', handleScroll)
+  }, [lesson.id, lesson.watched, onMarkDone])
+
   const currentIndex = weekLessons.findIndex(l => l.id === lesson.id)
   const prev = weekLessons[currentIndex - 1] || null
   const next = weekLessons[currentIndex + 1] || null
@@ -347,71 +397,83 @@ function ReadingView({ lesson, onBack, onMarkDone, isPending, weekLessons, onSel
   const theme = WEEK_THEMES[lesson.week]
 
   return (
-    <div style={{ display:'flex', flexDirection:'column', height:'calc(100vh - 112px)', background:'#161B22', border:'1px solid #30363D', overflow:'hidden' }}>
+    <div style={{ display:'flex', flexDirection:'column', height:'calc(100vh - 112px)', background: R.surface, border:`1px solid ${R.border2 ?? R.border}`, borderTop:`2px solid ${theme.color}`, overflow:'hidden' }}>
 
       {/* Top bar */}
-      <div style={{ display:'flex', alignItems:'center', gap:12, padding:'14px 28px', borderBottom:'1px solid #30363D', background:'#161B22', flexShrink:0 }}>
-        <button onClick={onBack} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', border:'1px solid #30363D', background:'#21262D', color:'#8B949E', fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:"'Inter', sans-serif", flexShrink:0 }}>
-          <ArrowLeft size={13}/> Week {lesson.week}
+      <div style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 24px', borderBottom:`1px solid ${R.border}`, background: R.surface, flexShrink:0 }}>
+        <button onClick={onBack} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', border:`1px solid ${R.border2 ?? R.border}`, background: R.surface2, color: R.text3, fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'JetBrains Mono,monospace', flexShrink:0 }}>
+          <ArrowLeft size={12}/> Week {lesson.week}
         </button>
 
         <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontSize:10, fontWeight:600, color:'#6E7681', letterSpacing:'0.1em', marginBottom:3, fontFamily:"'Inter', sans-serif" }}>
+          <div style={{ fontSize:9, fontWeight:700, color: R.text3, letterSpacing:'0.12em', marginBottom:3, fontFamily:'JetBrains Mono,monospace' }}>
             {theme.emoji} WEEK {lesson.week} · {lesson.lessonCode} · {currentIndex + 1} of {weekLessons.length}
           </div>
-          <div style={{ fontFamily:"'Inter', sans-serif", fontSize:17, fontWeight:600, color:'#E6EDF3', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', letterSpacing:'-0.01em' }}>{lesson.title}</div>
+          <div style={{ fontFamily:"'Inter', sans-serif", fontSize:16, fontWeight:700, color: R.text, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{lesson.title}</div>
         </div>
+
+        {/* Light / Dark toggle */}
+        <button
+          onClick={() => setBgMode(m => m === 'dark' ? 'light' : 'dark')}
+          title={bgMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 13px', border:`1px solid ${R.border2 ?? R.border}`, background: R.surface2, color: R.text3, fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'JetBrains Mono,monospace', flexShrink:0, transition:'color 0.15s, border-color 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.color = C.accent; e.currentTarget.style.borderColor = C.accent }}
+          onMouseLeave={e => { e.currentTarget.style.color = R.text3; e.currentTarget.style.borderColor = R.border2 ?? R.border }}
+        >
+          {bgMode === 'dark' ? <Sun size={12}/> : <Moon size={12}/>}
+          {bgMode === 'dark' ? 'Light' : 'Dark'}
+        </button>
 
         <button
           onClick={() => onMarkDone(lesson.id)}
           disabled={isPending || lesson.watched}
-          style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 18px', border:'none', cursor: lesson.watched ? 'default' : 'pointer', background: lesson.watched ? 'rgba(63,185,80,0.12)' : '#3B82F6', color: lesson.watched ? '#3FB950' : '#0D1117', fontWeight:700, fontSize:12, whiteSpace:'nowrap', flexShrink:0, letterSpacing:'0.04em', fontFamily:"'Inter', sans-serif" }}
+          style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 18px', border:'none', cursor: lesson.watched ? 'default' : 'pointer', background: lesson.watched ? `${C.green}18` : C.accent, color: lesson.watched ? C.green : '#fff', fontWeight:700, fontSize:11, whiteSpace:'nowrap', flexShrink:0, letterSpacing:'0.06em', fontFamily:'JetBrains Mono,monospace', boxShadow: lesson.watched ? glow(C.green, 8) : 'none' }}
         >
-          <CheckCircle size={14}/>
+          <CheckCircle size={13}/>
           {lesson.watched ? 'Completed' : isPending ? 'Saving…' : 'Mark as Complete'}
         </button>
       </div>
 
       {/* Content */}
-      <div style={{ flex:1, overflowY:'auto', padding:'36px 72px' }}>
+      <div ref={scrollRef} style={{ flex:1, overflowY:'auto', padding:'36px 64px', background: R.bg }}>
         {lesson.description ? (
-          <div style={{ maxWidth:800, margin:'0 auto', fontFamily:"'Inter', sans-serif" }}>
+          <div style={{ maxWidth:760, margin:'0 auto', fontFamily:"'Inter', sans-serif" }}>
             {segments.map((seg, i) =>
               seg.type === 'block'
                 ? <CodeBlock key={i} blockType={seg.blockType} code={seg.code}/>
-                : renderTextLine(seg.line, i)
+                : renderTextLine(seg.line, i, R)
             )}
           </div>
         ) : (
-          <div style={{ textAlign:'center', padding:64, color:'#6E7681' }}>
-            <BookOpen size={40} style={{ marginBottom:14, opacity:0.3 }}/>
-            <p style={{ fontSize:15 }}>Content coming soon for this lesson.</p>
+          <div style={{ textAlign:'center', padding:64, color: R.text3 }}>
+            <BookOpen size={36} style={{ marginBottom:14, opacity:0.3 }}/>
+            <p style={{ fontSize:13, fontFamily:"'Inter', sans-serif" }}>Content coming soon for this lesson.</p>
           </div>
         )}
 
-        {/* Prev / Next navigation */}
-        <div style={{ maxWidth:800, margin:'48px auto 0', display:'flex', justifyContent:'space-between', gap:12, paddingTop:28, borderTop:'1px solid #30363D' }}>
+        {/* Prev / Next */}
+        <div style={{ maxWidth:760, margin:'48px auto 0', display:'flex', justifyContent:'space-between', gap:12, paddingTop:24, borderTop:`1px solid ${R.border}` }}>
           {prev ? (
-            <button onClick={() => onSelectLesson(prev.id)} style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 20px', border:'1px solid #30363D', background:'#21262D', cursor:'pointer', color:'#8B949E', fontSize:12, fontWeight:500, fontFamily:"'Inter', sans-serif" }}>
-              <ChevronLeft size={16} color="#3B82F6"/>
+            <button onClick={() => onSelectLesson(prev.id)} style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 20px', border:`1px solid ${R.border2 ?? R.border}`, background: R.surface, cursor:'pointer', color: R.text2, fontSize:12, fontWeight:500, fontFamily:"'Inter', sans-serif" }}>
+              <ChevronLeft size={15} color={C.accent}/>
               <div style={{ textAlign:'left' }}>
-                <div style={{ fontSize:10, color:'#6E7681', marginBottom:2 }}>PREVIOUS</div>
+                <div style={{ fontSize:9, color: R.text3, marginBottom:2, fontFamily:'JetBrains Mono,monospace' }}>PREVIOUS</div>
                 <div>{prev.title}</div>
               </div>
             </button>
           ) : <div/>}
 
           {next ? (
-            <button onClick={() => onSelectLesson(next.id)} style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 20px', border:'1px solid #30363D', background:'#21262D', cursor:'pointer', color:'#8B949E', fontSize:12, fontWeight:500, fontFamily:"'Inter', sans-serif" }}>
+            <button onClick={() => onSelectLesson(next.id)} style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 20px', border:`1px solid ${R.border2 ?? R.border}`, background: R.surface, cursor:'pointer', color: R.text2, fontSize:12, fontWeight:500, fontFamily:"'Inter', sans-serif" }}>
               <div style={{ textAlign:'right' }}>
-                <div style={{ fontSize:10, color:'#6E7681', marginBottom:2 }}>NEXT</div>
+                <div style={{ fontSize:9, color: R.text3, marginBottom:2, fontFamily:'JetBrains Mono,monospace' }}>NEXT</div>
                 <div>{next.title}</div>
               </div>
-              <ChevronRight size={16} color="#3B82F6"/>
+              <ChevronRight size={15} color={C.accent}/>
             </button>
           ) : (
-            <button onClick={onBack} style={{ display:'flex', alignItems:'center', gap:8, padding:'12px 20px', border:'none', background:'#3B82F6', cursor:'pointer', color:'#fff', fontSize:12, fontWeight:700, fontFamily:"'Inter', sans-serif", letterSpacing:'0.04em' }}>
-              <CheckCircle size={15}/> Back to Week {lesson.week}
+            <button onClick={onBack} style={{ display:'flex', alignItems:'center', gap:8, padding:'12px 20px', border:'none', background: C.accent, cursor:'pointer', color:'#fff', fontSize:11, fontWeight:700, fontFamily:'JetBrains Mono,monospace', letterSpacing:'0.06em' }}>
+              <CheckCircle size={14}/> Back to Week {lesson.week}
             </button>
           )}
         </div>
@@ -423,8 +485,8 @@ function ReadingView({ lesson, onBack, onMarkDone, isPending, weekLessons, onSel
 // ── Main page ──────────────────────────────────────────────────────────────────
 export default function Lessons() {
   const qc = useQueryClient()
-  const [view, setView]               = useState('map')    // 'map' | 'browse' | 'reading'
-  const [activeWeek, setActiveWeek]   = useState(null)
+  const [view, setView]                     = useState('map')
+  const [activeWeek, setActiveWeek]         = useState(null)
   const [activeLessonId, setActiveLessonId] = useState(null)
 
   const { data: lessons = [], isLoading } = useQuery({
@@ -449,53 +511,21 @@ export default function Lessons() {
   const weekLessons  = activeWeek ? (byWeek[activeWeek] || []) : []
   const activeLesson = activeLessonId ? lessons.find(l => l.id === activeLessonId) || null : null
 
-  const handleSelectWeek = (w) => {
-    setActiveWeek(w)
-    setView('browse')
-  }
-
-  const handleSelectLesson = (id) => {
-    setActiveLessonId(id)
-    setView('reading')
-  }
-
-  const handleBackFromReading = () => {
-    setActiveLessonId(null)
-    setView('browse')
-  }
-
-  const handleBackToMap = () => {
-    setActiveLessonId(null)
-    setActiveWeek(null)
-    setView('map')
-  }
+  const handleSelectWeek   = (w) => { setActiveWeek(w); setView('browse') }
+  const handleSelectLesson = (id) => { setActiveLessonId(id); setView('reading') }
+  const handleBackFromReading = () => { setActiveLessonId(null); setView('browse') }
+  const handleBackToMap    = () => { setActiveLessonId(null); setActiveWeek(null); setView('map') }
 
   return (
     <DashboardLayout title="Lessons">
       {view === 'map' && (
-        <MapView
-          byWeek={byWeek}
-          maxUnlockedWeek={maxUnlockedWeek}
-          onSelectWeek={handleSelectWeek}
-        />
+        <MapView byWeek={byWeek} maxUnlockedWeek={maxUnlockedWeek} onSelectWeek={handleSelectWeek}/>
       )}
       {view === 'browse' && (
-        <BrowseView
-          activeWeek={activeWeek}
-          weekLessons={weekLessons}
-          onSelectLesson={handleSelectLesson}
-          onBackToMap={handleBackToMap}
-        />
+        <BrowseView activeWeek={activeWeek} weekLessons={weekLessons} onSelectLesson={handleSelectLesson} onBackToMap={handleBackToMap}/>
       )}
       {view === 'reading' && activeLesson && (
-        <ReadingView
-          lesson={activeLesson}
-          onBack={handleBackFromReading}
-          onMarkDone={(id) => watchMutation.mutate(id)}
-          isPending={watchMutation.isPending}
-          weekLessons={weekLessons}
-          onSelectLesson={handleSelectLesson}
-        />
+        <ReadingView lesson={activeLesson} onBack={handleBackFromReading} onMarkDone={(id) => watchMutation.mutate(id)} isPending={watchMutation.isPending} weekLessons={weekLessons} onSelectLesson={handleSelectLesson}/>
       )}
     </DashboardLayout>
   )

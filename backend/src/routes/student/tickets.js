@@ -2,8 +2,20 @@ const express = require('express')
 const { body, validationResult } = require('express-validator')
 const prisma = require('../../lib/prisma')
 const { runAIReview } = require('../../services/aiReview')
+const { prSubmittedEmail, prReviewedEmail } = require('../../services/emailService')
+const { notify } = require('../../services/notificationService')
 
 const router = express.Router()
+
+async function withRetry(fn, retries = 2) {
+  for (let i = 0; i < retries; i++) {
+    try { return await fn() }
+    catch (err) {
+      if (i === retries - 1) throw err
+      await new Promise(r => setTimeout(r, 3000))
+    }
+  }
+}
 
 // GET /api/student/tickets
 router.get('/', async (req, res) => {
@@ -50,7 +62,10 @@ router.post('/:id/submit', [
   const { prUrl } = req.body
 
   try {
-    const student = await prisma.student.findUnique({ where: { userId: req.user.userId } })
+    const student = await prisma.student.findUnique({
+      where: { userId: req.user.userId },
+      include: { user: { select: { name: true, email: true } } },
+    })
     if (!student) return res.status(404).json({ error: 'Student not found' })
 
     const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } })
@@ -62,7 +77,7 @@ router.post('/:id/submit', [
     // Save submission + reset any previous AI review
     const submission = await prisma.pRSubmission.upsert({
       where: { studentId_ticketId: { studentId: student.id, ticketId } },
-      update: { prUrl, status: 'IN_REVIEW', verdict: null, aiReview: null, aiReviewedAt: null },
+      update: { prUrl, status: 'IN_REVIEW', verdict: null, aiReview: null, aiReviewedAt: null, reviewError: null },
       create: { studentId: student.id, ticketId, prUrl, status: 'IN_REVIEW' },
     })
 
@@ -75,8 +90,17 @@ router.post('/:id/submit', [
     // Respond immediately — don't make student wait for AI
     res.json({ ...submission, message: 'Submitted. AI review starting…' })
 
-    // ── Background: run AI review ──────────────────────────────────────────
-    runAIReview(ticket, submission)
+    // Non-blocking: notify student of submission
+    prSubmittedEmail({
+      name: student.user.name,
+      email: student.user.email,
+      ticketCode: ticket.ticketCode,
+      title: ticket.title,
+      prUrl,
+    })
+
+    // ── Background: run AI review (retries 2x on failure) ─────────────────
+    withRetry(() => runAIReview(ticket, submission))
       .then(async (review) => {
         if (!review) return
 
@@ -105,8 +129,35 @@ router.post('/:id/submit', [
         ])
 
         console.log(`[aiReview] ${ticket.ticketCode} — ${review.verdict}`)
+
+        const verdictLabel = review.verdict === 'MERGE_READY' ? '✅ Merge Ready'
+                           : review.verdict === 'NEEDS_CHANGES' ? '🔄 Needs Changes'
+                           : '❌ Major Rework'
+        notify(student.id, {
+          type: 'PR_REVIEWED',
+          title: `${ticket.ticketCode} reviewed — ${verdictLabel}`,
+          body: review.summary || '',
+          link: '/tasks',
+        })
+
+        // Non-blocking: notify student of review result
+        prReviewedEmail({
+          name:       student.user.name,
+          email:      student.user.email,
+          ticketCode: ticket.ticketCode,
+          title:      ticket.title,
+          verdict:    review.verdict,
+          summary:    review.summary,
+          prUrl,
+        })
       })
-      .catch(err => console.error('[aiReview] failed:', err.message))
+      .catch(async (err) => {
+        console.error('[aiReview] failed after retries:', err.message)
+        await prisma.pRSubmission.update({
+          where: { id: submission.id },
+          data: { reviewError: err.message },
+        }).catch(() => {})
+      })
 
   } catch (err) {
     console.error(err)

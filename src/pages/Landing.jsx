@@ -1,124 +1,91 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { ArrowRight, Check } from 'lucide-react'
 
-// ─── Design tokens ────────────────────────────────────────────────────────────
+// ─── Amber Terminal tokens ────────────────────────────────────────────────────
 const C = {
-  bg:      '#0D1117',
-  surface: '#161B22',
-  surface2:'#21262D',
-  border:  '#30363D',
-  border2: '#3D444D',
-  text:    '#E6EDF3',
-  text2:   '#8B949E',
-  text3:   '#6E7681',
-  accent:  '#3B82F6',
-  green:   '#3FB950',
-  red:     '#F85149',
+  bg:      '#090805',
+  surface: '#100D08',
+  surface2:'#18140D',
+  border:  '#2A2015',
+  border2: '#3D2E18',
+  text:    '#FDE68A',
+  text2:   '#E2B96A',
+  text3:   '#B08A40',
+  accent:  '#F59E0B',
+  green:   '#6EE7B7',
+  red:     '#FCA5A5',
+  dim:     '#3D2E1888',
 }
 
-// ─── Hooks ────────────────────────────────────────────────────────────────────
-function useInView(threshold = 0.1) {
-  const ref = useRef(null)
-  const [inView, setInView] = useState(false)
+const glow  = (color = C.accent, size = 12) => `0 0 ${size}px ${color}55, 0 0 ${size * 2}px ${color}22`
+const fade  = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.7 } } }
+const viewportOnce = { once: true, margin: '-40px' }
+
+// ─── Typewriter ───────────────────────────────────────────────────────────────
+function useTypewriter(text, speed = 48) {
+  const [displayed, setDisplayed] = useState('')
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect() } },
-      { threshold }
-    )
-    if (ref.current) obs.observe(ref.current)
-    return () => obs.disconnect()
-  }, [threshold])
-  return [ref, inView]
+    setDisplayed('')
+    let i = 0
+    const id = setInterval(() => {
+      i++
+      setDisplayed(text.slice(0, i))
+      if (i >= text.length) clearInterval(id)
+    }, speed)
+    return () => clearInterval(id)
+  }, [text, speed])
+  return displayed
 }
 
-function useCounter(end, duration = 1600) {
-  const ref = useRef(null)
-  const [val, setVal] = useState(0)
-  const [started, setStarted] = useState(false)
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setStarted(true); obs.disconnect() } },
-      { threshold: 0.5 }
-    )
-    if (ref.current) obs.observe(ref.current)
-    return () => obs.disconnect()
-  }, [])
-  useEffect(() => {
-    if (!started || !end) return
-    let raf
-    const t0 = performance.now()
-    const tick = (now) => {
-      const t = Math.min((now - t0) / duration, 1)
-      const ease = 1 - Math.pow(1 - t, 4)
-      setVal(Math.floor(ease * end))
-      if (t < 1) raf = requestAnimationFrame(tick)
-      else setVal(end)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [started, end, duration])
-  return [ref, val]
-}
-
-const TAGLINES = [
-  'that ship to production — not just localhost.',
-  'that hold up under a technical interview.',
-  'with 65+ PRs your interviewer can open right now.',
-  'deployed, documented, and demo-ready.',
-]
-
-function useTypewriter(words, speed = 62, deleteSpeed = 32, pause = 2800) {
-  const [idx, setIdx] = useState(0)
-  const [text, setText] = useState('')
-  const [del, setDel] = useState(false)
-  useEffect(() => {
-    const cur = words[idx]
-    const id = setTimeout(() => {
-      if (!del) {
-        const next = cur.slice(0, text.length + 1)
-        setText(next)
-        if (next === cur) setTimeout(() => setDel(true), pause)
-      } else {
-        const next = cur.slice(0, text.length - 1)
-        setText(next)
-        if (next === '') { setDel(false); setIdx((idx + 1) % words.length) }
-      }
-    }, del ? deleteSpeed : speed)
-    return () => clearTimeout(id)
-  }, [text, del, idx, words, speed, deleteSpeed, pause])
-  return text
-}
-
-function Reveal({ children, delay = 0, style = {} }) {
-  const [ref, inView] = useInView()
+// ─── Scan line card ───────────────────────────────────────────────────────────
+function ScanCard({ children, style = {} }) {
+  const [hov, setHov] = useState(false)
   return (
-    <div ref={ref} style={{
-      opacity: inView ? 1 : 0,
-      transform: inView ? 'translateY(0)' : 'translateY(20px)',
-      transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`,
-      ...style,
-    }}>
+    <div
+      style={{ position: 'relative', overflow: 'hidden', ...style }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+    >
       {children}
+      <AnimatePresence>
+        {hov && (
+          <motion.div
+            key="scan"
+            initial={{ top: '-4%' }} animate={{ top: '108%' }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.55, ease: 'linear' }}
+            style={{
+              position: 'absolute', left: 0, right: 0, height: 2, pointerEvents: 'none',
+              background: `rgba(245,158,11,0.35)`,
+              boxShadow: `0 0 12px rgba(245,158,11,0.6)`,
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
+  )
+}
+
+// ─── Cursor blink ─────────────────────────────────────────────────────────────
+function Cursor() {
+  return (
+    <>
+      <motion.span
+        animate={{ opacity: [1, 0, 1] }}
+        transition={{ repeat: Infinity, duration: 1, ease: 'steps(1)' }}
+        style={{ display: 'inline-block', width: 10, height: '1em', background: C.accent, marginLeft: 3, verticalAlign: 'text-bottom', boxShadow: glow() }}
+      />
+      <style>{`@keyframes scanPulse{0%,100%{opacity:.6}50%{opacity:1}}`}</style>
+    </>
   )
 }
 
 // ─── Scroll progress ──────────────────────────────────────────────────────────
 function ScrollProgress() {
-  const [pct, setPct] = useState(0)
-  useEffect(() => {
-    const h = () => {
-      const el = document.documentElement
-      setPct((el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100)
-    }
-    window.addEventListener('scroll', h, { passive: true })
-    return () => window.removeEventListener('scroll', h)
-  }, [])
-  return (
-    <div style={{ position:'fixed', top:0, left:0, right:0, height:2, zIndex:100, background:C.border }}>
-      <div style={{ height:'100%', width:`${pct}%`, background:C.accent, transition:'width 0.1s linear' }}/>
-    </div>
-  )
+  const { scrollYProgress } = useScroll()
+  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1])
+  return <motion.div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 2, background: C.accent, scaleX, transformOrigin: 'left', zIndex: 100, boxShadow: glow() }} />
 }
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
@@ -132,127 +99,128 @@ function Navbar({ onApply }) {
   }, [])
 
   return (
-    <nav style={{
-      position: 'fixed', top: 2, left: 0, right: 0, zIndex: 50,
-      background: scrolled ? 'rgba(13,17,23,0.96)' : 'transparent',
-      borderBottom: scrolled ? `1px solid ${C.border}` : '1px solid transparent',
-      backdropFilter: scrolled ? 'blur(12px)' : 'none',
-      transition: 'background 0.3s, border-color 0.3s',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '0 48px', height: 60,
-    }}>
-      {/* Logo */}
-      <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-        <div style={{ width:26, height:26, background:C.accent, display:'flex', alignItems:'center', justifyContent:'center' }}>
-          <span style={{ fontSize:10, fontWeight:800, color:'#fff', fontFamily:'JetBrains Mono,monospace' }}>DF</span>
+    <motion.nav
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.2 }}
+      style={{
+        position: 'fixed', top: 2, left: 0, right: 0, zIndex: 50, height: 56,
+        background: scrolled ? `rgba(9,8,5,0.97)` : 'transparent',
+        borderBottom: scrolled ? `1px solid ${C.border}` : '1px solid transparent',
+        backdropFilter: scrolled ? 'blur(12px)' : 'none',
+        transition: 'background 0.3s, border-color 0.3s',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 48px',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ width: 26, height: 26, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: glow() }}>
+          <span style={{ fontSize: 10, fontWeight: 800, color: '#000', fontFamily: 'JetBrains Mono,monospace' }}>DF</span>
         </div>
-        <span style={{ fontFamily:"'Inter', sans-serif", fontWeight:700, fontSize:16, color:C.text, letterSpacing:'-0.02em' }}>
-          DevForge
-        </span>
+        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, fontSize: 15, color: C.text, letterSpacing: '0.04em' }}>DevForge</span>
       </div>
 
-      {/* Nav links */}
-      <div style={{ display:'flex', alignItems:'center', gap:32 }}>
-        {['Projects','Curriculum','Pricing','Testimonials'].map(l => (
-          <a key={l} href={`#${l.toLowerCase()}`} style={{
-            fontSize:13, fontWeight:500, color:C.text2, textDecoration:'none',
-            fontFamily:"'Inter', sans-serif", transition:'color 0.1s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.color = C.text}
-          onMouseLeave={e => e.currentTarget.style.color = C.text2}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
+        {['Projects', 'Curriculum', 'Pricing'].map(l => (
+          <a key={l} href={`#${l.toLowerCase()}`}
+            style={{ fontSize: 12, fontWeight: 600, color: C.text3, textDecoration: 'none', fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.06em', transition: 'color 0.15s' }}
+            onMouseEnter={e => e.currentTarget.style.color = C.accent}
+            onMouseLeave={e => e.currentTarget.style.color = C.text3}
           >{l}</a>
         ))}
       </div>
 
-      {/* Actions */}
-      <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-        <button onClick={() => navigate('/login')} style={{
-          background:'none', border:'none', cursor:'pointer',
-          fontSize:13, fontWeight:500, color:C.text2,
-          fontFamily:"'Inter', sans-serif", padding:'6px 12px',
-          transition:'color 0.1s',
-        }}
-        onMouseEnter={e => e.currentTarget.style.color = C.text}
-        onMouseLeave={e => e.currentTarget.style.color = C.text2}
-        >Login</button>
-        <button onClick={onApply} style={{
-          background:C.accent, border:'none', cursor:'pointer',
-          fontSize:13, fontWeight:700, color:'#fff',
-          fontFamily:"'Inter', sans-serif", padding:'9px 20px',
-          letterSpacing:'0.04em', transition:'opacity 0.1s',
-        }}
-        onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-        >Apply Now →</button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={() => navigate('/login')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: C.text3, fontFamily: 'JetBrains Mono,monospace', padding: '6px 12px', transition: 'color 0.15s', letterSpacing: '0.06em' }}
+          onMouseEnter={e => e.currentTarget.style.color = C.text}
+          onMouseLeave={e => e.currentTarget.style.color = C.text3}
+        >LOGIN</button>
+        <button onClick={onApply}
+          style={{ background: 'transparent', border: `1px solid ${C.accent}`, cursor: 'pointer', fontSize: 12, fontWeight: 700, color: C.accent, fontFamily: 'JetBrains Mono,monospace', padding: '8px 20px', letterSpacing: '0.08em', transition: 'background 0.15s, box-shadow 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = `${C.accent}18`; e.currentTarget.style.boxShadow = glow() }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.boxShadow = 'none' }}
+        >APPLY →</button>
       </div>
-    </nav>
+    </motion.nav>
   )
 }
 
-// ─── Terminal card ────────────────────────────────────────────────────────────
-function TerminalCard() {
+// ─── Dashboard mockup ─────────────────────────────────────────────────────────
+function DashboardMockup({ embedded = false }) {
+  const tickets = [
+    { code: 'LB-005', title: 'Invoice PDF upload — Cloudinary', status: 'In Review',   color: C.red    },
+    { code: 'LB-006', title: 'Dashboard revenue aggregation',    status: 'In Progress', color: C.accent },
+    { code: 'LB-007', title: 'Role-based access — admin panel',  status: 'Todo',        color: C.text3  },
+  ]
   return (
-    <div style={{
-      background: C.surface,
-      border: `1px solid ${C.border2}`,
-      fontFamily: 'JetBrains Mono, monospace',
-      fontSize: 13,
-      overflow: 'hidden',
-    }}>
-      {/* Title bar */}
-      <div style={{
-        display:'flex', alignItems:'center', justifyContent:'space-between',
-        padding:'10px 16px',
-        borderBottom:`1px solid ${C.border}`,
-        background: C.surface2,
-      }}>
-        <span style={{ fontSize:11, color:C.text3 }}>project-01.js</span>
-        <span style={{ fontSize:10, fontWeight:700, color:C.green, letterSpacing:'0.06em' }}>PR #14 MERGED ✓</span>
-      </div>
-
-      {/* Code */}
-      <div style={{ padding:'20px 20px', lineHeight:1.8 }}>
-        <div style={{ color:C.text3, marginBottom:8 }}>{'// Business SaaS — shipped to production'}</div>
-        <div>
-          <span style={{ color:'#A78BFA' }}>const </span>
-          <span style={{ color:C.text }}>generateDocument </span>
-          <span style={{ color:C.text3 }}>= </span>
-          <span style={{ color:'#A78BFA' }}>async </span>
-          <span style={{ color:C.text3 }}>(client) </span>
-          <span style={{ color:C.accent }}>{'=> {'}</span>
-        </div>
-        <div style={{ paddingLeft:20 }}>
-          <span style={{ color:'#A78BFA' }}>const </span>
-          <span style={{ color:C.text }}>content </span>
-          <span style={{ color:C.text3 }}>= </span>
-          <span style={{ color:'#60B8D4' }}>await </span>
-          <span style={{ color:C.text }}>ai</span>
-          <span style={{ color:C.text3 }}>.</span>
-          <span style={{ color:C.accent }}>generate</span>
-          <span style={{ color:C.text3 }}>(client)</span>
-        </div>
-        <div style={{ paddingLeft:20 }}>
-          <span style={{ color:'#A78BFA' }}>return </span>
-          <span style={{ color:C.accent }}>exportPDF</span>
-          <span style={{ color:C.text3 }}>(content)</span>
-        </div>
-        <div style={{ color:C.accent }}>{'}'}</div>
-      </div>
-
-      {/* Projects list */}
-      <div style={{ borderTop:`1px solid ${C.border}`, padding:'14px 20px' }}>
-        <div style={{ fontSize:10, fontWeight:700, color:C.text3, letterSpacing:'0.12em', marginBottom:10 }}>YOU'LL SHIP ALL 3 →</div>
-        {[
-          { num:'01', name:'SaaS App', sub:'Backend & Database module', color:C.accent },
-          { num:'02', name:'Multi-Role Platform', sub:'Auth & Payments module', color:C.green },
-          { num:'03', name:'Production Deploy', sub:'DevOps & Real-time module', color:'#60B8D4' },
-        ].map(p => (
-          <div key={p.num} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
-            <div style={{ width:6, height:6, borderRadius:'50%', background:p.color, flexShrink:0 }}/>
-            <span style={{ color:p.color, fontWeight:700 }}>Project {p.num}</span>
-            <span style={{ color:C.text3, fontSize:12 }}>{p.sub}</span>
+    <div style={{ width: '100%', height: '100%', fontFamily: 'JetBrains Mono,monospace', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: C.bg }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 220px', gap: 12, padding: 12, flex: 1, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {/* Welcome */}
+          <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.accent}`, padding: '12px 14px' }}>
+            <div style={{ fontSize: 9, color: C.text3, marginBottom: 4 }}>{'>'} ./devforge --week=5 --project=lead-bill</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 8, textShadow: glow(C.text, 8) }}>Welcome back, Ravikiran</div>
+            <div style={{ height: 2, background: C.border, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: '50%', background: C.accent, boxShadow: glow() }} />
+            </div>
+            <div style={{ fontSize: 9, color: C.text3, marginTop: 4 }}>50% complete · 5 weeks remaining</div>
           </div>
-        ))}
+
+          {/* Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 1, background: C.border }}>
+            {[{ l: 'PRS MERGED', v: '24', c: C.green }, { l: 'LESSONS', v: '18', c: C.accent }, { l: 'AVG GRADE', v: '91', c: C.text2 }].map(s => (
+              <div key={s.l} style={{ background: C.surface, padding: '10px 12px', borderTop: `2px solid ${s.c}` }}>
+                <div style={{ fontSize: 8, color: C.text3, marginBottom: 4, letterSpacing: '0.1em' }}>{s.l}</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: s.c, textShadow: glow(s.c, 8) }}>{s.v}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tickets */}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 9, color: C.text3, marginBottom: 6, letterSpacing: '0.1em' }}>ACTIVE TICKETS</div>
+            {tickets.map(t => (
+              <div key={t.code} style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `2px solid ${t.color}`, padding: '8px 12px', marginBottom: 6 }}>
+                <div style={{ fontSize: 9, color: C.text3, marginBottom: 3 }}>{t.code}</div>
+                <div style={{ fontSize: 11, color: C.text2 }}>{t.title}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: t.color }} />
+                  <span style={{ fontSize: 9, color: C.text3 }}>{t.status}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ background: C.surface, border: `1px solid ${C.border}`, padding: '12px 14px', flex: 1 }}>
+            <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.1em', marginBottom: 10 }}>THIS WEEK'S GOALS</div>
+            {[{ l: 'Cloudinary upload endpoint', d: true }, { l: 'Invoice PDF generation', d: true }, { l: 'Dashboard revenue query', d: false }].map((g, i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '5px 0', borderBottom: i < 2 ? `1px solid ${C.border}` : 'none' }}>
+                <div style={{ width: 11, height: 11, border: `1px solid ${g.d ? C.accent : C.border2}`, background: g.d ? C.accent : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {g.d && <Check size={7} color="#000" />}
+                </div>
+                <span style={{ fontSize: 9, color: g.d ? C.text3 : C.text2, textDecoration: g.d ? 'line-through' : 'none' }}>{g.l}</span>
+              </div>
+            ))}
+            <div style={{ marginTop: 10, height: 2, background: C.border }}>
+              <div style={{ height: '100%', width: '66%', background: C.accent, boxShadow: glow() }} />
+            </div>
+            <div style={{ fontSize: 9, color: C.accent, marginTop: 3 }}>2/3 done</div>
+          </div>
+
+          <div style={{ background: C.surface, border: `1px solid ${C.border}`, padding: '12px 14px' }}>
+            <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.1em', marginBottom: 8 }}>LATEST PR REVIEW</div>
+            <div style={{ fontSize: 9, color: C.text3, marginBottom: 8 }}>LB-005 · feat/cloudinary-upload</div>
+            <div style={{ background: C.surface2, borderLeft: `2px solid ${C.green}`, padding: '6px 8px', marginBottom: 6 }}>
+              <div style={{ fontSize: 9, color: C.green, marginBottom: 2 }}>✓ Logic correct</div>
+              <div style={{ fontSize: 9, color: C.text3, lineHeight: 1.5 }}>Good use of multer. Add file size validation.</div>
+            </div>
+            <div style={{ background: C.surface2, borderLeft: `2px solid ${C.accent}`, padding: '6px 8px' }}>
+              <div style={{ fontSize: 9, color: C.accent, marginBottom: 2 }}>⚠ Suggestion</div>
+              <div style={{ fontSize: 9, color: C.text3, lineHeight: 1.5 }}>Store only the URL in DB, not full response.</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -260,148 +228,165 @@ function TerminalCard() {
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 function Hero({ onApply }) {
-  const tagline = useTypewriter(TAGLINES)
+  const line1 = useTypewriter('Build 3 real products', 45)
+  const line2 = useTypewriter('in 10 weeks.', 55)
 
   return (
-    <section style={{
-      minHeight: '100vh',
-      display: 'flex', alignItems: 'center',
-      padding: '100px 48px 80px',
-      borderBottom: `1px solid ${C.border}`,
-    }}>
-      <div style={{ maxWidth:1200, margin:'0 auto', width:'100%', display:'grid', gridTemplateColumns:'1fr 480px', gap:80, alignItems:'center' }}>
+    <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 96, background: C.bg, position: 'relative', overflow: 'hidden' }}>
 
-        {/* Left */}
-        <div>
-          <div style={{
-            display:'inline-flex', alignItems:'center', gap:8,
-            border:`1px solid ${C.border2}`, padding:'5px 14px',
-            marginBottom:36, fontFamily:"'Inter', sans-serif",
-          }}>
-            <span style={{ width:6, height:6, borderRadius:'50%', background:C.green, display:'inline-block' }}/>
-            <span style={{ fontSize:11, fontWeight:600, color:C.text2, letterSpacing:'0.08em' }}>
-              COHORT 3 · LIMITED SEATS
-            </span>
-          </div>
+      {/* Dot grid */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+        backgroundImage: `radial-gradient(circle, ${C.accent}18 1px, transparent 1px)`,
+        backgroundSize: '36px 36px',
+      }} />
 
-          <h1 style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 'clamp(52px, 6vw, 82px)',
-            fontWeight: 700,
-            lineHeight: 1.0,
-            letterSpacing: '-0.03em',
-            color: C.text,
-            margin: '0 0 8px',
-          }}>
-            Build 3 real
-          </h1>
-          <h1 style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 'clamp(52px, 6vw, 82px)',
-            fontWeight: 700,
-            lineHeight: 1.0,
-            letterSpacing: '-0.03em',
-            color: C.accent,
-            margin: '0 0 8px',
-          }}>
-            products
-          </h1>
-          <h1 style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 'clamp(52px, 6vw, 82px)',
-            fontWeight: 700,
-            lineHeight: 1.0,
-            letterSpacing: '-0.03em',
-            color: C.text,
-            margin: '0 0 32px',
-          }}>
-            in 10 weeks.
-          </h1>
+      {/* Scanline texture */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+        backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.28) 3px, rgba(0,0,0,0.28) 4px)`,
+        opacity: 0.85,
+      }} />
 
-          {/* Typewriter */}
-          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:28, minHeight:28 }}>
-            <span style={{ color:C.accent, fontFamily:'JetBrains Mono,monospace', fontSize:14 }}>→</span>
-            <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:14, color:C.text2 }}>
-              {tagline}
-              <span style={{ animation:'blink 1s step-end infinite', color:C.accent }}>|</span>
-            </span>
-          </div>
+      {/* Amber glow orb — stronger */}
+      <div style={{
+        position: 'absolute', top: -140, left: '50%', transform: 'translateX(-50%)',
+        width: 1000, height: 640, borderRadius: '50%',
+        background: `radial-gradient(ellipse, ${C.accent}30 0%, ${C.accent}0A 45%, transparent 68%)`,
+        pointerEvents: 'none', zIndex: 0,
+      }} />
 
-          <p style={{
-            fontSize:15, color:C.text2, lineHeight:1.8,
-            fontFamily:"'Inter', sans-serif",
-            maxWidth:480, marginBottom:40,
-          }}>
-            Build, deploy, and explain production-grade software using the same GitHub workflow used at real companies — the kind of work that holds up in a technical interview.
-          </p>
-
-          {/* CTAs */}
-          <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:40 }}>
-            <button onClick={onApply} style={{
-              background:C.accent, border:'none', cursor:'pointer',
-              fontSize:14, fontWeight:700, color:'#fff',
-              fontFamily:"'Inter', sans-serif", padding:'14px 28px',
-              letterSpacing:'0.04em', transition:'opacity 0.1s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.opacity='0.88'}
-            onMouseLeave={e => e.currentTarget.style.opacity='1'}
-            >Enroll Now</button>
-            <a href="#projects" style={{
-              fontSize:14, fontWeight:500, color:C.text2,
-              fontFamily:"'Inter', sans-serif", textDecoration:'none',
-              border:`1px solid ${C.border2}`, padding:'13px 24px',
-              transition:'border-color 0.1s, color 0.1s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor=C.accent; e.currentTarget.style.color=C.text }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor=C.border2; e.currentTarget.style.color=C.text2 }}
-            >View Projects</a>
-          </div>
-
-          {/* Trust badges */}
-          <div style={{ display:'flex', alignItems:'center', gap:24 }}>
-            {['No CS degree needed', '10-week program', 'GitHub workflow'].map(b => (
-              <div key={b} style={{ display:'flex', alignItems:'center', gap:6 }}>
-                <span style={{ color:C.green, fontSize:12, fontFamily:'JetBrains Mono,monospace' }}>✓</span>
-                <span style={{ fontSize:12, color:C.text3, fontFamily:"'Inter', sans-serif" }}>{b}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right — terminal */}
-        <TerminalCard/>
+      {/* Side decorations — faint terminal lines */}
+      <div style={{ position: 'absolute', left: 48, top: 160, zIndex: 0, pointerEvents: 'none', userSelect: 'none', opacity: 0.11, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.accent, lineHeight: 2 }}>
+        {['$ git init', '$ npm install', '$ git add .', '$ git commit', '$ git push', '$ npm run dev', '$ git merge'].map((l, i) => <div key={i}>{l}</div>)}
+      </div>
+      <div style={{ position: 'absolute', right: 48, top: 200, zIndex: 0, pointerEvents: 'none', userSelect: 'none', opacity: 0.11, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, lineHeight: 2, textAlign: 'right' }}>
+        {['✓ tests passing', '✓ build success', '✓ linting clean', '✓ PR approved', '✓ deployed', '→ week 5 / 10'].map((l, i) => <div key={i}>{l}</div>)}
       </div>
 
-      <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
+      <div style={{ maxWidth: 1060, width: '100%', padding: '0 24px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+
+        {/* Terminal badge */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.3 }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 10, border: `1px solid ${C.border2}`, padding: '6px 16px', marginBottom: 40, fontFamily: 'JetBrains Mono,monospace' }}
+        >
+          <motion.span animate={{ opacity: [1, 0.2, 1] }} transition={{ repeat: Infinity, duration: 1.4 }}
+            style={{ width: 7, height: 7, borderRadius: '50%', background: C.green, display: 'inline-block', boxShadow: glow(C.green) }}
+          />
+          <span style={{ fontSize: 11, color: C.text3, letterSpacing: '0.1em' }}>COHORT 3 · LIMITED SEATS</span>
+        </motion.div>
+
+        {/* Prompt line */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.5 }}
+          style={{ fontSize: 13, color: C.text3, fontFamily: 'JetBrains Mono,monospace', marginBottom: 16, letterSpacing: '0.04em' }}
+        >
+          <span style={{ color: C.accent }}>$ </span>./enroll --cohort=3 --track=fullstack
+        </motion.div>
+
+        {/* Typewriter headline */}
+        <div style={{ marginBottom: 32, minHeight: 160 }}>
+          <h1 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(32px, 4.8vw, 64px)', fontWeight: 700, color: C.text, lineHeight: 1.1, margin: '0 0 6px', letterSpacing: '-0.02em', textShadow: glow(C.text, 16), whiteSpace: 'nowrap' }}>
+            {line1}{line1.length < 'Build 3 real products'.length && <Cursor />}
+          </h1>
+          <h1 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(32px, 4.8vw, 64px)', fontWeight: 700, color: C.accent, lineHeight: 1.1, margin: 0, letterSpacing: '-0.02em', textShadow: glow() }}>
+            {line1.length >= 'Build 3 real products'.length && (
+              <>{line2}{line2.length < 'in 10 weeks.'.length && <Cursor />}</>
+            )}
+            {line2.length >= 'in 10 weeks.'.length && <Cursor />}
+          </h1>
+        </div>
+
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 2.2 }}
+          style={{ fontSize: 16, color: C.text, lineHeight: 1.9, fontFamily: "'Inter', sans-serif", maxWidth: 560, margin: '0 auto 40px', textAlign: 'left', opacity: 0.82 }}
+        >
+          Merge 65+ real pull requests, ship 3 production-grade apps, and build a GitHub profile that holds up in a technical interview.
+        </motion.p>
+
+        {/* CTAs */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, delay: 2.6 }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 48 }}
+        >
+          <button onClick={onApply}
+            style={{ background: C.accent, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '14px 36px', letterSpacing: '0.08em', transition: 'box-shadow 0.2s, opacity 0.15s', display: 'flex', alignItems: 'center', gap: 8 }}
+            onMouseEnter={e => { e.currentTarget.style.boxShadow = glow(C.accent, 20); e.currentTarget.style.opacity = '0.9' }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.opacity = '1' }}
+          >ENROLL NOW <ArrowRight size={14} /></button>
+
+          <a href="#projects"
+            style={{ fontSize: 13, fontWeight: 600, color: C.text3, fontFamily: 'JetBrains Mono,monospace', textDecoration: 'none', border: `1px solid ${C.border2}`, padding: '13px 28px', letterSpacing: '0.06em', transition: 'border-color 0.15s, color 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.color = C.accent }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = C.border2; e.currentTarget.style.color = C.text3 }}
+          >VIEW PROJECTS</a>
+        </motion.div>
+
+        {/* Trust */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 2.9 }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32 }}
+        >
+          {['No CS degree', '10-week program', 'GitHub workflow'].map(b => (
+            <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+              <span style={{ color: C.green, fontSize: 11, fontFamily: 'JetBrains Mono,monospace', textShadow: glow(C.green, 6) }}>✓</span>
+              <span style={{ fontSize: 12, color: C.text3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.04em' }}>{b}</span>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Static portal preview */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 3.2 }}
+        style={{ width: '100%', maxWidth: 1060, padding: '48px 24px 0', position: 'relative', zIndex: 1 }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{ fontSize: 10, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 10 }}>
+            <span style={{ color: C.accent }}>$ </span>cat ./student-portal.preview
+          </div>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(20px, 3vw, 32px)', fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, margin: 0, textShadow: glow(C.text, 10) }}>
+            Your dev environment<span style={{ color: C.text3 }}> from day one.</span>
+          </h2>
+        </div>
+
+        {/* Window chrome */}
+        <div style={{
+          border: `1px solid ${C.border2}`,
+          borderRadius: 10,
+          overflow: 'hidden',
+          boxShadow: `0 0 0 1px ${C.border}, 0 32px 80px rgba(0,0,0,0.6), 0 0 60px ${C.accent}0D`,
+        }}>
+          {/* Title bar */}
+          <div style={{ height: 36, background: C.surface, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {[C.red, C.accent, C.green].map((c, i) => <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c, opacity: 0.75 }} />)}
+            </div>
+            <span style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>devforge — student-portal</span>
+            <span style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>week 5 / 10</span>
+          </div>
+          <div style={{ height: 480 }}>
+            <DashboardMockup embedded />
+          </div>
+        </div>
+      </motion.div>
     </section>
   )
 }
 
-// ─── Tool strip ───────────────────────────────────────────────────────────────
+// ─── Tools marquee ────────────────────────────────────────────────────────────
 function ToolsBar() {
-  const tools = ['React','Node.js','Express','PostgreSQL','Prisma','GitHub','Vercel','JWT','Razorpay','Claude AI']
+  const tools = ['React', 'Node.js', 'Express', 'PostgreSQL', 'Prisma', 'GitHub', 'Vercel', 'JWT', 'Razorpay', 'Socket.io', 'Cloudinary', 'Railway', 'Claude API']
+  const doubled = [...tools, ...tools]
   return (
-    <div style={{ borderBottom:`1px solid ${C.border}`, padding:'0 48px', overflow:'hidden' }}>
-      <div style={{ display:'flex', alignItems:'center', gap:0 }}>
-        <div style={{ fontSize:10, fontWeight:700, color:C.text3, letterSpacing:'0.12em', whiteSpace:'nowrap', padding:'16px 24px 16px 0', borderRight:`1px solid ${C.border}`, fontFamily:"'Inter', sans-serif" }}>
-          TECH STACK
-        </div>
-        <div style={{ display:'flex', alignItems:'center', gap:0, overflowX:'auto' }}>
-          {tools.map((t, i) => (
-            <div key={t} style={{
-              fontSize:12, fontWeight:600, color:C.text3,
-              fontFamily:'JetBrains Mono,monospace',
-              padding:'16px 20px',
-              borderRight: i < tools.length-1 ? `1px solid ${C.border}` : 'none',
-              whiteSpace:'nowrap',
-              transition:'color 0.1s',
-              cursor:'default',
-            }}
-            onMouseEnter={e => e.currentTarget.style.color = C.accent}
-            onMouseLeave={e => e.currentTarget.style.color = C.text3}
+    <div style={{ borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`, overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+      <div style={{ fontSize: 9, fontWeight: 700, color: C.text3, letterSpacing: '0.14em', whiteSpace: 'nowrap', padding: '14px 20px', borderRight: `1px solid ${C.border}`, fontFamily: 'JetBrains Mono,monospace', flexShrink: 0 }}>STACK</div>
+      <div style={{ overflow: 'hidden', flex: 1 }}>
+        <motion.div animate={{ x: ['0%', '-50%'] }} transition={{ repeat: Infinity, duration: 28, ease: 'linear' }}
+          style={{ display: 'flex', width: 'max-content' }}
+        >
+          {doubled.map((t, i) => (
+            <div key={i} style={{ fontSize: 11, fontWeight: 600, color: C.text3, fontFamily: 'JetBrains Mono,monospace', padding: '14px 22px', borderRight: `1px solid ${C.border}`, whiteSpace: 'nowrap', cursor: 'default', transition: 'color 0.15s, text-shadow 0.15s' }}
+              onMouseEnter={e => { e.currentTarget.style.color = C.accent; e.currentTarget.style.textShadow = glow() }}
+              onMouseLeave={e => { e.currentTarget.style.color = C.text3; e.currentTarget.style.textShadow = 'none' }}
             >{t}</div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   )
@@ -410,39 +395,31 @@ function ToolsBar() {
 // ─── Stats ────────────────────────────────────────────────────────────────────
 function Stats() {
   const stats = [
-    { end:65,  suffix:'+',  label:'Pull requests merged',   sub:'per student, every one reviewed' },
-    { end:3,   suffix:'',   label:'Production products',    sub:'shipped & deployed to production' },
-    { end:10,  suffix:'wk', label:'Program duration',       sub:'from zero to job-ready portfolio' },
-    { end:3,   suffix:'',   label:'Cohorts completed',      sub:'with placement support included' },
+    { value: '65+', label: 'pull requests merged',  sub: 'per student · every one reviewed' },
+    { value: '3',   label: 'products shipped',      sub: 'deployed to production'            },
+    { value: '10',  label: 'weeks',                 sub: 'from zero to job-ready portfolio'  },
+    { value: '3',   label: 'cohorts completed',     sub: 'with placement support'            },
   ]
-
   return (
-    <section style={{ padding:'80px 48px', borderBottom:`1px solid ${C.border}` }}>
-      <div style={{ maxWidth:1200, margin:'0 auto' }}>
-        <Reveal>
-          <div style={{ fontSize:10, fontWeight:700, color:C.accent, letterSpacing:'0.14em', fontFamily:"'Inter', sans-serif", marginBottom:48 }}>BY THE NUMBERS</div>
-        </Reveal>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
-          {stats.map((s, i) => {
-            const [ref, count] = useCounter(s.end)
-            return (
-              <div key={s.label} ref={ref} style={{
-                paddingRight: i < stats.length-1 ? 40 : 0,
-                paddingLeft: i > 0 ? 40 : 0,
-                borderRight: i < stats.length-1 ? `1px solid ${C.border}` : 'none',
-              }}>
-                <div style={{
-                  fontFamily:"'Inter', sans-serif", fontSize:56, fontWeight:700,
-                  letterSpacing:'-0.03em', color:C.text, lineHeight:1,
-                  marginBottom:8,
-                }}>
-                  {count}{s.suffix}
-                </div>
-                <div style={{ fontSize:14, fontWeight:600, color:C.text2, fontFamily:"'Inter', sans-serif", marginBottom:4 }}>{s.label}</div>
-                <div style={{ fontSize:12, color:C.text3, fontFamily:"'Inter', sans-serif" }}>{s.sub}</div>
+    <section style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}
+          style={{ fontSize: 9, color: C.text3, letterSpacing: '0.16em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 52 }}
+        ><span style={{ color: C.accent }}>$ </span>cat ./stats.log</motion.div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
+          {stats.map((s, i) => (
+            <motion.div key={s.label} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}
+              transition={{ delay: i * 0.1 }}
+              style={{ paddingRight: i < 3 ? 44 : 0, paddingLeft: i > 0 ? 44 : 0, borderRight: i < 3 ? `1px solid ${C.border}` : 'none' }}
+            >
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 64, fontWeight: 700, letterSpacing: '-0.04em', color: C.accent, lineHeight: 1, marginBottom: 12, textShadow: glow(C.accent, 20) }}>
+                {s.value}
               </div>
-            )
-          })}
+              <div style={{ fontSize: 13, fontWeight: 600, color: C.text, fontFamily: "'Inter', sans-serif", marginBottom: 4 }}>{s.label}</div>
+              <div style={{ fontSize: 11, color: C.text2, fontFamily: 'JetBrains Mono,monospace' }}>{s.sub}</div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
@@ -452,73 +429,38 @@ function Stats() {
 // ─── Projects ─────────────────────────────────────────────────────────────────
 function Projects() {
   const projects = [
-    {
-      num: '01', name: 'Full-Stack SaaS App', weeks: 'Weeks 4–6',
-      module: 'MODULE — BACKEND & DATABASE',
-      desc: 'Build a production backend from scratch — REST APIs, database schema design, PDF generation, and payment calculations. Your first real server.',
-      tags: ['Node.js','Express','PostgreSQL','Prisma','REST APIs'],
-      color: C.accent,
-    },
-    {
-      num: '02', name: 'Multi-Role Platform', weeks: 'Weeks 7–8',
-      module: 'MODULE — AUTH & PAYMENTS',
-      desc: 'Implement JWT authentication, role-based access control, and live payment integration. Build dashboards with real data from your own API.',
-      tags: ['React','JWT','Razorpay','Role-based access','Dashboards'],
-      color: C.green,
-    },
-    {
-      num: '03', name: 'Production Deployment', weeks: 'Week 9',
-      module: 'MODULE — DEVOPS & REAL-TIME',
-      desc: 'Ship your app to production with CI/CD, environment configs, file uploads, and real-time features. The thing you demo in interviews.',
-      tags: ['Vercel','Cloudinary','WebSockets','CI/CD','Docker'],
-      color: '#60B8D4',
-    },
+    { num:'01', name:'Full-Stack SaaS App',   weeks:'Weeks 4–6', tag:'BACKEND & DATABASE',  desc:'Build a production backend from scratch — REST APIs, database design, file uploads, and a real admin dashboard backed by PostgreSQL.', tags:['Node.js','Express','PostgreSQL','Prisma','Cloudinary'], color:C.accent },
+    { num:'02', name:'Multi-Role Platform',   weeks:'Weeks 7–8', tag:'PAYMENTS & REAL-TIME', desc:'Implement live payment flows with Razorpay and real-time order tracking via Socket.io. Two features every product company ships.', tags:['React','Razorpay','Socket.io','JWT','Dashboards'],        color:C.green  },
+    { num:'03', name:'Production Deployment', weeks:'Week 9',    tag:'AI & DEVOPS',           desc:'Ship with CI/CD, integrate the Claude API for an AI-powered feature, and configure production environments the right way.', tags:['Vercel','Railway','Claude API','GitHub Actions'],              color:C.text2  },
   ]
-
   return (
-    <section id="projects" style={{ padding:'80px 48px', borderBottom:`1px solid ${C.border}` }}>
-      <div style={{ maxWidth:1200, margin:'0 auto' }}>
-        <Reveal>
-          <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:56 }}>
-            <div>
-              <div style={{ fontSize:10, fontWeight:700, color:C.accent, letterSpacing:'0.14em', fontFamily:"'Inter', sans-serif", marginBottom:12 }}>WHAT YOU'LL BUILD</div>
-              <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:42, fontWeight:700, letterSpacing:'-0.03em', color:C.text, margin:0 }}>
-                3 real products.<br/><span style={{ color:C.text2 }}>All on your GitHub.</span>
-              </h2>
+    <section id="projects" style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginBottom: 56 }}>
+          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>ls ./projects/</div>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, letterSpacing: '-0.02em', color: C.text, margin: 0, textShadow: glow(C.text, 8) }}>
+            3 real products.<br /><span style={{ color: C.text3 }}>All on your GitHub.</span>
+          </h2>
+        </motion.div>
 
-            </div>
-            <div style={{ fontSize:13, color:C.text3, fontFamily:"'Inter', sans-serif", maxWidth:260, textAlign:'right', lineHeight:1.6 }}>
-              Not toy projects. Not tutorials. Products that answer "show me something you built."
-            </div>
-          </div>
-        </Reveal>
-
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:0 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 0 }}>
           {projects.map((p, i) => (
-            <Reveal key={p.num} delay={i * 80}>
-              <div style={{
-                padding:'32px 32px',
-                borderRight: i < projects.length-1 ? `1px solid ${C.border}` : 'none',
-                borderTop:`2px solid ${p.color}`,
-              }}>
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
-                  <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:p.color, fontWeight:700, letterSpacing:'0.1em' }}>{p.module}</span>
-                  <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:C.text3, letterSpacing:'0.06em' }}>{p.weeks}</span>
+            <motion.div key={p.num} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.12 }}>
+              <ScanCard style={{ padding: '32px', borderRight: i < 2 ? `1px solid ${C.border}` : 'none', borderTop: `2px solid ${p.color}`, height: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: p.color, fontWeight: 700, letterSpacing: '0.12em', textShadow: glow(p.color, 6) }}>{p.tag}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: C.text3 }}>{p.weeks}</span>
                 </div>
-                <h3 style={{ fontFamily:"'Inter', sans-serif", fontSize:22, fontWeight:700, color:C.text, margin:'0 0 14px', letterSpacing:'-0.02em' }}>{p.name}</h3>
-                <p style={{ fontSize:13, color:C.text2, lineHeight:1.75, fontFamily:"'Inter', sans-serif", margin:'0 0 24px' }}>{p.desc}</p>
-                <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 28, fontWeight: 700, color: C.text3, marginBottom: 8, letterSpacing: '-0.01em' }}>[{p.num}]</div>
+                <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: 20, fontWeight: 700, color: C.text, margin: '0 0 14px', letterSpacing: '-0.01em' }}>{p.name}</h3>
+                <p style={{ fontSize: 13, color: C.text, lineHeight: 1.75, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', opacity: 0.78 }}>{p.desc}</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {p.tags.map(t => (
-                    <span key={t} style={{
-                      fontSize:10, fontWeight:600, color:C.text3,
-                      fontFamily:'JetBrains Mono,monospace',
-                      border:`1px solid ${C.border}`, padding:'3px 8px',
-                      letterSpacing:'0.04em',
-                    }}>{t}</span>
+                    <span key={t} style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace', border: `1px solid ${C.border}`, padding: '3px 8px', letterSpacing: '0.04em' }}>{t}</span>
                   ))}
                 </div>
-              </div>
-            </Reveal>
+              </ScanCard>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -529,56 +471,43 @@ function Projects() {
 // ─── Curriculum ───────────────────────────────────────────────────────────────
 function Curriculum() {
   const weeks = [
-    { w:1,  title:'Git, JavaScript, APIs & Developer Workflow',       tag:'Foundations' },
-    { w:2,  title:'Node.js, Express, PostgreSQL & Prisma',            tag:'Backend' },
-    { w:3,  title:'React — State, Forms & TanStack Query',            tag:'Frontend' },
-    { w:4,  title:'Authentication — JWT, Refresh Tokens & RBAC',      tag:'Auth' },
-    { w:5,  title:'Project 1 — SaaS App Core Features',               tag:'Project 1' },
-    { w:6,  title:'Project 1 — Cloudinary, File Uploads & Deploy',    tag:'Project 1' },
-    { w:7,  title:'Project 2 — Payments with Razorpay',               tag:'Project 2' },
-    { w:8,  title:'Project 2 — Real-time with Socket.io & Deploy',    tag:'Project 2' },
-    { w:9,  title:'Project 3 — AI Integration, CI/CD & Production',   tag:'Project 3' },
-    { w:10, title:'Career Week — Resume, LinkedIn & Job Strategy',     tag:'Career' },
+    { w:1,  title:'Git, JavaScript, APIs & Developer Workflow',     tag:'foundations' },
+    { w:2,  title:'Node.js, Express, PostgreSQL & Prisma',          tag:'backend'     },
+    { w:3,  title:'React — State, Forms & TanStack Query',          tag:'frontend'    },
+    { w:4,  title:'Authentication — JWT, Refresh Tokens & RBAC',    tag:'auth'        },
+    { w:5,  title:'Project 1 — SaaS App Core Features',             tag:'project_1'   },
+    { w:6,  title:'Project 1 — Cloudinary, File Uploads & Deploy',  tag:'project_1'   },
+    { w:7,  title:'Project 2 — Payments with Razorpay',             tag:'project_2'   },
+    { w:8,  title:'Project 2 — Real-time with Socket.io & Deploy',  tag:'project_2'   },
+    { w:9,  title:'Project 3 — AI Integration, CI/CD & Production', tag:'project_3'   },
+    { w:10, title:'Career Week — Resume, LinkedIn & Job Strategy',   tag:'career'      },
   ]
+  const tagCol = { foundations:C.text3, backend:C.accent, frontend:'#22D3EE', auth:C.text2, project_1:C.green, project_2:'#FBBF24', project_3:C.red, career:C.text2 }
 
   return (
-    <section id="curriculum" style={{ padding:'80px 48px', borderBottom:`1px solid ${C.border}` }}>
-      <div style={{ maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:'280px 1fr', gap:80 }}>
-        <Reveal>
-          <div style={{ position:'sticky', top:80 }}>
-            <div style={{ fontSize:10, fontWeight:700, color:C.accent, letterSpacing:'0.14em', fontFamily:"'Inter', sans-serif", marginBottom:14 }}>CURRICULUM</div>
-            <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:36, fontWeight:700, letterSpacing:'-0.02em', color:C.text, margin:'0 0 20px', lineHeight:1.1 }}>
-              10 weeks.<br/><span style={{ color:C.text2 }}>Real skills.</span>
-            </h2>
-            <p style={{ fontSize:13, color:C.text3, lineHeight:1.75, fontFamily:"'Inter', sans-serif" }}>
-              Each week builds directly on the last. By Week 10 you understand the full stack — from terminal to production.
-            </p>
-          </div>
-        </Reveal>
+    <section id="curriculum" style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '260px 1fr', gap: 80 }}>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ position: 'sticky', top: 80 }}>
+          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>cat ./curriculum.md</div>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 32, fontWeight: 700, color: C.text, margin: '0 0 16px', lineHeight: 1.15, textShadow: glow(C.text, 8) }}>
+            10 weeks.<br /><span style={{ color: C.text3 }}>Real skills.</span>
+          </h2>
+          <p style={{ fontSize: 13, color: C.text2, lineHeight: 1.75, fontFamily: "'Inter', sans-serif" }}>
+            Each week builds directly on the last. By Week 10 you understand the full stack — from terminal to production.
+          </p>
+        </motion.div>
 
         <div>
           {weeks.map((w, i) => (
-            <Reveal key={w.w} delay={i * 40}>
-              <div style={{
-                display:'flex', alignItems:'flex-start', gap:24,
-                padding:'20px 0',
-                borderBottom: i < weeks.length-1 ? `1px solid ${C.border}` : 'none',
-              }}
-              onMouseEnter={e => e.currentTarget.style.paddingLeft='12px'}
-              onMouseLeave={e => e.currentTarget.style.paddingLeft='0'}
-              >
-                <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:C.text3, fontWeight:700, marginTop:2, flexShrink:0, width:48 }}>W{String(w.w).padStart(2,'0')}</div>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontSize:15, fontWeight:600, color:C.text, fontFamily:"'Inter', sans-serif", marginBottom:4 }}>{w.title}</div>
-                </div>
-                <div style={{
-                  fontSize:9, fontWeight:700, color:C.accent,
-                  border:`1px solid ${C.border2}`, padding:'3px 8px',
-                  letterSpacing:'0.1em', fontFamily:"'Inter', sans-serif",
-                  flexShrink:0, marginTop:2,
-                }}>{w.tag.toUpperCase()}</div>
-              </div>
-            </Reveal>
+            <motion.div key={w.w} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.04 }}>
+              <ScanCard style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 12px', borderBottom: i < weeks.length - 1 ? `1px solid ${C.border}` : 'none', cursor: 'default' }}>
+                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.text3, fontWeight: 700, flexShrink: 0, width: 36 }}>W{String(w.w).padStart(2, '0')}</span>
+                <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: C.text, fontFamily: "'Inter', sans-serif", opacity: 0.88 }}>{w.title}</span>
+                <span style={{ fontSize: 9, fontWeight: 700, color: tagCol[w.tag], border: `1px solid ${tagCol[w.tag]}44`, padding: '3px 8px', letterSpacing: '0.1em', fontFamily: 'JetBrains Mono,monospace', flexShrink: 0 }}>
+                  {w.tag.replace('_', ' ').toUpperCase()}
+                </span>
+              </ScanCard>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -589,34 +518,27 @@ function Curriculum() {
 // ─── How it works ─────────────────────────────────────────────────────────────
 function HowItWorks() {
   const steps = [
-    { n:'01', title:'Enroll & get access', desc:'Immediately access the student portal, lesson content, and the Week 1 starter repo.' },
-    { n:'02', title:'Build daily, PR daily', desc:'Every day you build real features and open a pull request. No shortcuts.' },
-    { n:'03', title:'Reviews every PR', desc:'Every pull request gets reviewed for logic, naming, security, and structure. Fix the feedback, push again, get re-reviewed.' },
-    { n:'04', title:'Ship & get placed', desc:'3 deployed products, 65+ merged PRs, and a structured job search process.' },
+    { n:'01', title:'Enroll & get access',   desc:'Immediately access the student portal, all lessons, and the Week 1 starter repo.' },
+    { n:'02', title:'Build daily, PR daily', desc:'Every day you build a real feature and open a pull request against a real project.' },
+    { n:'03', title:'Reviews every PR',      desc:'Every PR gets reviewed for logic, naming, security, and structure. Fix, push, repeat.' },
+    { n:'04', title:'Ship & get placed',     desc:'3 deployed products, 65+ merged PRs, and a structured job application process.' },
   ]
-
   return (
-    <section style={{ padding:'80px 48px', borderBottom:`1px solid ${C.border}` }}>
-      <div style={{ maxWidth:1200, margin:'0 auto' }}>
-        <Reveal>
-          <div style={{ fontSize:10, fontWeight:700, color:C.accent, letterSpacing:'0.14em', fontFamily:"'Inter', sans-serif", marginBottom:12 }}>HOW IT WORKS</div>
-          <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:42, fontWeight:700, letterSpacing:'-0.03em', color:C.text, margin:'0 0 56px' }}>
-            The process is the product.
-          </h2>
-        </Reveal>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:0 }}>
+    <section style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
+          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>./how-it-works --explain</div>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 52px', textShadow: glow(C.text, 8) }}>The process is the product.</h2>
+        </motion.div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
           {steps.map((s, i) => (
-            <Reveal key={s.n} delay={i * 70}>
-              <div style={{
-                paddingRight: i < steps.length-1 ? 36 : 0,
-                paddingLeft: i > 0 ? 36 : 0,
-                borderRight: i < steps.length-1 ? `1px solid ${C.border}` : 'none',
-              }}>
-                <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:32, fontWeight:700, color:C.border2, marginBottom:16, letterSpacing:'-0.02em' }}>{s.n}</div>
-                <h3 style={{ fontFamily:"'Inter', sans-serif", fontSize:15, fontWeight:700, color:C.text, margin:'0 0 10px' }}>{s.title}</h3>
-                <p style={{ fontSize:13, color:C.text3, lineHeight:1.7, fontFamily:"'Inter', sans-serif", margin:0 }}>{s.desc}</p>
-              </div>
-            </Reveal>
+            <motion.div key={s.n} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.1 }}
+              style={{ paddingRight: i < 3 ? 36 : 0, paddingLeft: i > 0 ? 36 : 0, borderRight: i < 3 ? `1px solid ${C.border}` : 'none' }}
+            >
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 36, fontWeight: 700, color: C.border2, marginBottom: 16, textShadow: glow(C.accent, 6) }}>{s.n}</div>
+              <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700, color: C.text, margin: '0 0 10px' }}>{s.title}</h3>
+              <p style={{ fontSize: 13, color: C.text2, lineHeight: 1.75, fontFamily: "'Inter', sans-serif", margin: 0 }}>{s.desc}</p>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -628,154 +550,107 @@ function HowItWorks() {
 function Pricing({ onApply }) {
   const plans = [
     {
-      id: 'solo',
-      name: 'Solo',
-      price: '₹7,999',
-      badge: null,
-      tagline: 'Build real projects. Ship real code.',
-      desc: 'Full 10-week curriculum, code review on every PR, and community access. Best for self-driven students who want project experience without career support.',
+      id: 'solo', name: 'Solo', price: '₹7,999', badge: null, tagline: 'Build real projects. Ship real code.',
+      desc: 'Full 10-week curriculum, code review on every PR, and community access.',
       features: [
-        { title: 'Full 10-week project curriculum', sub: 'All lessons, project briefs, and code examples unlocked on day 1. No drip-feeding.' },
-        { title: 'Code review on every pull request', sub: 'Every PR is reviewed for logic, naming, security, and architecture — the same feedback loop used at real companies.' },
-        { title: 'Community Discord access', sub: 'Ask questions, share progress, and get unblocked by peers from all cohorts.' },
-        { title: 'Completion certificate', sub: 'Issued after 10 weeks and 20+ merged PRs. Verifiable and LinkedIn-ready.' },
-        { title: 'Lifetime content access', sub: 'Curriculum updates go to your account forever. No re-purchase, no expiry.' },
+        { title: 'Full 10-week project curriculum', sub: 'All lessons, project briefs, and code examples on day 1.' },
+        { title: 'Code review on every pull request', sub: 'Every PR reviewed for logic, naming, security, and architecture.' },
+        { title: 'Community Discord access', sub: 'Ask questions, share progress, get unblocked by peers.' },
+        { title: 'Completion certificate', sub: 'Issued after 10 weeks and 20+ merged PRs. LinkedIn-ready.' },
+        { title: 'Lifetime content access', sub: 'Curriculum updates go to your account forever.' },
       ],
-      cta: 'Start Solo',
-      accent: '#6B7280',
-      recommended: false,
+      cta: 'START SOLO', accent: C.text3, recommended: false,
     },
     {
-      id: 'cohort',
-      name: 'Cohort',
-      price: '₹13,999',
-      badge: 'MOST POPULAR',
-      tagline: 'Build projects + get placement-ready.',
-      desc: 'Everything in Solo plus resume guidance, job application strategy, interview prep material, and one mock interview with a real developer.',
+      id: 'cohort', name: 'Cohort', price: '₹13,999', badge: 'MOST POPULAR', tagline: 'Build + get placement-ready.',
+      desc: 'Everything in Solo plus resume guidance, job strategy, and one mock interview.',
       features: [
-        { title: 'Everything in Solo', sub: 'Full 10-week curriculum, code reviews on every PR, Discord, certificate, and lifetime access.' },
-        { title: 'Resume writing guide & template', sub: 'Learn how to write a developer resume that gets past the first filter. Includes a template and real examples.' },
-        { title: 'Job application strategy', sub: 'Which companies to apply to, in what order, how to write cover letters, and how to follow up.' },
-        { title: 'Interview preparation resources', sub: 'Curated DSA problems, project walkthrough practice, and behavioral question prep for fresher interviews.' },
-        { title: '1 mock interview session', sub: 'A 45-minute interview with a hired freelance developer. Written feedback on what to improve.' },
+        { title: 'Everything in Solo', sub: 'Full curriculum, code reviews, Discord, certificate, lifetime access.' },
+        { title: 'Resume writing guide & template', sub: 'Write a developer resume that gets past the first filter.' },
+        { title: 'Job application strategy', sub: 'Which companies, what order, when and how to follow up.' },
+        { title: 'Interview preparation resources', sub: 'DSA, project walkthroughs, and behavioral question prep.' },
+        { title: '1 mock interview session', sub: '45-min interview with a hired developer. Written feedback.' },
       ],
-      cta: 'Join Cohort 3',
-      accent: C.accent,
-      recommended: true,
+      cta: 'JOIN COHORT 3', accent: C.accent, recommended: true,
     },
     {
-      id: 'mentored',
-      name: '1:1 Placement',
-      price: '₹24,999',
-      badge: 'MAXIMUM SUPPORT',
-      tagline: 'Build projects + full placement support.',
-      desc: 'Everything in Cohort plus a personal resume rewrite, LinkedIn overhaul, 3 mock interviews, and step-by-step application guidance.',
+      id: 'mentored', name: '1:1 Placement', price: '₹24,999', badge: 'MAX SUPPORT', tagline: 'Full placement support.',
+      desc: 'Everything in Cohort plus resume rewrite, LinkedIn overhaul, and 3 mock interviews.',
       features: [
-        { title: 'Everything in Cohort', sub: 'Full curriculum, code reviews on every PR, resume guide, application strategy, and 1 mock interview.' },
-        { title: 'Personal resume rewrite', sub: 'We write your resume for you — based on your projects and background. ATS-optimised, one revision included.' },
-        { title: 'LinkedIn profile overhaul', sub: 'Headline, about section, and projects rewritten to attract recruiters. One revision included.' },
-        { title: '3 mock interview sessions', sub: 'Three separate sessions with hired freelance developers. Each with written feedback and specific next steps.' },
-        { title: 'Application tracking & guidance', sub: 'Weekly async check-in — share your applications, we tell you exactly what to do next.' },
+        { title: 'Everything in Cohort', sub: 'Full curriculum, reviews, resume guide, application strategy, 1 mock.' },
+        { title: 'Personal resume rewrite', sub: 'We write your resume. ATS-optimised, one revision included.' },
+        { title: 'LinkedIn profile overhaul', sub: 'Headline, about section, and projects rewritten for recruiters.' },
+        { title: '3 mock interview sessions', sub: '3 sessions with hired developers, written feedback each time.' },
+        { title: 'Application tracking & guidance', sub: 'Weekly async check-in — we guide your next steps.' },
       ],
-      cta: 'Apply for 1:1',
-      accent: '#A78BFA',
-      recommended: false,
+      cta: 'APPLY FOR 1:1', accent: C.text2, recommended: false,
     },
   ]
 
   return (
-    <section id="pricing" style={{ padding:'80px 48px', borderBottom:`1px solid ${C.border}` }}>
-      <div style={{ maxWidth:1100, margin:'0 auto' }}>
-        <Reveal>
-          <div style={{ fontSize:10, fontWeight:700, color:C.accent, letterSpacing:'0.14em', fontFamily:"'Inter', sans-serif", marginBottom:12 }}>PRICING</div>
-          <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:56, flexWrap:'wrap', gap:20 }}>
-            <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:42, fontWeight:700, letterSpacing:'-0.03em', color:C.text, margin:0 }}>
-              No hidden fees.<br/>No subscriptions.
+    <section id="pricing" style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginBottom: 56 }}>
+          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>cat ./pricing.json</div>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
+            <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: 0, textShadow: glow(C.text, 8) }}>
+              No hidden fees.<br /><span style={{ color: C.text3 }}>No subscriptions.</span>
             </h2>
-            <div style={{ fontSize:12, color:C.text3, fontFamily:'JetBrains Mono,monospace', border:`1px solid ${C.border}`, padding:'8px 16px', letterSpacing:'0.04em' }}>
-              7-day refund · no questions asked
-            </div>
+            <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace', border: `1px solid ${C.border}`, padding: '8px 14px', letterSpacing: '0.06em' }}>7-day refund · no questions</div>
           </div>
-        </Reveal>
+        </motion.div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:0 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 0 }}>
           {plans.map((p, i) => (
-            <Reveal key={p.id} delay={i * 60}>
-              <div style={{
-                padding:'32px',
-                borderRight: i < plans.length-1 ? `1px solid ${C.border}` : 'none',
+            <motion.div key={p.id} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.1 }}>
+              <ScanCard style={{
+                padding: '32px', display: 'flex', flexDirection: 'column', minHeight: 620,
+                borderRight: i < 2 ? `1px solid ${C.border}` : 'none',
                 borderTop: `2px solid ${p.accent}`,
-                background: p.recommended ? 'rgba(59,130,246,0.04)' : p.id === 'mentored' ? 'rgba(167,139,250,0.03)' : 'transparent',
-                display:'flex', flexDirection:'column',
-                minHeight: 640,
+                background: p.recommended ? `${C.accent}08` : 'transparent',
               }}>
-                {/* Badge */}
-                <div style={{ height:20, marginBottom:16 }}>
-                  {p.badge && (
-                    <span style={{
-                      fontSize:9, fontWeight:700,
-                      color: p.recommended ? C.accent : '#A78BFA',
-                      letterSpacing:'0.14em', fontFamily:"'Inter', sans-serif",
-                    }}>{p.badge}</span>
-                  )}
+                <div style={{ height: 20, marginBottom: 14 }}>
+                  {p.badge && <span style={{ fontSize: 9, fontWeight: 700, color: p.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', textShadow: p.recommended ? glow() : 'none' }}>{p.badge}</span>}
                 </div>
-
-                {/* Plan name & tagline */}
-                <div style={{ marginBottom:20 }}>
-                  <div style={{ fontFamily:"'Inter', sans-serif", fontSize:18, fontWeight:700, color:C.text, marginBottom:4 }}>{p.name}</div>
-                  <div style={{ fontFamily:"'Inter', sans-serif", fontSize:12, color:C.text3 }}>{p.tagline}</div>
+                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 4 }}>{p.name}</div>
+                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: C.text3, marginBottom: 20, letterSpacing: '0.04em' }}>{p.tagline}</div>
+                <div style={{ marginBottom: 16 }}>
+                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 36, fontWeight: 700, color: p.recommended ? C.accent : C.text, textShadow: p.recommended ? glow() : 'none' }}>{p.price}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: C.text3, marginLeft: 8 }}>one-time</span>
                 </div>
-
-                {/* Price */}
-                <div style={{ marginBottom:20 }}>
-                  <span style={{ fontFamily:"'Inter', sans-serif", fontSize:40, fontWeight:700, color:C.text, letterSpacing:'-0.03em' }}>{p.price}</span>
-                  <span style={{ fontFamily:"'Inter', sans-serif", fontSize:12, color:C.text3, marginLeft:6 }}>one-time</span>
-                </div>
-
-                {/* Description */}
-                <p style={{ fontSize:13, color:C.text3, lineHeight:1.7, fontFamily:"'Inter', sans-serif", marginBottom:24, minHeight:54 }}>{p.desc}</p>
-
-                {/* Features */}
-                <div style={{ display:'flex', flexDirection:'column', gap:14, marginBottom:32, flex:1 }}>
+                <p style={{ fontSize: 12, color: C.text2, lineHeight: 1.7, fontFamily: "'Inter', sans-serif", marginBottom: 20 }}>{p.desc}</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28, flex: 1 }}>
                   {p.features.map(f => (
-                    <div key={f.title} style={{ display:'flex', alignItems:'flex-start', gap:10 }}>
-                      <span style={{ color: p.recommended ? C.accent : p.id === 'mentored' ? '#A78BFA' : C.text3, fontSize:11, fontFamily:'JetBrains Mono,monospace', flexShrink:0, marginTop:2 }}>✓</span>
+                    <div key={f.title} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                      <span style={{ color: p.accent, fontSize: 10, fontFamily: 'JetBrains Mono,monospace', flexShrink: 0, marginTop: 2, textShadow: p.recommended ? glow() : 'none' }}>✓</span>
                       <div>
-                        <div style={{ fontSize:13, fontWeight:600, color: p.recommended || p.id === 'mentored' ? C.text : C.text2, fontFamily:"'Inter', sans-serif", lineHeight:1.4, marginBottom:2 }}>{f.title}</div>
-                        <div style={{ fontSize:11, color:C.text3, fontFamily:"'Inter', sans-serif", lineHeight:1.5 }}>{f.sub}</div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: C.text, fontFamily: "'Inter', sans-serif", marginBottom: 2 }}>{f.title}</div>
+                        <div style={{ fontSize: 11, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.5 }}>{f.sub}</div>
                       </div>
                     </div>
                   ))}
                 </div>
-
-                {/* CTA */}
-                <button onClick={onApply} style={{
-                  width:'100%', padding:'12px',
-                  background: p.recommended ? C.accent : p.id === 'mentored' ? 'rgba(167,139,250,0.12)' : 'transparent',
-                  border: p.recommended ? 'none' : p.id === 'mentored' ? '1px solid rgba(167,139,250,0.3)' : `1px solid ${C.border2}`,
-                  color: p.recommended ? '#fff' : p.id === 'mentored' ? '#A78BFA' : C.text3,
-                  fontWeight:700, fontSize:13, cursor:'pointer',
-                  fontFamily:"'Inter', sans-serif", letterSpacing:'0.04em',
-                  transition:'opacity 0.15s',
-                  marginTop:'auto',
-                }}
-                onMouseEnter={e => e.currentTarget.style.opacity='0.8'}
-                onMouseLeave={e => e.currentTarget.style.opacity='1'}
+                <button onClick={onApply}
+                  style={{
+                    width: '100%', padding: '12px', cursor: 'pointer',
+                    fontWeight: 700, fontSize: 11, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.1em',
+                    background: p.recommended ? C.accent : 'transparent',
+                    border: p.recommended ? 'none' : `1px solid ${p.accent}55`,
+                    color: p.recommended ? '#000' : p.accent,
+                    transition: 'box-shadow 0.2s, opacity 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = glow(p.accent, 14); e.currentTarget.style.opacity = '0.88' }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.opacity = '1' }}
                 >{p.cta}</button>
-              </div>
-            </Reveal>
+              </ScanCard>
+            </motion.div>
           ))}
         </div>
-
-        {/* Guarantee note */}
-        <Reveal>
-          <div style={{ marginTop:32, textAlign:'center' }}>
-            <p style={{ fontSize:12, color:C.text3, fontFamily:"'Inter', sans-serif", lineHeight:1.7 }}>
-              All plans include a <strong style={{ color:C.text2 }}>7-day full refund</strong> if you haven't opened your first PR yet.
-              No forms, no questions. Email <span style={{ fontFamily:'JetBrains Mono,monospace' }}>support@devforge.in</span>
-            </p>
-          </div>
-        </Reveal>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginTop: 28, textAlign: 'center' }}>
+          <p style={{ fontSize: 11, color: C.text3, fontFamily: 'JetBrains Mono,monospace', lineHeight: 1.7 }}>
+            7-day full refund if you haven't opened your first PR · <span style={{ color: C.text2 }}>support@devforge.in</span>
+          </p>
+        </motion.div>
       </div>
     </section>
   )
@@ -784,40 +659,34 @@ function Pricing({ onApply }) {
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 function Testimonials() {
   const quotes = [
-    { quote: 'I had 3 interviews lined up before the program even ended. The PR workflow alone is worth the fee — it is how real companies work.', name:'Priya Sharma', detail:'Cohort 2 · Now at Razorpay' },
-    { quote: 'Every week I was genuinely scared I wouldn\'t finish — and then I did. That\'s the kind of confidence that shows up in interviews.', name:'Karan Mehta', detail:'Cohort 2 · Now at Zerodha' },
-    { quote: 'The code reviews were brutal in the best way. By Week 6 I was writing code that didn\'t get comments at all — that\'s when I knew I\'d actually levelled up.', name:'Ananya Roy', detail:'Cohort 2 · Now at a Bangalore startup' },
+    { quote: 'I had 3 interviews lined up before the program even ended. The PR workflow alone is worth the fee — it is how real companies work.', name: 'Priya Sharma', detail: 'Cohort 2 · Now at Razorpay' },
+    { quote: "Every week I was genuinely scared I wouldn't finish — and then I did. That's the confidence that shows up in interviews.", name: 'Karan Mehta', detail: 'Cohort 2 · Now at Zerodha' },
+    { quote: "The code reviews were brutal in the best way. By Week 6 I was writing code that didn't get comments at all.", name: 'Ananya Roy', detail: 'Cohort 2 · Now at a Bangalore startup' },
   ]
-
   return (
-    <section id="testimonials" style={{ padding:'80px 48px', borderBottom:`1px solid ${C.border}` }}>
-      <div style={{ maxWidth:1200, margin:'0 auto' }}>
-        <Reveal>
-          <div style={{ fontSize:10, fontWeight:700, color:C.accent, letterSpacing:'0.14em', fontFamily:"'Inter', sans-serif", marginBottom:12 }}>TESTIMONIALS</div>
-          <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:42, fontWeight:700, letterSpacing:'-0.03em', color:C.text, margin:'0 0 56px' }}>
-            From the people who built the products.
+    <section id="testimonials" style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
+          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>cat ./testimonials.log</div>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 52px', textShadow: glow(C.text, 8) }}>
+            From the people who built.
           </h2>
-        </Reveal>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:0 }}>
+        </motion.div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 0 }}>
           {quotes.map((q, i) => (
-            <Reveal key={q.name} delay={i * 80}>
-              <div style={{
-                padding:'32px',
-                borderRight: i < quotes.length-1 ? `1px solid ${C.border}` : 'none',
-              }}>
-                <div style={{ fontFamily:"'Inter', sans-serif", fontSize:48, color:C.border2, lineHeight:1, marginBottom:16 }}>"</div>
-                <p style={{ fontFamily:"'Inter', sans-serif", fontSize:16, color:C.text2, lineHeight:1.7, margin:'0 0 28px' }}>{q.quote}</p>
-                <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                  <div style={{ width:28, height:28, background:C.accent, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:800, fontSize:11, fontFamily:"'Inter', sans-serif" }}>
-                    {q.name[0]}
-                  </div>
+            <motion.div key={q.name} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.1 }}>
+              <ScanCard style={{ padding: '32px', borderRight: i < 2 ? `1px solid ${C.border}` : 'none', height: '100%' }}>
+                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 40, color: C.accent, lineHeight: 1, marginBottom: 16, textShadow: glow() }}>"</div>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.text, lineHeight: 1.8, margin: '0 0 28px', opacity: 0.85 }}>{q.quote}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 30, height: 30, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: 800, fontSize: 12, fontFamily: 'JetBrains Mono,monospace', boxShadow: glow() }}>{q.name[0]}</div>
                   <div>
-                    <div style={{ fontSize:13, fontWeight:600, color:C.text, fontFamily:"'Inter', sans-serif" }}>{q.name}</div>
-                    <div style={{ fontSize:11, color:C.text3, fontFamily:'JetBrains Mono,monospace', marginTop:2 }}>{q.detail}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: C.text, fontFamily: "'Inter', sans-serif" }}>{q.name}</div>
+                    <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace', marginTop: 2 }}>{q.detail}</div>
                   </div>
                 </div>
-              </div>
-            </Reveal>
+              </ScanCard>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -829,38 +698,36 @@ function Testimonials() {
 function FAQ() {
   const [open, setOpen] = useState(null)
   const items = [
-    { q:'Do I need a CS degree?', a:'No. Most students are engineering graduates from non-CS branches or working professionals. What matters is commitment and the ability to spend 3–4 focused hours daily.' },
-    { q:'What level of programming knowledge is required?', a:'You should know basic JavaScript — variables, functions, arrays, loops. If you can write a function that filters an array, you are ready.' },
-    { q:'How is this different from YouTube tutorials?', a:'Tutorials teach you to watch. This program teaches you to build. Every day you open a real pull request that gets reviewed with real feedback. You cannot fake your way through that.' },
-    { q:'Can I do this while working full-time?', a:'Yes. The program is fully async — no live sessions, no fixed schedule. 3–4 focused hours daily is recommended. Most students do early morning or dedicated evening blocks.' },
-    { q:'What happens after the program?', a:'You leave with 3 deployed products, 65+ merged PRs, and access to our placement network. We track every student\'s placement and optimize the curriculum based on what interviewers actually test.' },
+    { q: 'Do I need a CS degree?', a: 'No. Most students are engineering graduates from non-CS branches or working professionals. What matters is commitment and 3–4 focused hours daily.' },
+    { q: 'What programming knowledge is required?', a: 'You should know basic JavaScript — variables, functions, arrays, loops. If you can write a function that filters an array, you are ready.' },
+    { q: 'How is this different from YouTube tutorials?', a: 'Tutorials teach you to watch. This program teaches you to build. Every day you open a real pull request that gets reviewed. You cannot fake your way through that.' },
+    { q: 'Can I do this while working full-time?', a: 'Yes. The program is fully async — no live sessions, no fixed schedule. 3–4 focused hours daily is recommended. Most students do early morning or evening blocks.' },
+    { q: 'What happens after the program?', a: 'You leave with 3 deployed products, 65+ merged PRs, and a structured job application process. Discord access is lifetime.' },
   ]
-
   return (
-    <section style={{ padding:'80px 48px', borderBottom:`1px solid ${C.border}` }}>
-      <div style={{ maxWidth:800, margin:'0 auto' }}>
-        <Reveal>
-          <div style={{ fontSize:10, fontWeight:700, color:C.accent, letterSpacing:'0.14em', fontFamily:"'Inter', sans-serif", marginBottom:12 }}>FAQ</div>
-          <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:42, fontWeight:700, letterSpacing:'-0.03em', color:C.text, margin:'0 0 48px' }}>
-            Common questions.
-          </h2>
-        </Reveal>
+    <section style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 760, margin: '0 auto' }}>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
+          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>./faq --all</div>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 40px', textShadow: glow(C.text, 8) }}>Common questions.</h2>
+        </motion.div>
         {items.map((item, i) => (
-          <div key={item.q} style={{ borderBottom:`1px solid ${C.border}` }}>
-            <button
-              onClick={() => setOpen(open === i ? null : i)}
-              style={{
-                width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
-                padding:'20px 0', background:'none', border:'none', cursor:'pointer',
-                textAlign:'left',
-              }}
+          <div key={item.q} style={{ borderBottom: `1px solid ${C.border}` }}>
+            <button onClick={() => setOpen(open === i ? null : i)}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
             >
-              <span style={{ fontSize:15, fontWeight:600, color: open === i ? C.accent : C.text, fontFamily:"'Inter', sans-serif", transition:'color 0.1s' }}>{item.q}</span>
-              <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:16, color:C.text3, transition:'transform 0.2s', transform: open===i ? 'rotate(45deg)' : 'rotate(0)' }}>+</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: open === i ? C.accent : C.text2, fontFamily: "'Inter', sans-serif", transition: 'color 0.15s', textShadow: open === i ? glow() : 'none' }}>{item.q}</span>
+              <motion.span animate={{ rotate: open === i ? 45 : 0 }} transition={{ duration: 0.2 }}
+                style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 18, color: C.text3, display: 'inline-block', flexShrink: 0, marginLeft: 16 }}
+              >+</motion.span>
             </button>
-            {open === i && (
-              <div style={{ paddingBottom:20, fontSize:14, color:C.text2, lineHeight:1.8, fontFamily:"'Inter', sans-serif" }}>{item.a}</div>
-            )}
+            <AnimatePresence>
+              {open === i && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }} style={{ overflow: 'hidden' }}>
+                  <div style={{ paddingBottom: 18, fontSize: 13, color: C.text2, lineHeight: 1.8, fontFamily: "'Inter', sans-serif" }}>{item.a}</div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ))}
       </div>
@@ -871,26 +738,23 @@ function FAQ() {
 // ─── CTA ──────────────────────────────────────────────────────────────────────
 function CTA({ onApply }) {
   return (
-    <section style={{ padding:'100px 48px', borderBottom:`1px solid ${C.border}` }}>
-      <div style={{ maxWidth:700, margin:'0 auto', textAlign:'center' }}>
-        <Reveal>
-          <div style={{ fontSize:10, fontWeight:700, color:C.accent, letterSpacing:'0.14em', fontFamily:"'Inter', sans-serif", marginBottom:20 }}>COHORT 3 · LIMITED SEATS REMAINING</div>
-          <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:52, fontWeight:700, letterSpacing:'-0.03em', color:C.text, margin:'0 0 20px', lineHeight:1.05 }}>
-            Your GitHub should speak<br/><span style={{ color:C.accent }}>for itself.</span>
+    <section style={{ padding: '100px 48px', borderBottom: `1px solid ${C.border}`, position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 400, background: `radial-gradient(ellipse, ${C.accent}14 0%, transparent 65%)`, pointerEvents: 'none' }} />
+      <div style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
+          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20 }}><span style={{ color: C.accent }}>$ </span>./apply --cohort=3</div>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(32px,5vw,58px)', fontWeight: 700, color: C.text, margin: '0 0 20px', lineHeight: 1.05, textShadow: glow(C.text, 12) }}>
+            Your GitHub should<br /><span style={{ color: C.accent, textShadow: glow() }}>speak for itself.</span>
           </h2>
-          <p style={{ fontSize:15, color:C.text2, lineHeight:1.8, fontFamily:"'Inter', sans-serif", marginBottom:40 }}>
-            Interviews are won before you walk in. 65+ merged PRs, 3 deployed products, and code your interviewers can actually open.
+          <p style={{ fontSize: 14, color: C.text2, lineHeight: 1.8, fontFamily: "'Inter', sans-serif", marginBottom: 40 }}>
+            65+ merged PRs, 3 deployed products, and code your interviewers can actually open.
           </p>
-          <button onClick={onApply} style={{
-            background:C.accent, border:'none', cursor:'pointer',
-            fontSize:15, fontWeight:700, color:'#fff',
-            fontFamily:"'Inter', sans-serif", padding:'16px 40px',
-            letterSpacing:'0.04em', transition:'opacity 0.1s',
-          }}
-          onMouseEnter={e => e.currentTarget.style.opacity='0.85'}
-          onMouseLeave={e => e.currentTarget.style.opacity='1'}
-          >Apply for Cohort 3 →</button>
-        </Reveal>
+          <button onClick={onApply}
+            style={{ background: C.accent, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '16px 52px', letterSpacing: '0.1em', transition: 'box-shadow 0.2s, transform 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.boxShadow = `${glow(C.accent, 28)}, 0 0 60px ${C.accent}33`; e.currentTarget.style.transform = 'scale(1.03)' }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'scale(1)' }}
+          >APPLY FOR COHORT 3 →</button>
+        </motion.div>
       </div>
     </section>
   )
@@ -899,150 +763,117 @@ function CTA({ onApply }) {
 // ─── Footer ───────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer style={{ padding:'40px 48px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-      <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-        <div style={{ width:22, height:22, background:C.accent, display:'flex', alignItems:'center', justifyContent:'center' }}>
-          <span style={{ fontSize:9, fontWeight:800, color:'#fff', fontFamily:'JetBrains Mono,monospace' }}>DF</span>
+    <footer style={{ padding: '36px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ width: 22, height: 22, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: glow() }}>
+          <span style={{ fontSize: 9, fontWeight: 800, color: '#000', fontFamily: 'JetBrains Mono,monospace' }}>DF</span>
         </div>
-        <span style={{ fontFamily:"'Inter', sans-serif", fontWeight:700, fontSize:14, color:C.text3, letterSpacing:'-0.02em' }}>DevForge</span>
+        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, fontSize: 13, color: C.text3 }}>DevForge</span>
       </div>
-      <div style={{ display:'flex', gap:28 }}>
-        {['Privacy','Terms','support@devforge.in'].map(l => (
-          <a key={l} href="#" style={{ fontSize:12, color:C.text3, textDecoration:'none', fontFamily:"'Inter', sans-serif", transition:'color 0.1s' }}
-          onMouseEnter={e => e.currentTarget.style.color = C.text2}
-          onMouseLeave={e => e.currentTarget.style.color = C.text3}
+      <div style={{ display: 'flex', gap: 28 }}>
+        {['Privacy', 'Terms', 'support@devforge.in'].map(l => (
+          <a key={l} href="#" style={{ fontSize: 11, color: C.text3, textDecoration: 'none', fontFamily: 'JetBrains Mono,monospace', transition: 'color 0.15s' }}
+            onMouseEnter={e => e.currentTarget.style.color = C.accent}
+            onMouseLeave={e => e.currentTarget.style.color = C.text3}
           >{l}</a>
         ))}
       </div>
-      <div style={{ fontSize:11, color:C.text3, fontFamily:'JetBrains Mono,monospace' }}>© 2025 DevForge</div>
+      <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>© 2025 DevForge</div>
     </footer>
   )
 }
 
-// ─── Apply modal ──────────────────────────────────────────────────────────────
+// ─── Apply Modal ──────────────────────────────────────────────────────────────
 function ApplyModal({ onClose }) {
-  const [form, setForm] = useState({ name:'', email:'', phone:'', plan:'Cohort — ₹13,999' })
-
+  const [form, setForm] = useState({ name: '', email: '', phone: '', plan: 'Cohort — ₹13,999' })
   const [done, setDone] = useState(false)
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!form.name || !form.email) return
-    setDone(true)
-  }
-
   return (
-    <div style={{
-      position:'fixed', inset:0, background:'rgba(0,0,0,0.7)',
-      display:'flex', alignItems:'center', justifyContent:'center', zIndex:200,
-    }} onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{
-        background:C.surface, border:`1px solid ${C.border2}`,
-        width:480, padding:'36px', position:'relative',
-      }}>
-        <button onClick={onClose} style={{
-          position:'absolute', top:16, right:16, background:'none', border:'none',
-          cursor:'pointer', color:C.text3, fontSize:18, lineHeight:1,
-          fontFamily:'JetBrains Mono,monospace',
-        }}>×</button>
+    <AnimatePresence>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, backdropFilter: 'blur(6px)' }}
+        onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      >
+        <motion.div initial={{ opacity: 0, y: 28, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 28 }} transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          style={{ background: C.surface, border: `1px solid ${C.border2}`, borderTop: `2px solid ${C.accent}`, width: 460, padding: '36px', position: 'relative', boxShadow: glow(C.accent, 24) }}
+        >
+          <button onClick={onClose} style={{ position: 'absolute', top: 14, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: C.text3, fontSize: 20, fontFamily: 'JetBrains Mono,monospace', lineHeight: 1 }}>×</button>
 
-        {done ? (
-          <div style={{ textAlign:'center', padding:'20px 0' }}>
-            <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:13, color:C.green, marginBottom:16, letterSpacing:'0.06em' }}>✓ APPLICATION RECEIVED</div>
-            <div style={{ fontFamily:"'Inter', sans-serif", fontSize:24, fontWeight:700, color:C.text, marginBottom:12, letterSpacing:'-0.02em' }}>You're in the queue.</div>
-            <p style={{ fontSize:14, color:C.text2, fontFamily:"'Inter', sans-serif", lineHeight:1.8, marginBottom:20 }}>
-              We'll email <strong style={{ color:C.text }}>{form.email}</strong> within 24 hours with your admission status and payment link.
-            </p>
-            <div style={{ background:C.surface2, border:`1px solid ${C.border}`, padding:'16px', textAlign:'left' }}>
-              <div style={{ fontSize:11, color:C.text3, fontFamily:'JetBrains Mono,monospace', letterSpacing:'0.08em', marginBottom:10 }}>WHAT HAPPENS NEXT</div>
-              {['We review your application (same day)','You receive admission confirmation + payment link','Pay to lock your seat — cohort starts within 7 days','Get instant access to Week 1 content & Discord'].map((s, i) => (
-                <div key={i} style={{ display:'flex', gap:10, marginBottom:6, fontSize:12, color:C.text2, fontFamily:"'Inter', sans-serif" }}>
-                  <span style={{ color:C.accent, fontFamily:'JetBrains Mono,monospace', flexShrink:0 }}>{i+1}.</span>
-                  <span>{s}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <>
-            <div style={{ fontSize:10, fontWeight:700, color:C.accent, letterSpacing:'0.14em', fontFamily:"'Inter', sans-serif", marginBottom:14 }}>APPLY FOR COHORT 3</div>
-            <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:26, fontWeight:700, color:C.text, margin:'0 0 28px', letterSpacing:'-0.02em' }}>
-              Reserve your seat
-            </h2>
-            <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:16 }}>
-              {[['Full name','name','text'],['Email address','email','email'],['Phone number','phone','tel']].map(([label, key, type]) => (
-                <div key={key}>
-                  <label style={{ fontSize:10, fontWeight:700, color:C.text3, letterSpacing:'0.1em', fontFamily:"'Inter', sans-serif", display:'block', marginBottom:7 }}>{label.toUpperCase()}</label>
-                  <input
-                    type={type}
-                    value={form[key]}
-                    onChange={e => setForm({...form, [key]:e.target.value})}
-                    style={{
-                      width:'100%', padding:'10px 12px',
-                      background:C.surface2, border:`1px solid ${C.border}`,
-                      color:C.text, fontSize:13, fontFamily:"'Inter', sans-serif",
-                      outline:'none', boxSizing:'border-box', transition:'border-color 0.1s',
-                    }}
-                    onFocus={e => e.target.style.borderColor = C.accent}
-                    onBlur={e => e.target.style.borderColor = C.border}
-                  />
-                </div>
-              ))}
-              <div>
-                <label style={{ fontSize:10, fontWeight:700, color:C.text3, letterSpacing:'0.1em', fontFamily:"'Inter', sans-serif", display:'block', marginBottom:7 }}>PLAN</label>
-                <select
-                  value={form.plan}
-                  onChange={e => setForm({...form, plan:e.target.value})}
-                  style={{
-                    width:'100%', padding:'10px 12px',
-                    background:C.surface2, border:`1px solid ${C.border}`,
-                    color:C.text, fontSize:13, fontFamily:"'Inter', sans-serif",
-                    outline:'none', boxSizing:'border-box',
-                  }}
-                >
-                  <option>Cohort — ₹13,999</option>
-                  <option>Solo — ₹7,999</option>
-                  <option>1:1 Placement — ₹24,999</option>
-                </select>
+          {done ? (
+            <div style={{ textAlign: 'center', padding: '16px 0' }}>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em', textShadow: glow(C.green) }}>✓ APPLICATION RECEIVED</div>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 12 }}>You're in the queue.</div>
+              <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 20 }}>We'll email <strong style={{ color: C.accent }}>{form.email}</strong> within 24 hours.</p>
+              <div style={{ background: C.surface2, border: `1px solid ${C.border}`, padding: '14px 16px', textAlign: 'left' }}>
+                <div style={{ fontSize: 9, color: C.text3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.1em', marginBottom: 10 }}>WHAT HAPPENS NEXT</div>
+                {['Application reviewed same day', 'Admission confirmation + payment link sent', 'Pay to lock your seat', 'Instant access to Week 1 & Discord'].map((s, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 6, fontSize: 12, color: C.text2, fontFamily: "'Inter', sans-serif" }}>
+                    <span style={{ color: C.accent, fontFamily: 'JetBrains Mono,monospace' }}>{i + 1}.</span>
+                    <span>{s}</span>
+                  </div>
+                ))}
               </div>
-              <button type="submit" style={{
-                background:C.accent, border:'none', cursor:'pointer',
-                fontSize:13, fontWeight:700, color:'#fff',
-                fontFamily:"'Inter', sans-serif", padding:'13px',
-                letterSpacing:'0.06em', marginTop:8,
-                transition:'opacity 0.1s',
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity='0.88'}
-              onMouseLeave={e => e.currentTarget.style.opacity='1'}
-              >SUBMIT APPLICATION</button>
-            </form>
-          </>
-        )}
-      </div>
-    </div>
+            </div>
+          ) : (
+            <>
+              <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 12, textShadow: glow() }}>APPLY FOR COHORT 3</div>
+              <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 22, fontWeight: 700, color: C.text, margin: '0 0 28px' }}>Reserve your seat</h2>
+              <form onSubmit={e => { e.preventDefault(); if (!form.name || !form.email) return; setDone(true) }}
+                style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+              >
+                {[['Full name', 'name', 'text'], ['Email address', 'email', 'email'], ['Phone number', 'phone', 'tel']].map(([label, key, type]) => (
+                  <div key={key}>
+                    <label style={{ fontSize: 9, fontWeight: 700, color: C.text3, letterSpacing: '0.12em', fontFamily: 'JetBrains Mono,monospace', display: 'block', marginBottom: 7 }}>{label.toUpperCase()}</label>
+                    <input type={type} value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })}
+                      style={{ width: '100%', padding: '10px 12px', background: C.surface2, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+                      onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = glow() }}
+                      onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = 'none' }}
+                    />
+                  </div>
+                ))}
+                <div>
+                  <label style={{ fontSize: 9, fontWeight: 700, color: C.text3, letterSpacing: '0.12em', fontFamily: 'JetBrains Mono,monospace', display: 'block', marginBottom: 7 }}>PLAN</label>
+                  <select value={form.plan} onChange={e => setForm({ ...form, plan: e.target.value })}
+                    style={{ width: '100%', padding: '10px 12px', background: C.surface2, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box' }}
+                  >
+                    <option>Cohort — ₹13,999</option>
+                    <option>Solo — ₹7,999</option>
+                    <option>1:1 Placement — ₹24,999</option>
+                  </select>
+                </div>
+                <button type="submit"
+                  style={{ background: C.accent, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '13px', letterSpacing: '0.1em', marginTop: 6, transition: 'box-shadow 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.boxShadow = glow(C.accent, 16)}
+                  onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+                >SUBMIT APPLICATION</button>
+              </form>
+            </>
+          )}
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   )
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Landing() {
   const [showModal, setShowModal] = useState(false)
-
   return (
-    <div style={{ background:C.bg, minHeight:'100vh', fontFamily:"'Inter', sans-serif" }}>
-      <ScrollProgress/>
-      <Navbar onApply={() => setShowModal(true)}/>
-      <Hero onApply={() => setShowModal(true)}/>
-      <ToolsBar/>
-      <Stats/>
-      <Projects/>
-      <Curriculum/>
-      <HowItWorks/>
-      <Pricing onApply={() => setShowModal(true)}/>
-      <Testimonials/>
-      <FAQ/>
-      <CTA onApply={() => setShowModal(true)}/>
-      <Footer/>
-      {showModal && <ApplyModal onClose={() => setShowModal(false)}/>}
+    <div style={{ background: C.bg, minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
+      <ScrollProgress />
+      <Navbar onApply={() => setShowModal(true)} />
+      <Hero onApply={() => setShowModal(true)} />
+      <ToolsBar />
+      <Stats />
+      <Projects />
+      <Curriculum />
+      <HowItWorks />
+      <Pricing onApply={() => setShowModal(true)} />
+      <Testimonials />
+      <FAQ />
+      <CTA onApply={() => setShowModal(true)} />
+      <Footer />
+      {showModal && <ApplyModal onClose={() => setShowModal(false)} />}
     </div>
   )
 }

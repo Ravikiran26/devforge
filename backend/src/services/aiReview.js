@@ -11,9 +11,10 @@ function getClients() {
 // ─── Project detection ────────────────────────────────────────────────────────
 
 function detectProject(ticketCode = '') {
-  if (ticketCode.startsWith('P2')) return 'classpro'
-  if (ticketCode.startsWith('P3')) return 'deliverdesk'
-  return 'invoicewala'
+  if (ticketCode.startsWith('RF')) return 'restaurantflow'
+  if (ticketCode.startsWith('CA')) return 'clientdeskai'
+  if (ticketCode.startsWith('LB')) return 'leadbill'
+  return 'foundation'
 }
 
 // ─── Fetch PR diff from GitHub ────────────────────────────────────────────────
@@ -54,7 +55,16 @@ Rules:
 Output: return ONLY valid JSON, no markdown, no extra text outside the JSON object.`
 
 const PROJECT_CHECKS = {
-  invoicewala: `- JWT: access token in memory or httpOnly cookie, NOT localStorage
+  foundation: `- .gitignore covers node_modules/, .env, *.log — no secrets committed
+- .env used for all config: PORT, DATABASE_URL, JWT_SECRET — never hardcoded
+- Prisma client exported from a single src/lib/prisma.js — not instantiated per-route
+- Express routes have try/catch with a res.status(500) fallback — no unhandled promise rejections
+- Passwords hashed with bcrypt (cost factor >= 10) — never stored or logged in plain text
+- API response shape is consistent: { success: true, data: {...} } or { error: "message" }
+- No console.log of passwords, tokens, or raw database objects in production code paths
+- npm run dev starts the server with nodemon and npm run db:push applies schema without errors`,
+
+  leadbill: `- JWT: access token in memory or httpOnly cookie, NOT localStorage
 - Passwords hashed with bcrypt (cost factor >= 10) — never stored plain text
 - .env used for all secrets — no hardcoded DB URLs, JWT secrets, or API keys
 - express-validator validation runs BEFORE any database query
@@ -64,27 +74,32 @@ const PROJECT_CHECKS = {
 - All money amounts stored as integers (paise) — no floating point math
 - React calls API through src/lib/api.js axios instance — not raw fetch inside components`,
 
-  classpro: `- Razorpay: HMAC-SHA256 signature verified server-side using razorpay_order_id + "|" + razorpay_payment_id
-- Fee DB record created ONLY after successful payment verification — never before
-- roleGuard middleware used on all role-restricted routes — not just auth middleware
-- Parents can only access their own child's data — enforced server-side, not just hidden in UI
+  restaurantflow: `- Razorpay: HMAC-SHA256 signature verified server-side using razorpay_order_id + "|" + razorpay_payment_id
+- Payment DB record created ONLY after successful signature verification — never before
+- Order totalAmount calculated server-side — client never sends price or total
+- All money amounts in paise (integers) — no floating point math anywhere
 - Razorpay keys (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET) loaded from .env — never hardcoded
-- Passwords hashed with bcrypt — never stored plain
-- JWT payload contains role field used by roleGuard middleware
-- Attendance duplication prevented — same batch+date combination blocked`,
+- Socket.io: JWT verified in socket handshake for staff connections — unauthenticated staff rejected
+- DB write completes BEFORE socket event emitted — durability first
+- Order status transitions enforced server-side — invalid transitions return 400`,
 
-  deliverdesk: `- MongoDB schema has proper validation — required fields, enum values, and field types defined
-- Cloudinary keys (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) from .env — never hardcoded
-- Files stored in Cloudinary — NEVER as base64 strings in MongoDB documents or on local disk
-- File version number auto-incremented — old versions never overwritten
-- Socket.io: JWT verified in socket handshake (auth.token) — unauthenticated connections rejected
-- Activity log written to DB BEFORE socket event emitted — durability first
-- Magic link tokens are cryptographically random (UUID or 32-byte hex) — not sequential IDs
-- Client JWT scope limited to single projectId — cross-project access returns 403`,
+  clientdeskai: `- ANTHROPIC_API_KEY loaded from .env — never hardcoded in any file
+- AI draft generation runs async after ticket creation — customer response is not delayed by Claude API call
+- Claude API failure handled gracefully — ticket is still created, AiDraft body set to null with error field
+- Agent approves AI draft before it is sent — AI replies never go to customers without human review
+- SMTP credentials in .env — email sending failure does not crash the API or return 500
+- GitHub Actions secrets used for CI/CD — no secrets in workflow YAML or committed .env files
+- Tests hit a real test database (TEST_DATABASE_URL) — no mocked DB queries
+- GET /api/health confirms db connection — not just process uptime`,
 }
 
 function buildUserPrompt(ticket, diffText, projectType) {
-  const projectName = { invoicewala: 'InvoiceWala (GST Invoice Manager)', classpro: 'ClassPro (Coaching Center Management)', deliverdesk: 'DeliverDesk (Agency Client Portal)' }[projectType]
+  const projectName = {
+    foundation:    'DevForge Foundation (Weeks 1–4)',
+    leadbill:      'Lead Bill (CRM & GST Billing SaaS)',
+    restaurantflow:'Restaurant Flow (Ordering & Payments)',
+    clientdeskai:  'ClientDesk AI (AI-Powered Support Desk)',
+  }[projectType]
   return `Review this student Pull Request for the ${projectName} project.
 
 ## Ticket: ${ticket.ticketCode} — ${ticket.title}

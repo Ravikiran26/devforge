@@ -1,6 +1,7 @@
 const express = require('express')
 const { body, validationResult } = require('express-validator')
 const prisma = require('../../lib/prisma')
+const { notify } = require('../../services/notificationService')
 
 const router = express.Router()
 
@@ -34,6 +35,23 @@ router.post('/', [
       data: { title, body: msgBody, type, audience: audience ?? 'All', pinned: pinned ?? false, cohortId }
     })
     res.status(201).json(announcement)
+
+    // Non-blocking: broadcast notification to relevant students
+    setImmediate(async () => {
+      try {
+        const where = cohortId ? { cohortId: parseInt(cohortId) } : {}
+        const students = await prisma.student.findMany({ where, select: { id: true } })
+        const shortBody = msgBody.length > 100 ? msgBody.slice(0, 97) + '…' : msgBody
+        await Promise.all(students.map(s => notify(s.id, {
+          type: 'ANNOUNCEMENT',
+          title,
+          body: shortBody,
+          link: '/dashboard',
+        })))
+      } catch (err) {
+        console.error('[notify] announcement broadcast failed:', err.message)
+      }
+    })
   } catch (err) {
     res.status(500).json({ error: 'Server error' })
   }

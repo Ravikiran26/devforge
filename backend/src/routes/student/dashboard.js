@@ -50,6 +50,7 @@ router.get('/', async (req, res) => {
         status: student.status,
         plan: student.plan,
         cohort: student.cohort?.name ?? null,
+        onboardingCompleted: student.onboardingCompleted,
       },
       stats: {
         mergedPRs,

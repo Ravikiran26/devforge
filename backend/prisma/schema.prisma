@@ -87,22 +87,24 @@ model User {
 }
 
 model Student {
-  id          Int           @id @default(autoincrement())
-  userId      Int           @unique
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cohortId    Int?
-  cohort      Cohort?       @relation(fields: [cohortId], references: [id])
-  college     String?
-  location    String?
-  githubUrl   String?
-  bio         String?
-  plan        Plan          @default(LIVE_COHORT)
-  currentWeek Int           @default(1)
-  status      StudentStatus @default(ACTIVE)
+  id                  Int           @id @default(autoincrement())
+  userId              Int           @unique
+  user                User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cohortId            Int?
+  cohort              Cohort?       @relation(fields: [cohortId], references: [id])
+  college             String?
+  location            String?
+  githubUrl           String?
+  bio                 String?
+  plan                Plan          @default(LIVE_COHORT)
+  currentWeek         Int           @default(1)
+  status              StudentStatus @default(ACTIVE)
+  onboardingCompleted Boolean       @default(false)
 
   prSubmissions  PRSubmission[]
   lessonProgress LessonProgress[]
   payments       Payment[]
+  notifications  Notification[]
 }
 
 model Cohort {
@@ -129,6 +131,7 @@ model Ticket {
   priority    Priority     @default(MEDIUM)
   status      TicketStatus @default(UPCOMING)
   storyPoints Int          @default(3)
+  dueDate     DateTime?
   cohortId    Int?
   cohort      Cohort?      @relation(fields: [cohortId], references: [id])
   createdAt   DateTime     @default(now())
@@ -152,6 +155,7 @@ model PRSubmission {
   aiReview     String?
   aiReviewedAt DateTime?
   verdict      String?
+  reviewError  String?
 
   @@unique([studentId, ticketId])
 }
@@ -206,6 +210,18 @@ model Payment {
   method    String
   status    PaymentStatus @default(PENDING)
   createdAt DateTime      @default(now())
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
 }
 
 model RefreshToken {

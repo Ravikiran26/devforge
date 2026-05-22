@@ -77,19 +77,20 @@ function SectionLabel({ label, collapsed }) {
 
 function WeekProgress({ collapsed, student }) {
   if (collapsed) return null
+  const TOTAL_WEEKS = 10
   const week = student?.currentWeek ?? 1
-  const pct  = Math.round((week / 8) * 100)
+  const pct  = Math.round((week / TOTAL_WEEKS) * 100)
   return (
     <div style={{ margin:'0 12px 12px', padding:'12px 13px', border:`1px solid ${C.border}` }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:8 }}>
         <span style={{ fontSize:9, fontWeight:700, color:C.text3, letterSpacing:'0.12em', fontFamily:"'Inter', sans-serif" }}>COHORT PROGRESS</span>
         <span style={{ fontSize:10, fontWeight:700, color:C.accent, fontFamily:'JetBrains Mono,monospace' }}>{pct}%</span>
       </div>
-      <div style={{ fontSize:12, color:C.text2, marginBottom:8, fontWeight:500 }}>Week {week} of 8</div>
+      <div style={{ fontSize:12, color:C.text2, marginBottom:8, fontWeight:500 }}>Week {week} of {TOTAL_WEEKS}</div>
       <div style={{ height:2, background:C.border, borderRadius:1 }}>
         <div style={{ width:`${pct}%`, height:'100%', background:C.accent, borderRadius:1, transition:'width 0.5s ease' }}/>
       </div>
-      <div style={{ fontSize:10, color:C.text3, marginTop:6, fontFamily:"'Inter', sans-serif" }}>{8 - week} weeks remaining</div>
+      <div style={{ fontSize:10, color:C.text3, marginTop:6, fontFamily:"'Inter', sans-serif" }}>{TOTAL_WEEKS - week} weeks remaining</div>
     </div>
   )
 }
