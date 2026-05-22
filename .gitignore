@@ -34,7 +34,3 @@ dist-ssr
 # Generated PDFs and HTML
 DevForge_*.pdf
 DevForge_*.html
-
-# Generated PDFs and HTML
-DevForge_*.pdf
-DevForge_*.html
