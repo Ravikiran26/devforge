@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import api from '../lib/api'
 
 const RESOURCES = [
-  { label: 'Discord Server',   desc: 'Ask doubts, share PRs, find study buddies', icon: '💬', url: 'https://discord.gg/devforge' },
+  { label: 'Discord Server',   desc: 'Ask doubts, share PRs, find study buddies', icon: '💬', url: 'https://discord.gg/XxFSFdHTU' },
   { label: 'Cohort 3 Notion',  desc: 'Sprint docs, session recordings, resources', icon: '📋', url: '#' },
   { label: 'GitHub Org',       desc: 'All starter repos and submission guidelines', icon: '🐙', url: '#' },
   { label: 'Office Hours',     desc: 'Book 1:1 with mentor — 30 min slots',        icon: '📅', url: '#' },
@@ -61,7 +61,7 @@ export default function Community() {
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>Ask doubts · share PRs · get unblocked fast</div>
           </div>
         </div>
-        <a href="https://discord.gg/devforge" target="_blank" rel="noreferrer" style={{
+        <a href="https://discord.gg/XxFSFdHTU" target="_blank" rel="noreferrer" style={{
           display: 'flex', alignItems: 'center', gap: 7,
           background: '#fff', color: '#5865f2', fontWeight: 700, fontSize: 13,
           padding: '10px 20px', borderRadius: 11, textDecoration: 'none', flexShrink: 0,
