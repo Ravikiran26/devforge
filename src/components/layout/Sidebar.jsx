@@ -77,9 +77,9 @@ function SectionLabel({ label, collapsed }) {
 
 function WeekProgress({ collapsed, student }) {
   if (collapsed) return null
-  const TOTAL_WEEKS = 10
+  const TOTAL_WEEKS = 12
   const week = student?.currentWeek ?? 1
-  const pct  = Math.round((week / TOTAL_WEEKS) * 100)
+  const pct  = Math.round(((week - 1) / TOTAL_WEEKS) * 100)
   return (
     <div style={{ margin:'0 12px 12px', padding:'12px 13px', border:`1px solid ${C.border}` }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:8 }}>

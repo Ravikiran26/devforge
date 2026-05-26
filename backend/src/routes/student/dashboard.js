@@ -26,11 +26,11 @@ router.get('/', async (req, res) => {
     const activeSubmissions = await prisma.pRSubmission.findMany({
       where: {
         studentId: student.id,
-        status: { in: ['PENDING', 'IN_REVIEW'] }
+        status: { in: ['IN_REVIEW', 'NEEDS_CHANGES'] }
       },
       include: { ticket: true },
       take: 3,
-      orderBy: { createdAt: 'desc' }
+      orderBy: { submittedAt: 'desc' }
     })
     const activeTickets = activeSubmissions.map(s => ({
       ...s.ticket,
