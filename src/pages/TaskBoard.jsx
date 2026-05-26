@@ -252,37 +252,117 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
 
       {/* Submission section */}
       {sel.mySubmission ? (
-        <div>
-          <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 12, padding: '14px 16px', marginBottom: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
-              <CheckCircle2 size={14} color="#10b981" />
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#059669' }}>PR Submitted</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+          {/* PR link */}
+          <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 10, padding: '12px 14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
+              <CheckCircle2 size={13} color="#10b981" />
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#059669' }}>PR SUBMITTED</span>
             </div>
-            <a
-              href={sel.mySubmission.prUrl}
-              target="_blank"
-              rel="noreferrer"
-              style={{ fontSize: 12, color: '#4f46e5', wordBreak: 'break-all', display: 'flex', alignItems: 'center', gap: 5, textDecoration: 'none' }}
-            >
-              <ExternalLink size={11} /> {sel.mySubmission.prUrl}
+            <a href={sel.mySubmission.prUrl} target="_blank" rel="noreferrer"
+              style={{ fontSize: 11, color: '#4f46e5', wordBreak: 'break-all', display: 'flex', alignItems: 'center', gap: 5, textDecoration: 'none' }}>
+              <ExternalLink size={10}/> {sel.mySubmission.prUrl}
             </a>
           </div>
-          {sel.mySubmission.score && (
-            <div style={{ background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: 12, padding: '14px 16px' }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#7c3aed', marginBottom: 6 }}>AI Review Result</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: sel.mySubmission.score >= 90 ? '#059669' : '#4f46e5', marginBottom: 4 }}>
-                {sel.mySubmission.score}/100
+
+          {/* AI Review */}
+          {(() => {
+            const sub = sel.mySubmission
+            const review = sub.aiReview ? (() => { try { return JSON.parse(sub.aiReview) } catch { return null } })() : null
+
+            const VERDICT = {
+              MERGE_READY:   { label: '✅ Merge Ready',    bg: '#ecfdf5', border: '#a7f3d0', color: '#059669' },
+              NEEDS_CHANGES: { label: '🔄 Needs Changes',  bg: '#fff7ed', border: '#fed7aa', color: '#c2410c' },
+              MAJOR_REWORK:  { label: '❌ Major Rework',   bg: '#fef2f2', border: '#fecaca', color: '#dc2626' },
+            }
+
+            if (sub.aiReview === null && !sub.verdict) {
+              return (
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '16px', textAlign: 'center' }}>
+                  <div style={{ display: 'inline-block', width: 20, height: 20, border: '2px solid #e2e8f0', borderTop: '2px solid #4f46e5', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 8 }}/>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 4 }}>AI is reviewing your code…</div>
+                  <div style={{ fontSize: 11, color: '#94a3b8' }}>Usually takes 30–60 seconds. Refresh to check.</div>
+                </div>
+              )
+            }
+
+            if (!review) return null
+
+            const v = VERDICT[review.verdict] || VERDICT.NEEDS_CHANGES
+
+            return (
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: 10, overflow: 'hidden' }}>
+
+                {/* Verdict header */}
+                <div style={{ background: v.bg, border: `1px solid ${v.border}`, borderRadius: '10px 10px 0 0', padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: v.color }}>{v.label}</span>
+                  {sub.score && <span style={{ fontSize: 18, fontWeight: 800, color: sub.score >= 90 ? '#059669' : '#4f46e5' }}>{sub.score}/100</span>}
+                </div>
+
+                {/* Summary */}
+                <div style={{ padding: '12px 14px', borderBottom: '1px solid #f1f5f9', fontSize: 13, color: '#374151', lineHeight: 1.6 }}>
+                  {review.summary}
+                </div>
+
+                {/* Done well */}
+                {review.done_well?.length > 0 && (
+                  <div style={{ padding: '10px 14px', borderBottom: '1px solid #f1f5f9' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#059669', letterSpacing: '0.07em', marginBottom: 6 }}>WHAT YOU DID WELL</div>
+                    {review.done_well.map((d, i) => (
+                      <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 5, fontSize: 12, color: '#374151', lineHeight: 1.5 }}>
+                        <span style={{ color: '#10b981', flexShrink: 0 }}>✓</span> {d}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Improve */}
+                {review.improve?.length > 0 && (
+                  <div style={{ padding: '10px 14px', borderBottom: review.security_issues?.length ? '1px solid #f1f5f9' : 'none' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#c2410c', letterSpacing: '0.07em', marginBottom: 6 }}>IMPROVE</div>
+                    {review.improve.map((d, i) => (
+                      <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 5, fontSize: 12, color: '#374151', lineHeight: 1.5 }}>
+                        <span style={{ color: '#f59e0b', flexShrink: 0 }}>→</span> {d}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Security issues */}
+                {review.security_issues?.length > 0 && (
+                  <div style={{ padding: '10px 14px', background: '#fef2f2' }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#dc2626', letterSpacing: '0.07em', marginBottom: 6 }}>⚠️ SECURITY ISSUES</div>
+                    {review.security_issues.map((s, i) => (
+                      <div key={i} style={{ fontSize: 12, color: '#dc2626', marginBottom: 4, lineHeight: 1.5 }}>{s}</div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Criteria checklist */}
+                {review.criteria_results?.length > 0 && (
+                  <details style={{ borderTop: '1px solid #f1f5f9' }}>
+                    <summary style={{ padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#94a3b8', cursor: 'pointer', letterSpacing: '0.07em' }}>
+                      CHECKLIST ({review.criteria_results.filter(c => c.pass).length}/{review.criteria_results.length} passed)
+                    </summary>
+                    <div style={{ padding: '0 14px 10px' }}>
+                      {review.criteria_results.map((c, i) => (
+                        <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, fontSize: 11, color: c.pass ? '#374151' : '#dc2626', lineHeight: 1.5 }}>
+                          <span style={{ flexShrink: 0 }}>{c.pass ? '✅' : '❌'}</span>
+                          <span><strong>{c.criterion}</strong>{c.note ? ` — ${c.note}` : ''}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                )}
               </div>
-              {sel.mySubmission.feedback && (
-                <div style={{ fontSize: 12, color: '#64748b', lineHeight: 1.6 }}>{sel.mySubmission.feedback}</div>
-              )}
-            </div>
-          )}
+            )
+          })()}
         </div>
       ) : (
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>
-            Submit Pull Request
+            Submit Your Work
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '3px 3px 3px 12px' }}>
             <GitPullRequest size={13} color="#94a3b8" style={{ flexShrink: 0 }} />
@@ -291,13 +371,8 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
               onChange={e => setPrUrl(e.target.value)}
               placeholder="https://github.com/you/repo/pull/…"
               style={{
-                flex: 1,
-                padding: '8px 0',
-                border: 'none',
-                fontSize: 12,
-                outline: 'none',
-                background: 'transparent',
-                color: '#374151',
+                flex: 1, padding: '8px 0', border: 'none', fontSize: 12,
+                outline: 'none', background: 'transparent', color: '#374151',
                 fontFamily: "'Inter', sans-serif",
               }}
             />
@@ -306,19 +381,12 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
             disabled={!prUrl || submitMutation.isPending}
             onClick={() => submitMutation.mutate({ id: sel.id, prUrl })}
             style={{
-              width: '100%',
-              padding: '10px',
+              width: '100%', padding: '10px',
               background: prUrl ? '#4f46e5' : '#f1f5f9',
               color: prUrl ? '#fff' : '#94a3b8',
-              fontWeight: 700,
-              fontSize: 13,
-              borderRadius: 10,
-              border: 'none',
+              fontWeight: 700, fontSize: 13, borderRadius: 10, border: 'none',
               cursor: prUrl ? 'pointer' : 'not-allowed',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 7,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
               transition: 'background 0.15s, box-shadow 0.15s',
               boxShadow: prUrl ? '0 2px 8px rgba(79,70,229,0.3)' : 'none',
               fontFamily: "'Inter', sans-serif",
@@ -330,7 +398,7 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
             {submitMutation.isPending ? 'Submitting…' : 'Submit for Review'}
           </button>
           <div style={{ fontSize: 11, color: '#94a3b8', textAlign: 'center', marginTop: 8 }}>
-            AI review usually completes in 30–60 seconds
+            AI review runs automatically — results in 30–60 seconds
           </div>
         </div>
       )}

@@ -264,10 +264,11 @@ export default function Sidebar() {
             </a>
           </div>
         )}
-      </nav>
 
-      <ThemeDots collapsed={collapsed} C={C}/>
+        <ThemeDots collapsed={collapsed} C={C}/>
+      </nav>
       <UserProfile collapsed={collapsed} C={C}/>
+
     </aside>
   )
 }
