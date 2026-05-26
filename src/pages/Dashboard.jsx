@@ -31,7 +31,7 @@ const WEEK_FOCUS = [
 
 function formatPlan(plan) {
   if (!plan) return 'DevForge'
-  if (plan === 'LIVE_COHORT') return 'Live Cohort'
+  if (plan === 'LIVE_COHORT') return 'Live Batch'
   if (plan === 'SELF_PACED')  return 'Self-Paced'
   if (plan === 'MENTORED')    return 'Mentored'
   return plan.replace(/_/g, ' ')
@@ -165,7 +165,7 @@ function HeroBanner({ student, weekPct, firstName }) {
       <div style={{ position:'relative', zIndex:1, flex:1 }}>
         <div style={{ display:'inline-flex', alignItems:'center', gap:8, border:`1px solid ${C.border2}`, padding:'4px 14px', marginBottom:16, fontFamily:'JetBrains Mono, monospace', fontSize:10, fontWeight:700, color:C.text3, letterSpacing:'0.1em' }}>
           <span style={{ width:6, height:6, background:C.green, borderRadius:'50%', boxShadow:`0 0 6px ${C.green}` }}/>
-          {student.cohort || 'Cohort 3'} · {formatPlan(student.plan)}
+          {student.cohort ? student.cohort.replace(/cohort/i, 'Batch') : 'Batch 3'} · {formatPlan(student.plan)}
         </div>
 
         <div style={{ fontSize:11, color:C.text3, marginBottom:6, letterSpacing:'0.04em', fontFamily:"'Inter', sans-serif" }}>
@@ -432,7 +432,7 @@ export default function Dashboard() {
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, background:C.border, border:`1px solid ${C.border}`, marginBottom:20 }}>
         <StatCard icon={TrendingUp} label="CURRENT WEEK" rawValue={student.currentWeek} suffix={`/${TOTAL_WEEKS}`} accent={C.accent}  sub="weeks into the program"/>
         <StatCard icon={BookOpen}   label="LESSONS DONE" rawValue={stats.lessonsWatched}                           accent={C.cyan}    sub="lessons completed"      emptyMsg="Start Week 1 to unlock →"/>
-        <StatCard icon={GitMerge}   label="PRS MERGED"   rawValue={stats.mergedPRs}                                accent={C.green}   sub="pull requests merged"   emptyMsg="Submit your first PR →"/>
+        <StatCard icon={GitMerge}   label="SUBMITTED"    rawValue={stats.mergedPRs}                                accent={C.green}   sub="assignments submitted"  emptyMsg="Submit your first assignment →"/>
         <StatCard icon={Star}       label="AVG GRADE"    rawValue={typeof stats.avgGrade === 'number' && stats.avgGrade > 0 ? stats.avgGrade : 0} accent={C.yellow} sub="out of 100 points" emptyMsg="Grade appears after first PR"/>
       </div>
 

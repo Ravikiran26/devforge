@@ -136,7 +136,7 @@ function TicketCard({ ticket: t, col, isSelected, onClick }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#94a3b8' }}>
           <Clock size={10} />
-          Week {t.week} · {t.storyPoints}pts
+          Week {t.week} · {t.storyPoints} XP
         </div>
         {t.mySubmission?.score && (
           <span style={{ fontSize: 11, fontWeight: 800, color: '#10b981', background: '#ecfdf5', padding: '2px 7px', borderRadius: 999 }}>
@@ -222,7 +222,7 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
           ['Priority', <span style={{ fontSize: 12, fontWeight: 700, color: ps.color }}>{sel.priority}</span>],
           ['Status',   <span style={{ fontSize: 12, color: '#374151' }}>{sel.status.replace('_', ' ')}</span>],
           ['Week',     <span style={{ fontSize: 12, color: '#374151' }}>Week {sel.week}</span>],
-          ['Points',   <span style={{ fontSize: 12, color: '#374151' }}>{sel.storyPoints} pts</span>],
+          ['XP',       <span style={{ fontSize: 12, color: '#374151' }}>{sel.storyPoints} XP</span>],
         ].map(([k, v]) => (
           <div key={k} style={{ background: '#f8fafc', borderRadius: 10, padding: '10px 12px' }}>
             <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>{k}</div>
@@ -368,7 +368,7 @@ export default function TaskBoard() {
 
   if (isLoading) return <DashboardLayout title="Task Board"><Spinner /></DashboardLayout>
   if (isError) return (
-    <DashboardLayout title="Task Board">
+    <DashboardLayout title="Assignments">
       <div style={{ background: '#fff', border: '1px solid #fecaca', borderRadius: 14, padding: '20px 24px', color: '#dc2626', display: 'flex', alignItems: 'center', gap: 10 }}>
         <AlertCircle size={16} /> Failed to load tickets.
       </div>
@@ -378,7 +378,7 @@ export default function TaskBoard() {
   const sel = selected ? tickets.find(t => t.id === selected) : null
 
   return (
-    <DashboardLayout title="Task Board">
+    <DashboardLayout title="Assignments">
 
       {/* Filter bar */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, alignItems: 'center' }}>

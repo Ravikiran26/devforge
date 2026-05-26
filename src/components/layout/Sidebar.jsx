@@ -11,10 +11,10 @@ import {
 } from 'lucide-react'
 
 const NAV_MAIN = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/tasks',     icon: CheckSquare,     label: 'Task Board' },
-  { to: '/lessons',   icon: BookOpen,        label: 'Lessons'    },
-  { to: '/progress',  icon: TrendingUp,      label: 'Progress'   },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard'   },
+  { to: '/lessons',   icon: BookOpen,        label: 'Lessons'     },
+  { to: '/tasks',     icon: CheckSquare,     label: 'Assignments' },
+  { to: '/progress',  icon: TrendingUp,      label: 'Progress'    },
 ]
 const NAV_OTHER = [
   { to: '/community', icon: Users,      label: 'Community' },
