@@ -266,7 +266,6 @@ export default function Sidebar() {
         )}
       </nav>
 
-      <WeekProgress collapsed={collapsed} student={user?.student} C={C}/>
       <ThemeDots collapsed={collapsed} C={C}/>
       <UserProfile collapsed={collapsed} C={C}/>
     </aside>
