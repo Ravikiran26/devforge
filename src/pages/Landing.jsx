@@ -156,7 +156,7 @@ function DashboardMockup({ embedded = false }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {/* Welcome */}
           <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.accent}`, padding: '12px 14px' }}>
-            <div style={{ fontSize: 9, color: C.text3, marginBottom: 4 }}>{'>'} ./devforge --week=5 --project=lead-bill</div>
+            <div style={{ fontSize: 9, color: C.text3, marginBottom: 4 }}>{'>'} ./devforge --week=5 --project=billing-saas</div>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 8, textShadow: glow(C.text, 8) }}>Welcome back, Ravikiran</div>
             <div style={{ height: 2, background: C.border, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: '50%', background: C.accent, boxShadow: glow() }} />
@@ -229,7 +229,7 @@ function DashboardMockup({ embedded = false }) {
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 function Hero({ onApply }) {
   const line1 = useTypewriter('Build 3 real products', 45)
-  const line2 = useTypewriter('in 10 weeks.', 55)
+  const line2 = useTypewriter('in 12 weeks.', 55)
 
   return (
     <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 96, background: C.bg, position: 'relative', overflow: 'hidden' }}>
@@ -290,9 +290,9 @@ function Hero({ onApply }) {
           </h1>
           <h1 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(32px, 4.8vw, 64px)', fontWeight: 700, color: C.accent, lineHeight: 1.1, margin: 0, letterSpacing: '-0.02em', textShadow: glow() }}>
             {line1.length >= 'Build 3 real products'.length && (
-              <>{line2}{line2.length < 'in 10 weeks.'.length && <Cursor />}</>
+              <>{line2}{line2.length < 'in 12 weeks.'.length && <Cursor />}</>
             )}
-            {line2.length >= 'in 10 weeks.'.length && <Cursor />}
+            {line2.length >= 'in 12 weeks.'.length && <Cursor />}
           </h1>
         </div>
 
@@ -323,7 +323,7 @@ function Hero({ onApply }) {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 2.9 }}
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32 }}
         >
-          {['No CS degree', '10-week program', 'GitHub workflow'].map(b => (
+          {['No CS degree', '12-week program', 'GitHub workflow'].map(b => (
             <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
               <span style={{ color: C.green, fontSize: 11, fontFamily: 'JetBrains Mono,monospace', textShadow: glow(C.green, 6) }}>✓</span>
               <span style={{ fontSize: 12, color: C.text3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.04em' }}>{b}</span>
@@ -358,7 +358,7 @@ function Hero({ onApply }) {
               {[C.red, C.accent, C.green].map((c, i) => <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c, opacity: 0.75 }} />)}
             </div>
             <span style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>devforge — student-portal</span>
-            <span style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>week 5 / 10</span>
+            <span style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>week 5 / 12</span>
           </div>
           <div style={{ height: 480 }}>
             <DashboardMockup embedded />
@@ -397,7 +397,7 @@ function Stats() {
   const stats = [
     { value: '65+', label: 'pull requests merged',  sub: 'per student · every one reviewed' },
     { value: '3',   label: 'products shipped',      sub: 'deployed to production'            },
-    { value: '10',  label: 'weeks',                 sub: 'from zero to job-ready portfolio'  },
+    { value: '12',  label: 'weeks',                 sub: 'from zero to job-ready portfolio'  },
     { value: '3',   label: 'cohorts completed',     sub: 'with placement support'            },
   ]
   return (
@@ -429,9 +429,9 @@ function Stats() {
 // ─── Projects ─────────────────────────────────────────────────────────────────
 function Projects() {
   const projects = [
-    { num:'01', name:'Full-Stack SaaS App',   weeks:'Weeks 4–6', tag:'BACKEND & DATABASE',  desc:'Build a production backend from scratch — REST APIs, database design, file uploads, and a real admin dashboard backed by PostgreSQL.', tags:['Node.js','Express','PostgreSQL','Prisma','Cloudinary'], color:C.accent },
-    { num:'02', name:'Multi-Role Platform',   weeks:'Weeks 7–8', tag:'PAYMENTS & REAL-TIME', desc:'Implement live payment flows with Razorpay and real-time order tracking via Socket.io. Two features every product company ships.', tags:['React','Razorpay','Socket.io','JWT','Dashboards'],        color:C.green  },
-    { num:'03', name:'Production Deployment', weeks:'Week 9',    tag:'AI & DEVOPS',           desc:'Ship with CI/CD, integrate the Claude API for an AI-powered feature, and configure production environments the right way.', tags:['Vercel','Railway','Claude API','GitHub Actions'],              color:C.text2  },
+    { num:'01', name:'Ordering & Payments App',  weeks:'Weeks 5–6',  tag:'BACKEND & PAYMENTS',  desc:'Build a full-stack ordering system with server-side payment verification, real-time order tracking, and a live kitchen dashboard.', tags:['Node.js','Express','PostgreSQL','Prisma','Razorpay','Socket.io'], color:C.accent },
+    { num:'02', name:'SaaS Billing Platform',    weeks:'Weeks 7–9',  tag:'FULL-STACK SAAS',      desc:'Build a multi-tenant billing SaaS — invoices, tax calculation, PDF generation, payment tracking, and a full React dashboard with live data.', tags:['React','pdf-lib','GST Logic','TanStack Query','Cloudinary'],      color:C.green  },
+    { num:'03', name:'AI-Powered Web App',        weeks:'Weeks 10–11',tag:'AI & CI/CD',            desc:'Integrate an AI API for intelligent automation, set up GitHub Actions for CI/CD, and deploy a production-grade app with health monitoring.', tags:['Claude API','GitHub Actions','Nodemailer','Vercel','Railway'],    color:C.text2  },
   ]
   return (
     <section id="projects" style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
@@ -471,16 +471,18 @@ function Projects() {
 // ─── Curriculum ───────────────────────────────────────────────────────────────
 function Curriculum() {
   const weeks = [
-    { w:1,  title:'Git, JavaScript, APIs & Developer Workflow',     tag:'foundations' },
-    { w:2,  title:'Node.js, Express, PostgreSQL & Prisma',          tag:'backend'     },
-    { w:3,  title:'React — State, Forms & TanStack Query',          tag:'frontend'    },
-    { w:4,  title:'Authentication — JWT, Refresh Tokens & RBAC',    tag:'auth'        },
-    { w:5,  title:'Project 1 — SaaS App Core Features',             tag:'project_1'   },
-    { w:6,  title:'Project 1 — Cloudinary, File Uploads & Deploy',  tag:'project_1'   },
-    { w:7,  title:'Project 2 — Payments with Razorpay',             tag:'project_2'   },
-    { w:8,  title:'Project 2 — Real-time with Socket.io & Deploy',  tag:'project_2'   },
-    { w:9,  title:'Project 3 — AI Integration, CI/CD & Production', tag:'project_3'   },
-    { w:10, title:'Career Week — Resume, LinkedIn & Job Strategy',   tag:'career'      },
+    { w:1,  title:'Git, JavaScript, APIs & Developer Workflow',          tag:'foundations' },
+    { w:2,  title:'Node.js, Express, PostgreSQL & Prisma',               tag:'backend'     },
+    { w:3,  title:'React — State, Forms & TanStack Query',               tag:'frontend'    },
+    { w:4,  title:'Authentication — JWT, Refresh Tokens & RBAC',         tag:'auth'        },
+    { w:5,  title:'Project 1 — Payments, APIs & Backend Logic',          tag:'project_1'   },
+    { w:6,  title:'Project 1 — Real-Time Features & Full Deploy',        tag:'project_1'   },
+    { w:7,  title:'Project 2 — SaaS Backend & Business Logic',           tag:'project_2'   },
+    { w:8,  title:'Project 2 — PDF Generation, React & Payments',        tag:'project_2'   },
+    { w:9,  title:'Project 2 — Dashboard, Forms & Deploy',               tag:'project_2'   },
+    { w:10, title:'Project 3 — AI API Integration & Email Notifications', tag:'project_3'   },
+    { w:11, title:'Project 3 — CI/CD Pipeline, React & Production',      tag:'project_3'   },
+    { w:12, title:'Career Week — Resume, LinkedIn & Job Strategy',        tag:'career'      },
   ]
   const tagCol = { foundations:C.text3, backend:C.accent, frontend:'#22D3EE', auth:C.text2, project_1:C.green, project_2:'#FBBF24', project_3:C.red, career:C.text2 }
 
@@ -490,7 +492,7 @@ function Curriculum() {
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ position: 'sticky', top: 80 }}>
           <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>cat ./curriculum.md</div>
           <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 32, fontWeight: 700, color: C.text, margin: '0 0 16px', lineHeight: 1.15, textShadow: glow(C.text, 8) }}>
-            10 weeks.<br /><span style={{ color: C.text3 }}>Real skills.</span>
+            12 weeks.<br /><span style={{ color: C.text3 }}>Real skills.</span>
           </h2>
           <p style={{ fontSize: 13, color: C.text2, lineHeight: 1.75, fontFamily: "'Inter', sans-serif" }}>
             Each week builds directly on the last. By Week 10 you understand the full stack — from terminal to production.
@@ -550,40 +552,29 @@ function HowItWorks() {
 function Pricing({ onApply }) {
   const plans = [
     {
-      id: 'solo', name: 'Solo', price: '₹7,999', badge: null, tagline: 'Build real projects. Ship real code.',
-      desc: 'Full 10-week curriculum, code review on every PR, and community access.',
+      id: 'basic', name: 'Basic', price: '₹9,999', badge: null, tagline: 'Build real projects. Ship real code.',
+      desc: 'Full 12-week curriculum, AI code review on every PR, mentor grading, and community access.',
       features: [
-        { title: 'Full 10-week project curriculum', sub: 'All lessons, project briefs, and code examples on day 1.' },
-        { title: 'Code review on every pull request', sub: 'Every PR reviewed for logic, naming, security, and architecture.' },
+        { title: 'Full 12-week project curriculum', sub: 'All lessons, project briefs, and code examples on day 1.' },
+        { title: 'AI code review on every pull request', sub: 'Every PR reviewed for logic, naming, security, and architecture.' },
+        { title: 'Mentor grading within 24 hours', sub: 'Human feedback on every submission — not just automated checks.' },
+        { title: 'Completion certificate', sub: 'Issued after 12 weeks and 65+ merged PRs. LinkedIn-ready.' },
         { title: 'Community Discord access', sub: 'Ask questions, share progress, get unblocked by peers.' },
-        { title: 'Completion certificate', sub: 'Issued after 10 weeks and 20+ merged PRs. LinkedIn-ready.' },
         { title: 'Lifetime content access', sub: 'Curriculum updates go to your account forever.' },
       ],
-      cta: 'START SOLO', accent: C.text3, recommended: false,
+      cta: 'ENROLL — BASIC', accent: C.text3, recommended: false,
     },
     {
-      id: 'cohort', name: 'Cohort', price: '₹13,999', badge: 'MOST POPULAR', tagline: 'Build + get placement-ready.',
-      desc: 'Everything in Solo plus resume guidance, job strategy, and one mock interview.',
+      id: 'pro', name: 'Pro', price: '₹14,999', badge: 'MOST POPULAR', tagline: 'Build + get placement-ready.',
+      desc: 'Everything in Basic plus resume preparation, LinkedIn setup, and a 1:1 mock interview.',
       features: [
-        { title: 'Everything in Solo', sub: 'Full curriculum, code reviews, Discord, certificate, lifetime access.' },
-        { title: 'Resume writing guide & template', sub: 'Write a developer resume that gets past the first filter.' },
+        { title: 'Everything in Basic', sub: 'Full curriculum, AI reviews, mentor grading, certificate, lifetime access.' },
+        { title: 'Resume writing & review', sub: 'Write a developer resume that gets past the first filter. We review it.' },
+        { title: 'LinkedIn profile preparation', sub: 'Headline, about section, and projects set up for recruiters.' },
         { title: 'Job application strategy', sub: 'Which companies, what order, when and how to follow up.' },
-        { title: 'Interview preparation resources', sub: 'DSA, project walkthroughs, and behavioral question prep.' },
-        { title: '1 mock interview session', sub: '45-min interview with a hired developer. Written feedback.' },
+        { title: '1 mock interview session (1:1)', sub: '45-min interview with a working developer. Written feedback included.' },
       ],
-      cta: 'JOIN COHORT 3', accent: C.accent, recommended: true,
-    },
-    {
-      id: 'mentored', name: '1:1 Placement', price: '₹24,999', badge: 'MAX SUPPORT', tagline: 'Full placement support.',
-      desc: 'Everything in Cohort plus resume rewrite, LinkedIn overhaul, and 3 mock interviews.',
-      features: [
-        { title: 'Everything in Cohort', sub: 'Full curriculum, reviews, resume guide, application strategy, 1 mock.' },
-        { title: 'Personal resume rewrite', sub: 'We write your resume. ATS-optimised, one revision included.' },
-        { title: 'LinkedIn profile overhaul', sub: 'Headline, about section, and projects rewritten for recruiters.' },
-        { title: '3 mock interview sessions', sub: '3 sessions with hired developers, written feedback each time.' },
-        { title: 'Application tracking & guidance', sub: 'Weekly async check-in — we guide your next steps.' },
-      ],
-      cta: 'APPLY FOR 1:1', accent: C.text2, recommended: false,
+      cta: 'ENROLL — PRO', accent: C.accent, recommended: true,
     },
   ]
 
@@ -600,12 +591,12 @@ function Pricing({ onApply }) {
           </div>
         </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 0 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 0, maxWidth: 800, margin: '0 auto' }}>
           {plans.map((p, i) => (
             <motion.div key={p.id} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.1 }}>
               <ScanCard style={{
                 padding: '32px', display: 'flex', flexDirection: 'column', minHeight: 620,
-                borderRight: i < 2 ? `1px solid ${C.border}` : 'none',
+                borderRight: i < 1 ? `1px solid ${C.border}` : 'none',
                 borderTop: `2px solid ${p.accent}`,
                 background: p.recommended ? `${C.accent}08` : 'transparent',
               }}>
@@ -785,7 +776,7 @@ function Footer() {
 
 // ─── Apply Modal ──────────────────────────────────────────────────────────────
 function ApplyModal({ onClose }) {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', plan: 'Cohort — ₹13,999' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', plan: 'Pro — ₹14,999' })
   const [done, setDone] = useState(false)
 
   return (
@@ -836,9 +827,8 @@ function ApplyModal({ onClose }) {
                   <select value={form.plan} onChange={e => setForm({ ...form, plan: e.target.value })}
                     style={{ width: '100%', padding: '10px 12px', background: C.surface2, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box' }}
                   >
-                    <option>Cohort — ₹13,999</option>
-                    <option>Solo — ₹7,999</option>
-                    <option>1:1 Placement — ₹24,999</option>
+                    <option>Pro — ₹14,999</option>
+                    <option>Basic — ₹9,999</option>
                   </select>
                 </div>
                 <button type="submit"
