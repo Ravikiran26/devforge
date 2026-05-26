@@ -27,7 +27,7 @@ const C = {
   cyan:    '#22D3EE',
 }
 
-const TOTAL_WEEKS = 10
+const TOTAL_WEEKS = 12
 
 function formatPlan(plan) {
   if (!plan) return 'DevForge'

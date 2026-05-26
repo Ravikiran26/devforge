@@ -60,7 +60,7 @@ async function main() {
 
   // ── Students ─────────────────────────────────────────────────────────────────
   const studentData = [
-    { name:'Ravikiran',     email:'ravi@devforge.com',    college:'JNTU Hyderabad',     week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
+    { name:'Ravikiran',     email:'ravi@devforge.com',    college:'JNTU Hyderabad',     week:1, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
     { name:'Priya Sharma',  email:'priya@devforge.com',   college:'NIT Warangal',        week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
     { name:'Rahul Verma',   email:'rahul@devforge.com',   college:'BITS Pilani',          week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
     { name:'Sneha Kapur',   email:'sneha@devforge.com',   college:'VIT Vellore',          week:6, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
@@ -610,46 +610,13 @@ Acceptance Criteria:
 
   console.log('✓ Tickets seeded  (24 tickets: RF-001→008, LB-001→008, CA-001→008)')
 
-  // ── PR Submissions (for Ravikiran = students[0]) ──────────────────────────────
-  // Ravi is on Week 7 — Restaurant Flow complete, starting Lead Bill
+  // ── PR Submissions (none for Ravikiran — fresh start) ────────────────────────
   const ravi = students[0]
-  const submissionsData = [
-    { ticketId: tickets[0].id, prUrl:'https://github.com/ravi/restaurantflow/pull/1',  score:92, status:'APPROVED',   feedback:'Clean schema setup. Prisma exported from lib/. All prices stored as paise integers. Health endpoint correct.' },
-    { ticketId: tickets[1].id, prUrl:'https://github.com/ravi/restaurantflow/pull/3',  score:88, status:'APPROVED',   feedback:'Menu API grouped by category correctly. Order placement calculates server-side. Order number format matches spec.' },
-    { ticketId: tickets[2].id, prUrl:'https://github.com/ravi/restaurantflow/pull/6',  score:85, status:'APPROVED',   feedback:'Razorpay HMAC verification implemented correctly. Payment only confirmed after verification passes. Keys from .env.' },
-    { ticketId: tickets[3].id, prUrl:'https://github.com/ravi/restaurantflow/pull/9',  score:null, status:'IN_REVIEW', feedback:null },
-  ]
 
-  for (const s of submissionsData) {
-    await prisma.pRSubmission.upsert({
-      where: { studentId_ticketId: { studentId: ravi.id, ticketId: s.ticketId } },
-      update: {},
-      create: { studentId: ravi.id, ...s, reviewedAt: s.score ? new Date() : null }
-    })
-  }
+  console.log('✓ PR submissions seeded  (Ravikiran starts fresh — 0 submissions)')
 
-  console.log('✓ PR submissions seeded')
-
-  // ── Lesson progress for Ravikiran ─────────────────────────────────────────────
-  // Weeks 1-4 foundation complete, Weeks 5-6 (Restaurant Flow) complete, now on Week 7
-  const doneCodesRavi = [
-    'W1D1','W1D2','W1D3','W1D4','W1D5',
-    'W2D1','W2D2','W2D3','W2D4','W2D5',
-    'W3D1','W3D2','W3D3','W3D4','W3D5',
-    'W4D1','W4D2','W4D3','W4D4',
-    'W5L1','W5L2','W5L3','W5L4','W5L5',
-    'W6L1','W6L2','W6L3','W6L4','W6L5',
-  ]
-  for (const code of doneCodesRavi) {
-    const lesson = lessons.find(l => l.lessonCode === code)
-    if (lesson) {
-      await prisma.lessonProgress.create({
-        data: { studentId: ravi.id, lessonId: lesson.id, watched: true, watchedAt: new Date() }
-      })
-    }
-  }
-
-  console.log('✓ Lesson progress seeded  (Weeks 1-6 done, Week 7 in progress)')
+  // ── Lesson progress for Ravikiran — none (fresh start) ───────────────────────
+  console.log('✓ Lesson progress seeded  (Ravikiran starts fresh — 0 lessons watched)')
 
   // ── Announcements ────────────────────────────────────────────────────────────
   const announcementsRaw = [
