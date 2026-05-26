@@ -1,37 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '../components/layout/DashboardLayout'
+import { useTheme } from '../hooks/useTheme'
+import { THEMES } from '../lib/themes'
 import {
   CheckCircle, Lock, BookOpen, ChevronRight, ChevronLeft,
   Copy, Check, Terminal, Code2, Monitor, Clock, ArrowLeft, Map, Sun, Moon,
 } from 'lucide-react'
 import api from '../lib/api'
 
-const C = {
-  bg:      '#0D1117',
-  surface: '#161B22',
-  surface2:'#21262D',
-  border:  '#30363D',
-  border2: '#3D444D',
-  text:    '#E6EDF3',
-  text2:   '#C9D1D9',
-  text3:   '#8B949E',
-  accent:  '#3B82F6',
-  green:   '#3FB950',
-  red:     '#F85149',
-}
 const glow = (color = '#3B82F6', size = 10) => `0 0 ${size}px ${color}44`
-
-const LIGHT = {
-  bg:      '#FFFFFF',
-  surface: '#F6F8FA',
-  surface2:'#EAEEF2',
-  border:  '#D0D7DE',
-  border2: '#BDC4CC',
-  text:    '#0D1117',
-  text2:   '#24292F',
-  text3:   '#57606A',
-}
 
 const WEEK_LABELS = [
   '',
@@ -94,6 +72,7 @@ function parseSegments(description) {
 }
 
 function CopyButton({ text }) {
+  const C = useTheme()
   const [copied, setCopied] = useState(false)
   return (
     <button
@@ -121,10 +100,10 @@ function CodeBlock({ blockType, code }) {
   )
 }
 
-function renderTextLine(line, i, R = C) {
+function renderTextLine(line, i, R) {
   const t = line.trim()
   if (/^[A-Z][A-Z0-9\s\-]{3,}$/.test(t) && t.length < 55 && !t.startsWith('•') && !t.startsWith('☐'))
-    return <div key={i} style={{ fontSize:11, fontWeight:800, color:'#3B82F6', letterSpacing:'0.1em', marginTop: i===0 ? 0 : 32, marginBottom:10, fontFamily:"'Inter', sans-serif" }}>{t}</div>
+    return <div key={i} style={{ fontSize:11, fontWeight:800, color:R.accent, letterSpacing:'0.1em', marginTop: i===0 ? 0 : 32, marginBottom:10, fontFamily:"'Inter', sans-serif" }}>{t}</div>
   if (/^─+$/.test(t))
     return <hr key={i} style={{ border:'none', borderTop:`1px solid ${R.border}`, margin:'24px 0' }}/>
   if (t.startsWith('☐'))
@@ -134,19 +113,19 @@ function renderTextLine(line, i, R = C) {
     </div>
   if (t.startsWith('•'))
     return <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:8 }}>
-      <span style={{ width:6, height:6, background: C.accent, flexShrink:0, marginTop:10 }}/>
+      <span style={{ width:6, height:6, background: R.accent, flexShrink:0, marginTop:10 }}/>
       <span style={{ fontSize:14, color: R.text2, lineHeight:1.75, fontFamily:"'Inter', sans-serif" }}>{t.slice(1).trim()}</span>
     </div>
   if (/^\d+\./.test(t)) {
     const num = t.match(/^(\d+)\./)[1]
     const text = t.replace(/^\d+\.\s*/,'')
     return <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:14, marginBottom:10 }}>
-      <span style={{ width:24, height:24, background:`${C.accent}18`, color: C.accent, fontSize:12, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:2, fontFamily:'JetBrains Mono,monospace' }}>{num}</span>
+      <span style={{ width:24, height:24, background:`${R.accent}18`, color: R.accent, fontSize:12, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:2, fontFamily:'JetBrains Mono,monospace' }}>{num}</span>
       <span style={{ fontSize:14, color: R.text2, lineHeight:1.75, fontFamily:"'Inter', sans-serif" }}>{text}</span>
     </div>
   }
   if (line.startsWith('  ') && t.length > 0)
-    return <div key={i} style={{ background: R.surface, border:`1px solid ${R.border}`, borderLeft:`2px solid ${C.accent}`, padding:'4px 14px', margin:'3px 0', fontFamily:'JetBrains Mono, monospace', fontSize:13, color: R.text, lineHeight:1.85 }}>{t}</div>
+    return <div key={i} style={{ background: R.surface, border:`1px solid ${R.border}`, borderLeft:`2px solid ${R.accent}`, padding:'4px 14px', margin:'3px 0', fontFamily:'JetBrains Mono, monospace', fontSize:13, color: R.text, lineHeight:1.85 }}>{t}</div>
   if (!t) return <div key={i} style={{ height:10 }}/>
   if (t.endsWith('?') || /^What |^Why |^How /.test(t))
     return <div key={i} style={{ fontSize:16, fontWeight:700, color: R.text, marginTop:20, marginBottom:8, fontFamily:"'Inter', sans-serif" }}>{t}</div>
@@ -154,6 +133,7 @@ function renderTextLine(line, i, R = C) {
 }
 
 function Spinner() {
+  const C = useTheme()
   return (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:300 }}>
       <div style={{ width:32, height:32, border:`3px solid ${C.border2}`, borderTop:`3px solid ${C.accent}`, borderRadius:'50%', animation:'spin 0.8s linear infinite' }}/>
@@ -164,6 +144,7 @@ function Spinner() {
 
 // ── Map view ──────────────────────────────────────────────────────────────────
 function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
+  const C = useTheme()
   const weeks = Array.from({ length: 12 }, (_, i) => i + 1)
 
   const weekStatus = (w) => {
@@ -179,7 +160,7 @@ function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
     <div>
       <div style={{ marginBottom: 28 }}>
         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
-          <Map size={18} color="#3B82F6"/>
+          <Map size={18} color={C.accent}/>
           <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:26, fontWeight:600, color: C.text, margin:0, letterSpacing:'-0.02em' }}>Your Learning Journey</h2>
         </div>
         <p style={{ fontSize: 13, color: C.text3, margin: 0, fontFamily: "'Inter', sans-serif" }}>
@@ -206,7 +187,7 @@ function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
               key={w}
               onClick={() => !locked && onSelectWeek(w)}
               style={{
-                background: isDone ? 'rgba(63,185,80,0.07)' : isCurrent ? theme.bg : locked ? 'rgba(255,255,255,0.01)' : C.surface,
+                background: isDone ? 'rgba(63,185,80,0.07)' : isCurrent ? theme.bg : locked ? `${C.surface}44` : C.surface,
                 border: `1px solid ${isDone ? 'rgba(63,185,80,0.25)' : isCurrent ? theme.border : C.border}`,
                 padding: '20px',
                 cursor: locked ? 'not-allowed' : 'pointer',
@@ -218,16 +199,13 @@ function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
               onMouseEnter={e => { if (!locked) { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.borderColor = isCurrent ? theme.color : isDone ? 'rgba(63,185,80,0.4)' : C.border2 }}}
               onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.borderColor = isDone ? 'rgba(63,185,80,0.25)' : isCurrent ? theme.border : C.border }}
             >
-              {/* Watermark number */}
               <div style={{ position:'absolute', top:8, right:12, fontFamily:'JetBrains Mono,monospace', fontSize:48, fontWeight:700, color: accentColor, lineHeight:1, userSelect:'none', pointerEvents:'none', opacity:0.12 }}>{w}</div>
 
-              {/* Week tag */}
               <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
                 <span style={{ fontSize:14 }}>{locked ? '🔒' : theme.emoji}</span>
                 <span style={{ fontSize:9, fontWeight:700, color: accentColor, letterSpacing:'0.12em', fontFamily:'JetBrains Mono,monospace' }}>{theme.tag}</span>
               </div>
 
-              {/* Status badge */}
               {isCurrent && !isDone && (
                 <div style={{ marginBottom:8 }}>
                   <span style={{ fontSize:9, fontWeight:700, color: theme.color, border:`1px solid ${theme.border}`, padding:'2px 8px', letterSpacing:'0.08em', fontFamily:'JetBrains Mono,monospace' }}>● CURRENT</span>
@@ -239,12 +217,10 @@ function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
                 </div>
               )}
 
-              {/* Title */}
               <div style={{ fontSize:12, fontWeight:600, color: locked ? C.text3 : C.text, lineHeight:1.45, marginBottom:16, minHeight:36, fontFamily:"'Inter', sans-serif" }}>
                 {WEEK_LABELS[w]}
               </div>
 
-              {/* Progress */}
               {!locked && total > 0 ? (
                 <>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:5 }}>
@@ -272,6 +248,7 @@ function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
 
 // ── Browse view ───────────────────────────────────────────────────────────────
 function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap }) {
+  const C = useTheme()
   const watched = weekLessons.filter(l => l.watched).length
   const total   = weekLessons.length
   const pct     = total ? Math.round((watched / total) * 100) : 0
@@ -321,7 +298,6 @@ function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap }) {
 
   return (
     <div>
-      {/* Breadcrumb */}
       <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:20 }}>
         <button onClick={onBackToMap} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', border:`1px solid ${C.border2}`, background: C.surface, color: C.text3, fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'JetBrains Mono,monospace' }}>
           <Map size={12}/> All Weeks
@@ -331,7 +307,6 @@ function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap }) {
       </div>
 
       <div style={{ background: C.surface, border:`1px solid ${C.border2}`, overflow:'hidden', borderTop:`2px solid ${theme.color}` }}>
-        {/* Header */}
         <div style={{ padding:'20px 24px', borderBottom:`1px solid ${C.border}`, background: theme.bg }}>
           <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:14 }}>
             <div>
@@ -378,8 +353,9 @@ function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap }) {
 
 // ── Reading view ──────────────────────────────────────────────────────────────
 function ReadingView({ lesson, onBack, onMarkDone, isPending, weekLessons, onSelectLesson }) {
-  const [bgMode, setBgMode] = useState('dark')
-  const R = bgMode === 'light' ? LIGHT : C
+  const C = useTheme()
+  const [bgMode, setBgMode] = useState('theme')
+  const R = bgMode === 'light' ? THEMES.light : C
   const scrollRef = useRef(null)
 
   useEffect(() => {
@@ -416,16 +392,16 @@ function ReadingView({ lesson, onBack, onMarkDone, isPending, weekLessons, onSel
           <div style={{ fontFamily:"'Inter', sans-serif", fontSize:16, fontWeight:700, color: R.text, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{lesson.title}</div>
         </div>
 
-        {/* Light / Dark toggle */}
+        {/* Light / Dark reading toggle */}
         <button
-          onClick={() => setBgMode(m => m === 'dark' ? 'light' : 'dark')}
-          title={bgMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          onClick={() => setBgMode(m => m === 'light' ? 'theme' : 'light')}
+          title={bgMode === 'light' ? 'Use theme colors' : 'Switch to light reading mode'}
           style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 13px', border:`1px solid ${R.border2 ?? R.border}`, background: R.surface2, color: R.text3, fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'JetBrains Mono,monospace', flexShrink:0, transition:'color 0.15s, border-color 0.15s' }}
           onMouseEnter={e => { e.currentTarget.style.color = C.accent; e.currentTarget.style.borderColor = C.accent }}
           onMouseLeave={e => { e.currentTarget.style.color = R.text3; e.currentTarget.style.borderColor = R.border2 ?? R.border }}
         >
-          {bgMode === 'dark' ? <Sun size={12}/> : <Moon size={12}/>}
-          {bgMode === 'dark' ? 'Light' : 'Dark'}
+          {bgMode === 'light' ? <Moon size={12}/> : <Sun size={12}/>}
+          {bgMode === 'light' ? 'Theme' : 'Light'}
         </button>
 
         <button

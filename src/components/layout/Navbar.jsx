@@ -4,17 +4,7 @@ import { useAuthStore } from '../../store/authStore'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '../../lib/api'
-
-const C = {
-  bg:      '#161B22',
-  border:  '#30363D',
-  surface: '#21262D',
-  text:    '#E6EDF3',
-  text2:   '#8B949E',
-  text3:   '#6E7681',
-  accent:  '#3B82F6',
-  red:     '#F85149',
-}
+import { useTheme } from '../../hooks/useTheme'
 
 export default function Navbar({ title = 'Dashboard' }) {
   const [notifOpen, setNotifOpen] = useState(false)
@@ -27,6 +17,7 @@ export default function Navbar({ title = 'Dashboard' }) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const name = user?.name ?? 'Student'
+  const C = useTheme()
 
   const { data: notifications = [] } = useQuery({
     queryKey: ['notifications'],

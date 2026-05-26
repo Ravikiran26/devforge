@@ -3,29 +3,13 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import { useAuthStore } from '../store/authStore'
+import { useTheme } from '../hooks/useTheme'
 import api from '../lib/api'
 import {
   BookOpen, GitMerge, Star, ArrowRight, AlertCircle,
   TrendingUp, Zap, ChevronRight, Code2, Flame,
   Terminal, Target, Trophy, Play, Lock,
 } from 'lucide-react'
-
-const C = {
-  bg:      '#0D1117',
-  surface: '#161B22',
-  surface2:'#21262D',
-  border:  '#30363D',
-  border2: '#3D444D',
-  text:    '#E6EDF3',
-  text2:   '#8B949E',
-  text3:   '#6E7681',
-  accent:  '#3B82F6',
-  green:   '#3FB950',
-  red:     '#F85149',
-  yellow:  '#E3B341',
-  purple:  '#A78BFA',
-  cyan:    '#22D3EE',
-}
 
 const TOTAL_WEEKS = 12
 
@@ -82,6 +66,7 @@ function useCount(target, duration = 1000) {
 }
 
 function Spinner() {
+  const C = useTheme()
   return (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:300 }}>
       <div style={{ width:28, height:28, border:`2px solid ${C.border}`, borderTop:`2px solid ${C.accent}`, borderRadius:'50%', animation:'dfSpin 0.8s linear infinite' }}/>
@@ -92,10 +77,11 @@ function Spinner() {
 
 // ─── First Mission card (shown only on day 1 / zero progress) ─────────────────
 function FirstMission({ week, navigate }) {
+  const C = useTheme()
   const w = WEEK_FOCUS[week] || WEEK_FOCUS[1]
   return (
     <div style={{
-      background: `linear-gradient(135deg, ${C.surface} 0%, rgba(59,130,246,0.08) 100%)`,
+      background: `linear-gradient(135deg, ${C.surface} 0%, ${C.accent}14 100%)`,
       border: `1px solid ${C.accent}44`,
       borderLeft: `3px solid ${C.accent}`,
       padding: '28px 32px',
@@ -145,9 +131,9 @@ function FirstMission({ week, navigate }) {
         <div style={{ flexShrink:0, display:'flex', flexDirection:'column', gap:6, minWidth:180 }}>
           <div style={{ fontSize:9, fontWeight:700, color:C.text3, letterSpacing:'0.12em', fontFamily:'JetBrains Mono,monospace', marginBottom:4 }}>WHAT YOU'LL BUILD</div>
           {[
-            { label:'Restaurant Flow',  weeks:'W5–6', color:C.green,  locked:false },
-            { label:'Lead Bill SaaS',   weeks:'W7–9', color:C.cyan,   locked:true  },
-            { label:'ClientDesk AI',    weeks:'W10–11',color:C.purple, locked:true  },
+            { label:'Restaurant Flow',  weeks:'W5–6',   color:C.green,  locked:false },
+            { label:'Lead Bill SaaS',   weeks:'W7–9',   color:C.cyan,   locked:true  },
+            { label:'ClientDesk AI',    weeks:'W10–11', color:C.purple, locked:true  },
           ].map(p => (
             <div key={p.label} style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 12px', background:`${p.color}0A`, border:`1px solid ${p.color}${p.locked ? '22':'44'}`, opacity: p.locked ? 0.5 : 1 }}>
               {p.locked ? <Lock size={9} color={C.text3}/> : <Trophy size={9} color={p.color}/>}
@@ -163,6 +149,7 @@ function FirstMission({ week, navigate }) {
 
 // ─── Hero banner ──────────────────────────────────────────────────────────────
 function HeroBanner({ student, weekPct, firstName }) {
+  const C = useTheme()
   const w = WEEK_FOCUS[student.currentWeek] || WEEK_FOCUS[1]
   const isActive = student.currentWeek > 1 || weekPct > 0
 
@@ -189,12 +176,10 @@ function HeroBanner({ student, weekPct, firstName }) {
           Welcome back, <span style={{ color:C.accent }}>{firstName}</span>
         </h2>
 
-        {/* This week's focus */}
         <div style={{ fontSize:12, color:C.text2, fontFamily:"'Inter', sans-serif", marginBottom:20 }}>
           {w.emoji} This week — <span style={{ color:C.text, fontWeight:600 }}>{w.focus}</span>
         </div>
 
-        {/* Progress bar */}
         <div style={{ display:'flex', alignItems:'center', gap:14 }}>
           <div style={{ position:'relative', width:220, height:5, background:C.border, overflow:'hidden' }}>
             <div style={{ position:'absolute', inset:0, width:`${weekPct}%`, background:`linear-gradient(90deg, ${C.accent}, ${C.cyan})`, transition:'width 0.8s ease', boxShadow:`0 0 8px ${C.accent}88` }}/>
@@ -208,7 +193,6 @@ function HeroBanner({ student, weekPct, firstName }) {
         </div>
       </div>
 
-      {/* Right — ring + milestone */}
       <div style={{ textAlign:'center', flexShrink:0, position:'relative', zIndex:1 }}>
         <ProgressRing pct={weekPct} size={100}/>
         <div style={{ fontSize:9, color:C.text3, marginTop:8, fontWeight:700, letterSpacing:'0.1em', fontFamily:"'Inter', sans-serif" }}>PROGRAM PROGRESS</div>
@@ -223,6 +207,7 @@ function HeroBanner({ student, weekPct, firstName }) {
 }
 
 function ProgressRing({ pct, size = 96 }) {
+  const C = useTheme()
   const r = (size - 10) / 2
   const circ = 2 * Math.PI * r
   const dash = (pct / 100) * circ
@@ -238,6 +223,7 @@ function ProgressRing({ pct, size = 96 }) {
 
 // ─── Stat card ────────────────────────────────────────────────────────────────
 function StatCard({ icon: Icon, label, rawValue, suffix = '', accent, sub, emptyMsg }) {
+  const C = useTheme()
   const numVal = typeof rawValue === 'number' ? rawValue : null
   const [ref, count] = useCount(numVal || 0)
   const isEmpty = numVal === 0
@@ -264,15 +250,15 @@ function StatCard({ icon: Icon, label, rawValue, suffix = '', accent, sub, empty
 }
 
 // ─── Active tickets ───────────────────────────────────────────────────────────
-const P_COLOR = { HIGH: C.red, MEDIUM: C.accent, LOW: C.green }
-const STATUS_MAP = {
-  UPCOMING:  { color:C.text3,  dot:'#6E7681', label:'Todo'        },
-  ACTIVE:    { color:C.yellow, dot:C.yellow,  label:'In Progress' },
-  IN_REVIEW: { color:C.purple, dot:C.purple,  label:'In Review'   },
-  REVIEWED:  { color:C.green,  dot:C.green,   label:'Done'        },
-}
-
 function TicketCard({ ticket: t }) {
+  const C = useTheme()
+  const P_COLOR = { HIGH: C.red, MEDIUM: C.accent, LOW: C.green }
+  const STATUS_MAP = {
+    UPCOMING:  { color:C.text3,  dot:'#6E7681', label:'Todo'        },
+    ACTIVE:    { color:C.yellow, dot:C.yellow,  label:'In Progress' },
+    IN_REVIEW: { color:C.purple, dot:C.purple,  label:'In Review'   },
+    REVIEWED:  { color:C.green,  dot:C.green,   label:'Done'        },
+  }
   const pColor = P_COLOR[t.priority] || C.border2
   const s = STATUS_MAP[t.submissionStatus || t.status] || STATUS_MAP.UPCOMING
   return (
@@ -300,6 +286,7 @@ function TicketCard({ ticket: t }) {
 
 // ─── Empty tickets state ──────────────────────────────────────────────────────
 function EmptyTickets({ week, navigate }) {
+  const C = useTheme()
   return (
     <div style={{ background:C.surface, border:`1px dashed ${C.border2}`, padding:'32px 24px', textAlign:'center' }}>
       <div style={{ width:44, height:44, background:`${C.accent}12`, border:`1px solid ${C.accent}33`, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px' }}>
@@ -323,6 +310,7 @@ function EmptyTickets({ week, navigate }) {
 
 // ─── Active PRs sidebar ───────────────────────────────────────────────────────
 function ActivePRs({ tickets }) {
+  const C = useTheme()
   return (
     <div style={{ background:C.surface, border:`1px solid ${C.border}`, overflow:'hidden' }}>
       <div style={{ padding:'14px 20px', borderBottom:`1px solid ${C.border}`, background:C.surface2, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
@@ -357,6 +345,7 @@ function ActivePRs({ tickets }) {
 
 // ─── Announcements ────────────────────────────────────────────────────────────
 function Announcements({ announcements }) {
+  const C = useTheme()
   const typeColor = { GENERAL:C.accent, IMPORTANT:C.yellow, EVENT:C.green, WARNING:C.red, SPRINT:C.purple, SESSION:C.cyan, UPDATE:C.yellow }
   if (!announcements?.length) return null
   return (
@@ -383,6 +372,7 @@ function Announcements({ announcements }) {
 
 // ─── Quick actions ────────────────────────────────────────────────────────────
 function QuickActions({ week, navigate }) {
+  const C = useTheme()
   const actions = [
     { icon:Code2,    label:'Submit PR',    sub:`Week ${week} submission`, color:C.accent,  onClick:() => navigate('/tasks')    },
     { icon:BookOpen, label:'This Week',    sub:'Continue lesson',         color:C.green,   onClick:() => navigate('/lessons')  },
@@ -408,7 +398,8 @@ function QuickActions({ week, navigate }) {
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 export default function Dashboard() {
-  const user     = useAuthStore(s => s.user)
+  const C       = useTheme()
+  const user    = useAuthStore(s => s.user)
   const navigate = useNavigate()
 
   const { data, isLoading, isError } = useQuery({
@@ -434,13 +425,10 @@ export default function Dashboard() {
     <DashboardLayout title="Dashboard">
       <style>{`@keyframes dfSpin{to{transform:rotate(360deg)}} @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
 
-      {/* Hero */}
       <HeroBanner student={student} weekPct={weekPct} firstName={firstName}/>
 
-      {/* First mission — only for brand new students */}
       {isNewStudent && <FirstMission week={student.currentWeek} navigate={navigate}/>}
 
-      {/* Stat row */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, background:C.border, border:`1px solid ${C.border}`, marginBottom:20 }}>
         <StatCard icon={TrendingUp} label="CURRENT WEEK" rawValue={student.currentWeek} suffix={`/${TOTAL_WEEKS}`} accent={C.accent}  sub="weeks into the program"/>
         <StatCard icon={BookOpen}   label="LESSONS DONE" rawValue={stats.lessonsWatched}                           accent={C.cyan}    sub="lessons completed"      emptyMsg="Start Week 1 to unlock →"/>
@@ -448,10 +436,7 @@ export default function Dashboard() {
         <StatCard icon={Star}       label="AVG GRADE"    rawValue={typeof stats.avgGrade === 'number' && stats.avgGrade > 0 ? stats.avgGrade : 0} accent={C.yellow} sub="out of 100 points" emptyMsg="Grade appears after first PR"/>
       </div>
 
-      {/* Main grid */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 320px', gap:20 }}>
-
-        {/* Left */}
         <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
           <div>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
@@ -474,7 +459,6 @@ export default function Dashboard() {
           <QuickActions week={student.currentWeek} navigate={navigate}/>
         </div>
 
-        {/* Right */}
         <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
           <ActivePRs tickets={activeTickets}/>
           <Announcements announcements={announcements}/>

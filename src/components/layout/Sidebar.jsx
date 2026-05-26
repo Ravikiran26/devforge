@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/authStore'
+import { useTheme } from '../../hooks/useTheme'
+import { useThemeStore } from '../../store/themeStore'
+import { THEMES, THEME_ORDER } from '../../lib/themes'
 import {
   LayoutDashboard, CheckSquare, BookOpen, TrendingUp,
   Users, Settings, LogOut, UserCircle, MessageCircle,
@@ -19,17 +22,7 @@ const NAV_OTHER = [
   { to: '/settings',  icon: Settings,   label: 'Settings'  },
 ]
 
-const C = {
-  bg:      '#0D1117',
-  surface: '#161B22',
-  border:  '#30363D',
-  text:    '#E6EDF3',
-  text2:   '#8B949E',
-  text3:   '#6E7681',
-  accent:  '#3B82F6',
-}
-
-function NavItem({ to, icon: Icon, label, collapsed }) {
+function NavItem({ to, icon: Icon, label, collapsed, C }) {
   return (
     <NavLink
       to={to}
@@ -49,7 +42,7 @@ function NavItem({ to, icon: Icon, label, collapsed }) {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         borderLeft: isActive ? `2px solid ${C.accent}` : '2px solid transparent',
-        background: isActive ? 'rgba(59,130,246,0.05)' : 'transparent',
+        background: isActive ? `${C.accent}0D` : 'transparent',
       })}
     >
       {({ isActive }) => (
@@ -62,7 +55,7 @@ function NavItem({ to, icon: Icon, label, collapsed }) {
   )
 }
 
-function SectionLabel({ label, collapsed }) {
+function SectionLabel({ label, collapsed, C }) {
   if (collapsed) return <div style={{ height: 6 }} />
   return (
     <div style={{
@@ -75,7 +68,7 @@ function SectionLabel({ label, collapsed }) {
   )
 }
 
-function WeekProgress({ collapsed, student }) {
+function WeekProgress({ collapsed, student, C }) {
   if (collapsed) return null
   const TOTAL_WEEKS = 12
   const week = student?.currentWeek ?? 1
@@ -95,7 +88,53 @@ function WeekProgress({ collapsed, student }) {
   )
 }
 
-function UserProfile({ collapsed }) {
+function ThemeDots({ collapsed, C }) {
+  const currentTheme = useThemeStore(s => s.theme)
+  const setTheme = useThemeStore(s => s.setTheme)
+
+  return (
+    <div style={{
+      padding: collapsed ? '8px 0' : '8px 14px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: collapsed ? 'center' : 'flex-start',
+      gap: 7,
+      borderTop: `1px solid ${C.border}`,
+    }}>
+      {THEME_ORDER.map(key => {
+        const t = THEMES[key]
+        const active = currentTheme === key
+        return (
+          <button
+            key={key}
+            title={t.name}
+            onClick={() => setTheme(key)}
+            style={{
+              width: active ? 12 : 9,
+              height: active ? 12 : 9,
+              borderRadius: '50%',
+              background: t.dot,
+              border: active ? `2px solid ${C.text}` : '2px solid transparent',
+              cursor: 'pointer',
+              padding: 0,
+              flexShrink: 0,
+              transition: 'all 0.15s ease',
+              outline: 'none',
+              boxSizing: 'border-box',
+            }}
+          />
+        )
+      })}
+      {!collapsed && (
+        <span style={{ fontSize:9, color:C.text3, letterSpacing:'0.1em', fontFamily:"'Inter', sans-serif", marginLeft:2 }}>
+          THEME
+        </span>
+      )}
+    </div>
+  )
+}
+
+function UserProfile({ collapsed, C }) {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
   const name = user?.name ?? 'Student'
@@ -140,6 +179,7 @@ function UserProfile({ collapsed }) {
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const { user } = useAuthStore()
+  const C = useTheme()
 
   return (
     <aside style={{
@@ -200,17 +240,17 @@ export default function Sidebar() {
         display: 'flex', flexDirection: 'column',
         overflowY: 'auto', overflowX: 'hidden', gap: 1,
       }}>
-        <SectionLabel label="MAIN" collapsed={collapsed}/>
-        {NAV_MAIN.map(item => <NavItem key={item.to} {...item} collapsed={collapsed}/>)}
+        <SectionLabel label="MAIN" collapsed={collapsed} C={C}/>
+        {NAV_MAIN.map(item => <NavItem key={item.to} {...item} collapsed={collapsed} C={C}/>)}
 
         <div style={{ height:1, background:C.border, margin: collapsed ? '8px 4px' : '8px 14px' }}/>
 
-        <SectionLabel label="OTHER" collapsed={collapsed}/>
-        {NAV_OTHER.map(item => <NavItem key={item.to} {...item} collapsed={collapsed}/>)}
+        <SectionLabel label="OTHER" collapsed={collapsed} C={C}/>
+        {NAV_OTHER.map(item => <NavItem key={item.to} {...item} collapsed={collapsed} C={C}/>)}
 
         {!collapsed && (
           <div style={{ padding:'14px 12px 0' }}>
-            <a href="#" style={{
+            <a href="https://discord.gg/XxFSFdHTU" target="_blank" rel="noopener noreferrer" style={{
               display:'flex', alignItems:'center', gap:7,
               padding:'8px 12px', border:`1px solid ${C.border}`,
               color:C.text2, fontSize:12, fontWeight:500,
@@ -226,8 +266,9 @@ export default function Sidebar() {
         )}
       </nav>
 
-      <WeekProgress collapsed={collapsed} student={user?.student}/>
-      <UserProfile collapsed={collapsed}/>
+      <WeekProgress collapsed={collapsed} student={user?.student} C={C}/>
+      <ThemeDots collapsed={collapsed} C={C}/>
+      <UserProfile collapsed={collapsed} C={C}/>
     </aside>
   )
 }
