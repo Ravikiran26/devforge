@@ -487,7 +487,7 @@ export default function Dashboard() {
 
   const { student, stats, activeTickets, announcements } = data
   const firstName = user?.name?.split(' ')[0] ?? 'Developer'
-  const weekPct   = Math.round((student.currentWeek / TOTAL_WEEKS) * 100)
+  const weekPct   = Math.round(((student.currentWeek - 1) / TOTAL_WEEKS) * 100)
 
   return (
     <DashboardLayout title="Dashboard">

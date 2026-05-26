@@ -23,14 +23,20 @@ router.get('/', async (req, res) => {
     const avgGrade = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0
     const lessonsWatched = student.lessonProgress.filter(l => l.watched).length
 
-    const activeTickets = await prisma.ticket.findMany({
+    const activeSubmissions = await prisma.pRSubmission.findMany({
       where: {
-        cohortId: student.cohortId,
-        status: { in: ['ACTIVE', 'IN_REVIEW'] }
+        studentId: student.id,
+        status: { in: ['PENDING', 'IN_REVIEW'] }
       },
+      include: { ticket: true },
       take: 3,
-      orderBy: { week: 'asc' }
+      orderBy: { createdAt: 'desc' }
     })
+    const activeTickets = activeSubmissions.map(s => ({
+      ...s.ticket,
+      submissionStatus: s.status,
+      prUrl: s.prUrl,
+    }))
 
     const announcements = await prisma.announcement.findMany({
       where: {
