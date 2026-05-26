@@ -60,16 +60,7 @@ async function main() {
 
   // ── Students ─────────────────────────────────────────────────────────────────
   const studentData = [
-    { name:'Ravikiran',     email:'ravi@devforge.com',    college:'JNTU Hyderabad',     week:1, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Priya Sharma',  email:'priya@devforge.com',   college:'NIT Warangal',        week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Rahul Verma',   email:'rahul@devforge.com',   college:'BITS Pilani',          week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Sneha Kapur',   email:'sneha@devforge.com',   college:'VIT Vellore',          week:6, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Amit Rajan',    email:'amit@devforge.com',    college:'DTU Delhi',            week:7, status:'ACTIVE',    plan:'MENTORED',    cohortId: cohort3.id },
-    { name:'Divya Nair',    email:'divya@devforge.com',   college:'CUSAT Kerala',         week:5, status:'AT_RISK',   plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Vikram Singh',  email:'vikram@devforge.com',  college:'Thapar University',    week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Ananya Roy',    email:'ananya@devforge.com',  college:'Jadavpur University',  week:7, status:'ACTIVE',    plan:'LIVE_COHORT', cohortId: cohort3.id },
-    { name:'Karan Mehta',   email:'karan@devforge.com',   college:'IIIT Hyderabad',       week:12, status:'COMPLETED', plan:'LIVE_COHORT', cohortId: cohort2.id },
-    { name:'Nisha Patel',   email:'nisha@devforge.com',   college:'Nirma University',     week:12, status:'COMPLETED', plan:'LIVE_COHORT', cohortId: cohort2.id },
+    { name:'Ravikiran',  email:'ravi@devforge.com',  college:'JNTU Hyderabad',  week:1, status:'ACTIVE',  plan:'LIVE_COHORT', cohortId: cohort3.id },
   ]
 
   const pwd = await bcrypt.hash('Student@123', 10)
