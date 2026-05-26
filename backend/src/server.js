@@ -8,6 +8,7 @@ const { authenticate, requireAdmin } = require('./middleware/auth')
 
 const authRoutes         = require('./routes/auth')
 const applyRoute         = require('./routes/apply')
+const paymentRoute       = require('./routes/payment')
 const dashboardRoute     = require('./routes/student/dashboard')
 const ticketsRoute       = require('./routes/student/tickets')
 const lessonsRoute       = require('./routes/student/lessons')
@@ -52,6 +53,7 @@ app.use('/api/auth/register', authLimiter)
 // ─── Public ───────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes)
 app.use('/api/apply', applyRoute)
+app.use('/api/payment', paymentRoute)
 
 // ─── Student (authenticated) ──────────────────────────────────────────────────
 app.use('/api/student/dashboard',  authenticate, dashboardRoute)

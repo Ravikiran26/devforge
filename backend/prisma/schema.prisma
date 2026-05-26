@@ -234,11 +234,14 @@ model RefreshToken {
 }
 
 model Application {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String
-  phone     String
-  college   String
-  plan      String   @default("Pro")
-  createdAt DateTime @default(now())
+  id                 Int      @id @default(autoincrement())
+  name               String
+  email              String   @unique
+  phone              String
+  college            String
+  plan               String   @default("LIVE_COHORT")
+  paid               Boolean  @default(false)
+  razorpayOrderId    String?  @unique
+  razorpayPaymentId  String?
+  createdAt          DateTime @default(now())
 }

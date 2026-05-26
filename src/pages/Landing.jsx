@@ -841,12 +841,27 @@ function Footer() {
 }
 
 // ─── Apply Modal ──────────────────────────────────────────────────────────────
-function ApplyModal({ onClose, initialPlan = 'Pro' }) {
-  const planLabel = initialPlan === 'Basic' ? 'Basic — ₹9,999' : 'Pro — ₹14,999'
-  const [form, setForm] = useState({ name: '', email: '', phone: '', college: '', plan: planLabel })
+function loadRazorpay() {
+  return new Promise(resolve => {
+    if (window.Razorpay) return resolve(true)
+    const s = document.createElement('script')
+    s.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    s.onload = () => resolve(true)
+    s.onerror = () => resolve(false)
+    document.body.appendChild(s)
+  })
+}
+
+function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', college: '', plan: initialPlan })
   const [done, setDone] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const PLAN_OPTIONS = [
+    { value: 'LIVE_COHORT', label: 'Live Cohort — ₹14,999' },
+    { value: 'SELF_PACED',  label: 'Self-Paced — ₹9,999'  },
+  ]
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -854,16 +869,44 @@ function ApplyModal({ onClose, initialPlan = 'Pro' }) {
       setError('All fields are required.'); return
     }
     setLoading(true); setError('')
+
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/apply`, {
+      const ok = await loadRazorpay()
+      if (!ok) { setError('Failed to load payment gateway. Please try again.'); setLoading(false); return }
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/payment/order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: form.name, email: form.email, phone: form.phone, college: form.college, plan: form.plan }),
       })
-      setDone(true)
+      const data = await res.json()
+      if (!res.ok) { setError(data.error || 'Something went wrong.'); setLoading(false); return }
+
+      const rzp = new window.Razorpay({
+        key:         data.keyId,
+        amount:      data.amount,
+        currency:    data.currency,
+        order_id:    data.orderId,
+        name:        'DevForge',
+        description: `${data.planLabel} — Cohort 3`,
+        prefill:     { name: data.name, email: data.email, contact: data.phone },
+        theme:       { color: '#F59E0B' },
+        modal:       { ondismiss: () => setLoading(false) },
+        handler: async (response) => {
+          try {
+            await fetch(`${import.meta.env.VITE_API_URL}/payment/verify`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(response),
+            })
+          } catch {}
+          setDone(true)
+          setLoading(false)
+        },
+      })
+      rzp.open()
     } catch {
       setError('Something went wrong. Please try again.')
-    } finally {
       setLoading(false)
     }
   }
@@ -888,12 +931,12 @@ function ApplyModal({ onClose, initialPlan = 'Pro' }) {
 
           {done ? (
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em', textShadow: glow(C.green) }}>✓ APPLICATION RECEIVED</div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 12 }}>You're in the queue.</div>
-              <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 20 }}>We'll WhatsApp <strong style={{ color: C.accent }}>{form.phone}</strong> within 2 hours.</p>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em', textShadow: glow(C.green) }}>✓ PAYMENT SUCCESSFUL</div>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 12 }}>Seat locked. You're in.</div>
+              <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 20 }}>We'll WhatsApp <strong style={{ color: C.accent }}>{form.phone}</strong> within 2 hours with login details.</p>
               <div style={{ background: C.surface2, border: `1px solid ${C.border}`, padding: '14px 16px', textAlign: 'left' }}>
                 <div style={{ fontSize: 9, color: C.text3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.1em', marginBottom: 10 }}>WHAT HAPPENS NEXT</div>
-                {['Application reviewed same day', 'We contact you on WhatsApp within 2 hours', 'Pay to lock your seat', 'Instant access to Week 1 & Discord'].map((s, i) => (
+                {['Payment confirmed & seat locked', 'Login details sent on WhatsApp within 2 hours', 'Cohort 3 kicks off July 7', 'Instant access to Week 1 lessons & Discord'].map((s, i) => (
                   <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 6, fontSize: 12, color: C.text2, fontFamily: "'Inter', sans-serif" }}>
                     <span style={{ color: C.accent, fontFamily: 'JetBrains Mono,monospace' }}>{i + 1}.</span>
                     <span>{s}</span>
@@ -905,7 +948,7 @@ function ApplyModal({ onClose, initialPlan = 'Pro' }) {
             <>
               <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 8, textShadow: glow() }}>APPLY FOR COHORT 3</div>
               <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 22, fontWeight: 700, color: C.text, margin: '0 0 6px' }}>Reserve your seat</h2>
-              <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>Cohort 3 starts July 7 · 8 seats remaining</p>
+              <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>Cohort 3 starts July 7 · {PILOT_SEATS_LEFT} seats remaining · Pilot batch pricing</p>
 
               {error && (
                 <div style={{ fontSize: 12, color: C.red, fontFamily: "'Inter', sans-serif", padding: '8px 12px', border: `1px solid ${C.red}44`, marginBottom: 14 }}>{error}</div>
@@ -933,15 +976,17 @@ function ApplyModal({ onClose, initialPlan = 'Pro' }) {
                   <select value={form.plan} onChange={e => setForm({ ...form, plan: e.target.value })}
                     style={{ ...inputStyle, cursor: 'pointer' }}
                   >
-                    <option>Pro — ₹14,999</option>
-                    <option>Basic — ₹9,999</option>
+                    {PLAN_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                   </select>
                 </div>
                 <button type="submit" disabled={loading}
-                  style={{ background: C.accent, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '13px', letterSpacing: '0.1em', marginTop: 6, transition: 'box-shadow 0.2s, opacity 0.15s', opacity: loading ? 0.7 : 1 }}
-                  onMouseEnter={e => { if (!loading) e.currentTarget.style.boxShadow = glow(C.accent, 16) }}
-                  onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
-                >{loading ? 'SUBMITTING...' : 'SUBMIT APPLICATION'}</button>
+                  style={{ background: C.accent, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '13px', letterSpacing: '0.1em', marginTop: 6, transition: 'box-shadow 0.2s, opacity 0.15s', opacity: loading ? 0.7 : 1, boxShadow: glow() }}
+                  onMouseEnter={e => { if (!loading) e.currentTarget.style.boxShadow = glow(C.accent, 20) }}
+                  onMouseLeave={e => e.currentTarget.style.boxShadow = glow()}
+                >{loading ? 'OPENING PAYMENT...' : 'PAY & LOCK SEAT →'}</button>
+                <p style={{ fontSize: 10, color: C.text3, fontFamily: "'Inter', sans-serif", textAlign: 'center', margin: 0 }}>
+                  Secured by Razorpay · UPI, Cards, Net Banking accepted
+                </p>
               </form>
             </>
           )}
