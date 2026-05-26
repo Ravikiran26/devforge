@@ -165,4 +165,40 @@ router.post('/:id/submit', [
   }
 })
 
+// POST /api/student/tickets/:id/stuck
+router.post('/:id/stuck', async (req, res) => {
+  const ticketId = parseInt(req.params.id)
+  try {
+    const student = await prisma.student.findUnique({
+      where: { userId: req.user.userId },
+      include: { user: { select: { name: true } } },
+    })
+    if (!student) return res.status(404).json({ error: 'Student not found' })
+
+    const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } })
+    if (!ticket) return res.status(404).json({ error: 'Ticket not found' })
+
+    await notify(student.id, {
+      type: 'HELP_REQUESTED',
+      title: `Help requested on ${ticket.ticketCode}`,
+      body: `You raised a hand on "${ticket.title}". A mentor will reach out soon on Discord.`,
+      link: '/tasks',
+    })
+
+    if (process.env.DISCORD_WEBHOOK_URL) {
+      const body = JSON.stringify({
+        content: `🆘 **${student.user.name}** is stuck on **${ticket.ticketCode} — ${ticket.title}**\nWeek ${ticket.week} · Please check in with them!`,
+      })
+      fetch(process.env.DISCORD_WEBHOOK_URL, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body,
+      }).catch(e => console.error('[stuck webhook]', e.message))
+    }
+
+    res.json({ ok: true, message: 'Mentor notified. Check Discord for help soon.' })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
 module.exports = router

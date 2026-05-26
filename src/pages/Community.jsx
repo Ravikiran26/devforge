@@ -1,5 +1,5 @@
 import DashboardLayout from '../components/layout/DashboardLayout'
-import { ExternalLink, Users, BookOpen, GitMerge } from 'lucide-react'
+import { ExternalLink, Users, BookOpen, GitMerge, Trophy } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import api from '../lib/api'
 
@@ -34,12 +34,66 @@ function StatusBadge({ status }) {
   )
 }
 
+// ─── Win Wall ─────────────────────────────────────────────────────────────────
+
+function WinWall({ wins = [] }) {
+  if (!wins.length) return null
+
+  const timeAgo = (dateStr) => {
+    if (!dateStr) return ''
+    const diff = Date.now() - new Date(dateStr)
+    const d = Math.floor(diff / 86400000)
+    const h = Math.floor(diff / 3600000)
+    if (d > 0) return `${d}d ago`
+    if (h > 0) return `${h}h ago`
+    return 'just now'
+  }
+
+  const scoreColor = (s) => s >= 90 ? '#059669' : s >= 75 ? '#4f46e5' : '#94a3b8'
+
+  return (
+    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 18, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+      <div style={{ padding: '16px 22px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Trophy size={14} color="#f59e0b"/>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', fontFamily: "'Inter', sans-serif" }}>Win Wall</span>
+        <span style={{ fontSize: 11, color: '#94a3b8', marginLeft: 4 }}>recent approvals</span>
+      </div>
+      <div style={{ maxHeight: 320, overflowY: 'auto' }}>
+        {wins.map((w, i) => (
+          <div key={w.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 22px', borderBottom: i < wins.length - 1 ? '1px solid #f8fafc' : 'none', transition: 'background 0.1s' }}
+            onMouseEnter={e => e.currentTarget.style.background = '#fafafe'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            <Avatar name={w.studentName} i={i} size={32}/>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, color: '#1e293b', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {w.studentName}
+              </div>
+              <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
+                <span style={{ fontWeight: 700, color: '#4f46e5', fontFamily: 'monospace' }}>{w.ticketCode}</span>
+                {' · '}{w.title}
+              </div>
+            </div>
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              {w.score && <div style={{ fontSize: 14, fontWeight: 800, color: scoreColor(w.score) }}>{w.score}</div>}
+              <div style={{ fontSize: 10, color: '#cbd5e1' }}>{timeAgo(w.reviewedAt)}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function Community() {
-  const { data: students = [], isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['cohort-students'],
-    queryFn: () => api.get('/student/community').then(r => r.data).catch(() => []),
+    queryFn: () => api.get('/student/community').then(r => r.data).catch(() => ({ students: [], recentWins: [] })),
     staleTime: 5 * 60_000,
   })
+
+  const students    = data?.students    ?? []
+  const recentWins  = data?.recentWins  ?? []
 
   return (
     <DashboardLayout title="Community">
@@ -69,58 +123,64 @@ export default function Community() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 24, alignItems: 'start' }}>
 
-        {/* Cohort leaderboard */}
-        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 18, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-          <div style={{ padding: '18px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Users size={15} color="#4f46e5" />
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', fontFamily: "'Inter', sans-serif" }}>Batch 3 — Students</span>
-            <span style={{ fontSize: 11, color: '#94a3b8', marginLeft: 4 }}>{students.length} enrolled</span>
+        {/* Left — leaderboard + win wall */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+          {/* Cohort leaderboard */}
+          <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 18, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div style={{ padding: '18px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Users size={15} color="#4f46e5" />
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', fontFamily: "'Inter', sans-serif" }}>Batch 3 — Students</span>
+              <span style={{ fontSize: 11, color: '#94a3b8', marginLeft: 4 }}>{students.length} enrolled</span>
+            </div>
+
+            {isLoading ? (
+              <div style={{ padding: '40px', textAlign: 'center' }}>
+                <div style={{ width: 28, height: 28, border: '3px solid #e2e8f0', borderTop: '3px solid #4f46e5', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+                <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+              </div>
+            ) : students.length === 0 ? (
+              <div style={{ padding: '48px 24px', textAlign: 'center' }}>
+                <div style={{ fontSize: 32, marginBottom: 12 }}>👥</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginBottom: 6 }}>Cohort directory coming soon</div>
+                <div style={{ fontSize: 13, color: '#64748b' }}>Student profiles will appear here once the cohort kicks off.</div>
+              </div>
+            ) : (
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                    {['#', 'Student', 'Week', 'Submitted', 'Avg Grade', 'Status'].map((h, i) => (
+                      <th key={h} style={{ padding: '11px 18px', fontSize: 11, fontWeight: 700, color: '#94a3b8', textAlign: i < 2 ? 'left' : 'center', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map((s, i) => (
+                    <tr key={s.id} style={{ borderBottom: i < students.length - 1 ? '1px solid #f8fafc' : 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = '#f8fafc')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <td style={{ padding: '12px 18px', fontSize: 13, fontWeight: 700, color: '#cbd5e1', textAlign: 'center' }}>#{i + 1}</td>
+                      <td style={{ padding: '12px 18px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <Avatar name={s.name} i={i} />
+                          <div style={{ fontSize: 13, fontWeight: 600, color: '#1e293b' }}>{s.name}</div>
+                        </div>
+                      </td>
+                      <td style={{ padding: '12px 18px', textAlign: 'center', fontSize: 13, color: '#4f46e5', fontWeight: 700 }}>{s.currentWeek}</td>
+                      <td style={{ padding: '12px 18px', textAlign: 'center', fontSize: 13, fontWeight: 700, color: '#059669' }}>{s.mergedPRs}</td>
+                      <td style={{ padding: '12px 18px', textAlign: 'center', fontSize: 13, fontWeight: 700, color: s.avgGrade >= 90 ? '#059669' : s.avgGrade > 0 ? '#4f46e5' : '#94a3b8' }}>
+                        {s.avgGrade > 0 ? `${s.avgGrade}/100` : '—'}
+                      </td>
+                      <td style={{ padding: '12px 18px', textAlign: 'center' }}><StatusBadge status={s.status} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
-          {isLoading ? (
-            <div style={{ padding: '40px', textAlign: 'center' }}>
-              <div style={{ width: 28, height: 28, border: '3px solid #e2e8f0', borderTop: '3px solid #4f46e5', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
-              <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-            </div>
-          ) : students.length === 0 ? (
-            <div style={{ padding: '48px 24px', textAlign: 'center' }}>
-              <div style={{ fontSize: 32, marginBottom: 12 }}>👥</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', marginBottom: 6 }}>Cohort directory coming soon</div>
-              <div style={{ fontSize: 13, color: '#64748b' }}>Student profiles will appear here once the cohort kicks off.</div>
-            </div>
-          ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                  {['#', 'Student', 'Week', 'Submitted', 'Avg Grade', 'Status'].map((h, i) => (
-                    <th key={h} style={{ padding: '11px 18px', fontSize: 11, fontWeight: 700, color: '#94a3b8', textAlign: i < 2 ? 'left' : 'center', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {students.map((s, i) => (
-                  <tr key={s.id} style={{ borderBottom: i < students.length - 1 ? '1px solid #f8fafc' : 'none' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#f8fafc')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    <td style={{ padding: '12px 18px', fontSize: 13, fontWeight: 700, color: '#cbd5e1', textAlign: 'center' }}>#{i + 1}</td>
-                    <td style={{ padding: '12px 18px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <Avatar name={s.name} i={i} />
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#1e293b' }}>{s.name}</div>
-                      </div>
-                    </td>
-                    <td style={{ padding: '12px 18px', textAlign: 'center', fontSize: 13, color: '#4f46e5', fontWeight: 700 }}>{s.currentWeek}</td>
-                    <td style={{ padding: '12px 18px', textAlign: 'center', fontSize: 13, fontWeight: 700, color: '#059669' }}>{s.mergedPRs}</td>
-                    <td style={{ padding: '12px 18px', textAlign: 'center', fontSize: 13, fontWeight: 700, color: s.avgGrade >= 90 ? '#059669' : s.avgGrade > 0 ? '#4f46e5' : '#94a3b8' }}>
-                      {s.avgGrade > 0 ? `${s.avgGrade}/100` : '—'}
-                    </td>
-                    <td style={{ padding: '12px 18px', textAlign: 'center' }}><StatusBadge status={s.status} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+          <WinWall wins={recentWins} />
         </div>
 
         {/* Right sidebar */}

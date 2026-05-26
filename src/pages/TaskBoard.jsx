@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import { Search, X, ExternalLink, Send, AlertCircle, CheckCircle2, Clock, Eye, GitPullRequest } from 'lucide-react'
@@ -158,6 +158,40 @@ function TicketCard({ ticket: t, col, isSelected, onClick }) {
   )
 }
 
+// ─── I'm Stuck button ─────────────────────────────────────────────────────────
+
+function StuckButton({ ticketId }) {
+  const [sent, setSent]     = useState(false)
+  const [sending, setSending] = useState(false)
+
+  const handleStuck = useCallback(async () => {
+    setSending(true)
+    try {
+      await api.post(`/student/tickets/${ticketId}/stuck`)
+      setSent(true)
+    } catch {}
+    setSending(false)
+  }, [ticketId])
+
+  if (sent) return (
+    <div style={{ padding: '10px 14px', background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: 10, fontSize: 12, color: '#059669', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+      ✅ Mentor notified! Check Discord for help.
+    </div>
+  )
+
+  return (
+    <button
+      onClick={handleStuck}
+      disabled={sending}
+      style={{ width: '100%', padding: '9px 14px', background: '#fff7ed', border: '1.5px solid #fed7aa', borderRadius: 10, color: '#c2410c', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, marginBottom: 16, transition: 'background 0.15s' }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#fef3c7' }}
+      onMouseLeave={e => { e.currentTarget.style.background = '#fff7ed' }}
+    >
+      🆘 {sending ? 'Notifying mentor…' : "I'm Stuck — Raise Hand"}
+    </button>
+  )
+}
+
 // ─── Detail Panel ─────────────────────────────────────────────────────────────
 
 function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) {
@@ -249,6 +283,9 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
           <div style={{ fontSize: 13, color: '#475569', lineHeight: 1.65 }}>{sel.description}</div>
         </div>
       )}
+
+      {/* I'm Stuck */}
+      <StuckButton ticketId={sel.id}/>
 
       {/* Submission section */}
       {sel.mySubmission ? (

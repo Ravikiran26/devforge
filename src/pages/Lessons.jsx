@@ -43,6 +43,21 @@ const WEEK_THEMES = [
   { emoji:'🎯', tag:'Week 12', color:'#10B981', bg:'rgba(16,185,129,0.08)',   border:'rgba(16,185,129,0.2)'   },
 ]
 
+const WEEK_SKILLS = {
+  1:  ['Terminal', 'Git', 'GitHub', 'JavaScript', 'Functions', 'Arrays', 'Objects'],
+  2:  ['Node.js', 'Express', 'REST API', 'PostgreSQL', 'Prisma ORM'],
+  3:  ['React', 'JSX', 'useState', 'useEffect', 'Components', 'Props'],
+  4:  ['JWT Auth', 'bcrypt', 'Protected Routes', 'Full-Stack Architecture'],
+  5:  ['Socket.io', 'Real-time Events', 'Event-Driven Architecture'],
+  6:  ['Razorpay', 'Payment Gateway', 'Webhooks', 'Order Management'],
+  7:  ['PDF Generation', 'GST Billing', 'pdf-lib', 'Invoice Design'],
+  8:  ['Cloudinary', 'File Upload', 'Image Optimization', 'Storage APIs'],
+  9:  ['Production Deploy', 'Railway/Render', 'Environment Variables', 'DevOps'],
+  10: ['Claude API', 'LLM Integration', 'Prompt Engineering', 'AI Products'],
+  11: ['GitHub Actions', 'CI/CD Pipelines', 'Docker Basics', 'Automation'],
+  12: ['Portfolio', 'Resume Writing', 'System Design', 'Mock Interviews'],
+}
+
 const BLOCK_STYLES = {
   'TRY IT NOW':    { bg:'#052e16', border:'#166534', labelBg:'#15803d', labelColor:'#fff', codeColor:'#86efac', icon:Terminal, label:'TRY IT NOW' },
   'TRY IN CONSOLE':{ bg:'#0c1a2e', border:'#1e3a5f', labelBg:'#1d4ed8', labelColor:'#fff', codeColor:'#93c5fd', icon:Monitor,  label:'TRY IN CONSOLE' },
@@ -246,13 +261,39 @@ function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
   )
 }
 
+// ── Skills Unlocked card ──────────────────────────────────────────────────────
+function SkillsUnlocked({ completedWeeks, C }) {
+  const allSkills = completedWeeks.flatMap(w => WEEK_SKILLS[w] || [])
+  if (!allSkills.length) return null
+
+  return (
+    <div style={{ background: C.surface, border: `1px solid ${C.border}`, marginTop: 14, padding: '14px 20px' }}>
+      <div style={{ fontSize: 9, fontWeight: 700, color: C.green, letterSpacing: '0.14em', marginBottom: 10, fontFamily: 'JetBrains Mono, monospace' }}>
+        ✦ RESUME KEYWORDS UNLOCKED ({allSkills.length})
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        {allSkills.map(skill => (
+          <span key={skill} style={{ fontSize: 11, fontWeight: 600, color: C.text2, background: `${C.accent}12`, border: `1px solid ${C.accent}22`, padding: '3px 10px', fontFamily: "'Inter', sans-serif" }}>
+            {skill}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // ── Browse view ───────────────────────────────────────────────────────────────
-function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap }) {
+function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap, byWeek }) {
   const C = useTheme()
   const watched = weekLessons.filter(l => l.watched).length
   const total   = weekLessons.length
   const pct     = total ? Math.round((watched / total) * 100) : 0
   const theme   = WEEK_THEMES[activeWeek]
+
+  // Weeks completed up to and including activeWeek
+  const completedWeeks = Object.entries(byWeek)
+    .filter(([w, lessons]) => parseInt(w) <= activeWeek && lessons.length && lessons.every(l => l.watched))
+    .map(([w]) => parseInt(w))
 
   const foundations = weekLessons.filter(l => l.lessonCode.startsWith('L'))
   const dailies     = weekLessons.filter(l => !l.lessonCode.startsWith('L'))
@@ -347,6 +388,8 @@ function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap }) {
           </div>
         )}
       </div>
+
+      <SkillsUnlocked completedWeeks={completedWeeks} C={C}/>
     </div>
   )
 }
@@ -502,7 +545,7 @@ export default function Lessons() {
         <MapView byWeek={byWeek} maxUnlockedWeek={maxUnlockedWeek} onSelectWeek={handleSelectWeek}/>
       )}
       {view === 'browse' && (
-        <BrowseView activeWeek={activeWeek} weekLessons={weekLessons} onSelectLesson={handleSelectLesson} onBackToMap={handleBackToMap}/>
+        <BrowseView activeWeek={activeWeek} weekLessons={weekLessons} onSelectLesson={handleSelectLesson} onBackToMap={handleBackToMap} byWeek={byWeek}/>
       )}
       {view === 'reading' && activeLesson && (
         <ReadingView lesson={activeLesson} onBack={handleBackFromReading} onMarkDone={(id) => watchMutation.mutate(id)} isPending={watchMutation.isPending} weekLessons={weekLessons} onSelectLesson={handleSelectLesson}/>

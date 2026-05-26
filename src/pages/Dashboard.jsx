@@ -370,6 +370,39 @@ function Announcements({ announcements }) {
   )
 }
 
+// ─── Pace predictor ──────────────────────────────────────────────────────────
+function PacePredictor({ stats, student }) {
+  const C = useTheme()
+  const { currentWeek } = student
+  const { lessonsWatched } = stats
+  if (lessonsWatched === 0) return null
+
+  const weeksElapsed = Math.max(1, currentWeek - 1)
+  const expectedLessons = weeksElapsed * 5
+  const diff = lessonsWatched - expectedLessons
+  const weeklyRate = lessonsWatched / weeksElapsed
+  const weeksToFinish = Math.ceil((60 - lessonsWatched) / Math.max(0.5, weeklyRate))
+  const projectedFinishWeek = Math.min(currentWeek + weeksToFinish - 1, 12)
+
+  let status, color, msg
+  if (Math.abs(diff) <= 2) { status = 'ON TRACK';  color = C.green;  msg = "You're keeping pace well — stay consistent!" }
+  else if (diff > 0)        { status = 'AHEAD';     color = C.cyan;   msg = `${diff} lessons ahead of schedule — great momentum` }
+  else                      { status = 'BEHIND';    color = C.yellow; msg = `${Math.abs(diff)} lessons behind — one focused session this week will catch you up` }
+
+  return (
+    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${color}`, padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0 }}>
+        <TrendingUp size={12} color={color}/>
+        <span style={{ fontSize: 10, fontWeight: 800, color, letterSpacing: '0.1em', fontFamily: 'JetBrains Mono, monospace' }}>PACE: {status}</span>
+      </div>
+      <div style={{ fontSize: 12, color: C.text2, flex: 1, fontFamily: "'Inter', sans-serif" }}>{msg}</div>
+      <div style={{ fontSize: 11, color: C.text3, fontFamily: 'JetBrains Mono, monospace', flexShrink: 0 }}>
+        Est. finish: <span style={{ color: C.accent, fontWeight: 700 }}>Week {projectedFinishWeek}</span>
+      </div>
+    </div>
+  )
+}
+
 // ─── Quick actions ────────────────────────────────────────────────────────────
 function QuickActions({ week, navigate }) {
   const C = useTheme()
@@ -428,6 +461,8 @@ export default function Dashboard() {
       <HeroBanner student={student} weekPct={weekPct} firstName={firstName}/>
 
       {isNewStudent && <FirstMission week={student.currentWeek} navigate={navigate}/>}
+
+      <PacePredictor stats={stats} student={student}/>
 
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, background:C.border, border:`1px solid ${C.border}`, marginBottom:20 }}>
         <StatCard icon={TrendingUp} label="CURRENT WEEK" rawValue={student.currentWeek} suffix={`/${TOTAL_WEEKS}`} accent={C.accent}  sub="weeks into the program"/>

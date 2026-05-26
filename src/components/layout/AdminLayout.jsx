@@ -4,7 +4,7 @@ import { useAuthStore } from '../../store/authStore'
 import {
   LayoutDashboard, Users, BookOpen, Ticket,
   Megaphone, CreditCard, GraduationCap, Bell, LogOut,
-  Code2, ClipboardList,
+  Code2, ClipboardList, BarChart2,
 } from 'lucide-react'
 
 const NAV = [
@@ -12,6 +12,7 @@ const NAV = [
   { to: '/admin/applications',   icon: ClipboardList,   label: 'Applications'  },
   { to: '/admin/cohorts',        icon: GraduationCap,   label: 'Cohorts'       },
   { to: '/admin/students',       icon: Users,           label: 'Students'      },
+  { to: '/admin/analytics',      icon: BarChart2,       label: 'Analytics'     },
   { to: '/admin/tickets',        icon: Ticket,          label: 'Tickets'       },
   { to: '/admin/lessons',        icon: BookOpen,        label: 'Lessons'       },
   { to: '/admin/announcements',  icon: Megaphone,       label: 'Announcements' },

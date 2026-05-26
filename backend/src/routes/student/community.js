@@ -41,7 +41,31 @@ router.get('/', async (req, res) => {
       }
     })
 
-    res.json(result)
+    // Recent wins (approved PRs in this cohort)
+    const winSubmissions = await prisma.pRSubmission.findMany({
+      where: {
+        status: 'APPROVED',
+        student: { cohortId: me?.cohortId ?? undefined },
+      },
+      include: {
+        student: { include: { user: { select: { name: true } } } },
+        ticket: { select: { ticketCode: true, title: true, week: true } },
+      },
+      orderBy: { reviewedAt: 'desc' },
+      take: 12,
+    })
+
+    const recentWins = winSubmissions.map(s => ({
+      id: s.id,
+      studentName: s.student.user.name,
+      ticketCode: s.ticket.ticketCode,
+      title: s.ticket.title,
+      week: s.ticket.week,
+      score: s.score,
+      reviewedAt: s.reviewedAt,
+    }))
+
+    res.json({ students: result, recentWins })
   } catch (err) {
     console.error('[community]', err)
     res.status(500).json({ error: 'Server error' })

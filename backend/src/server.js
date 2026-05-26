@@ -24,6 +24,7 @@ const adminLessons       = require('./routes/admin/lessons')
 const adminAnnouncements = require('./routes/admin/announcements')
 const adminPayments      = require('./routes/admin/payments')
 const adminApplications  = require('./routes/admin/applications')
+const adminAnalytics     = require('./routes/admin/analytics')
 
 const app = express()
 
@@ -74,6 +75,7 @@ app.use('/api/admin/lessons',        authenticate, requireAdmin, adminLessons)
 app.use('/api/admin/announcements',  authenticate, requireAdmin, adminAnnouncements)
 app.use('/api/admin/payments',       authenticate, requireAdmin, adminPayments)
 app.use('/api/admin/applications',   authenticate, requireAdmin, adminApplications)
+app.use('/api/admin/analytics',      authenticate, requireAdmin, adminAnalytics)
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (_, res) => res.json({ status: 'ok', timestamp: new Date() }))

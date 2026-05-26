@@ -1,15 +1,23 @@
 import { useState } from 'react'
 import Sidebar from './Sidebar'
 import Navbar from './Navbar'
+import OnboardingTour from '../OnboardingTour'
 import { useIsMobile } from '../../lib/useIsMobile'
 import { useTheme } from '../../hooks/useTheme'
+import { useAuthStore } from '../../store/authStore'
 
 export default function DashboardLayout({ title, children }) {
   const isMobile = useIsMobile()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [tourDone, setTourDone] = useState(false)
   const C = useTheme()
+  const user = useAuthStore(s => s.user)
+
+  const showTour = !tourDone && user?.student?.onboardingCompleted === false
 
   return (
+    <>
+    {showTour && <OnboardingTour onComplete={() => setTourDone(true)}/>}
     <div style={{
       display: 'flex',
       minHeight: '100vh',
@@ -53,5 +61,6 @@ export default function DashboardLayout({ title, children }) {
         </main>
       </div>
     </div>
+    </>
   )
 }

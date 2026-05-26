@@ -45,6 +45,22 @@ router.get('/', async (req, res) => {
       ? Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length)
       : 0
 
+    // Activity dates for heatmap (lesson watch dates)
+    const activityDates = student.lessonProgress
+      .filter(l => l.watchedAt)
+      .map(l => l.watchedAt.toISOString().split('T')[0])
+
+    // Days inactive (last lesson watch or PR submission)
+    const lastPR = student.prSubmissions[0]?.submittedAt
+    const lastLesson = [...student.lessonProgress]
+      .filter(l => l.watchedAt)
+      .sort((a, b) => new Date(b.watchedAt) - new Date(a.watchedAt))[0]?.watchedAt
+    const lastActivity = [lastPR, lastLesson].filter(Boolean)
+      .sort((a, b) => new Date(b) - new Date(a))[0]
+    const daysInactive = lastActivity
+      ? Math.floor((Date.now() - new Date(lastActivity)) / 86400000)
+      : null
+
     res.json({
       currentWeek: student.currentWeek,
       status: student.status,
@@ -53,6 +69,8 @@ router.get('/', async (req, res) => {
       mergedPRs: student.prSubmissions.filter(p => p.status === 'APPROVED').length,
       lessonsWatched: student.lessonProgress.filter(l => l.watched).length,
       weeklyData: Object.values(weekMap),
+      activityDates,
+      daysInactive,
       recentPRs: student.prSubmissions.slice(0, 10).map(pr => ({
         id: pr.id,
         ticketCode: pr.ticket.ticketCode,
