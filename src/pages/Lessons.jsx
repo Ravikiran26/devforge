@@ -160,7 +160,7 @@ function Spinner() {
 
 // ── Map view ──────────────────────────────────────────────────────────────────
 function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
-  const weeks = Array.from({ length: 10 }, (_, i) => i + 1)
+  const weeks = Array.from({ length: 12 }, (_, i) => i + 1)
 
   const weekStatus = (w) => {
     const wl = byWeek[w] || []
@@ -179,7 +179,7 @@ function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
           <h2 style={{ fontFamily:"'Inter', sans-serif", fontSize:26, fontWeight:600, color: C.text, margin:0, letterSpacing:'-0.02em' }}>Your Learning Journey</h2>
         </div>
         <p style={{ fontSize: 13, color: C.text3, margin: 0, fontFamily: "'Inter', sans-serif" }}>
-          10-week full-stack developer training · Click any week to open lessons
+          12-week full-stack developer training · Click any week to open lessons
         </p>
       </div>
 

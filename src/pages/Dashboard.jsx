@@ -303,9 +303,8 @@ function TicketCard({ ticket: t }) {
 }
 
 // ─── Weekly Goals ─────────────────────────────────────────────────────────────
-function WeeklyGoals({ tasks, setTasks }) {
-  const done = tasks.filter(t => t.done).length
-  const pct  = Math.round((done / tasks.length) * 100)
+function WeeklyGoals({ activeTickets }) {
+  const total = activeTickets.length
   return (
     <div style={{ background:C.surface, border:`1px solid ${C.border}`, overflow:'hidden' }}>
       {/* Header */}
@@ -317,53 +316,33 @@ function WeeklyGoals({ tasks, setTasks }) {
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <Target size={13} color={C.accent}/>
           <span style={{ fontSize:12, fontWeight:700, color:C.text, fontFamily:"'Inter', sans-serif", letterSpacing:'0.02em' }}>
-            This Week's Goals
+            Active PRs
           </span>
         </div>
         <span style={{ fontSize:11, fontWeight:700, color:C.accent, fontFamily:'JetBrains Mono,monospace' }}>
-          {done}/{tasks.length}
+          {total}
         </span>
       </div>
 
-      {/* Tasks */}
+      {/* Tickets */}
       <div style={{ padding:'8px 0' }}>
-        {tasks.map((task, i) => (
-          <div
-            key={i}
-            onClick={() => setTasks(tasks.map((t, j) => j === i ? {...t, done:!t.done} : t))}
-            style={{
-              display:'flex', alignItems:'flex-start', gap:12,
-              padding:'12px 20px', cursor:'pointer',
-              borderBottom: i < tasks.length - 1 ? `1px solid ${C.border}` : 'none',
-              transition:'background 0.1s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.background=C.surface2}
-            onMouseLeave={e => e.currentTarget.style.background='transparent'}
-          >
-            <div style={{
-              width:16, height:16, flexShrink:0, marginTop:1,
-              border:`1.5px solid ${task.done ? C.accent : C.border2}`,
-              background: task.done ? C.accent : 'transparent',
-              display:'flex', alignItems:'center', justifyContent:'center',
-              transition:'all 0.15s',
-            }}>
-              {task.done && <CheckCircle size={10} color="#fff"/>}
-            </div>
+        {total === 0 ? (
+          <div style={{ padding:'20px', textAlign:'center', fontSize:12, color:C.text3, fontFamily:"'Inter', sans-serif", lineHeight:1.6 }}>
+            No PRs in review.<br/>Submit a PR to get started.
+          </div>
+        ) : activeTickets.map((ticket, i) => (
+          <div key={ticket.id} style={{
+            display:'flex', alignItems:'flex-start', gap:12,
+            padding:'12px 20px',
+            borderBottom: i < total - 1 ? `1px solid ${C.border}` : 'none',
+          }}>
+            <div style={{ width:6, height:6, borderRadius:'50%', background:C.amber, flexShrink:0, marginTop:5 }}/>
             <div style={{ flex:1 }}>
-              <div style={{
-                fontSize:13, fontWeight:500, lineHeight:1.4,
-                color: task.done ? C.text3 : C.text2,
-                textDecoration: task.done ? 'line-through' : 'none',
-                fontFamily:"'Inter', sans-serif",
-              }}>{task.label}</div>
-              <div style={{
-                fontSize:10, marginTop:4,
-                color: task.done ? C.green : C.text3,
-                display:'flex', alignItems:'center', gap:4,
-                fontFamily:"'Inter', sans-serif",
-              }}>
-                {task.done ? <CheckCircle size={9} color={C.green}/> : <Clock size={9}/>}
-                {task.time}
+              <div style={{ fontSize:12, fontWeight:600, color:C.text2, fontFamily:"'Inter', sans-serif", lineHeight:1.4 }}>
+                {ticket.title}
+              </div>
+              <div style={{ fontSize:10, color:C.text3, marginTop:3, fontFamily:'JetBrains Mono,monospace' }}>
+                {ticket.ticketCode} · IN REVIEW
               </div>
             </div>
           </div>
@@ -372,20 +351,6 @@ function WeeklyGoals({ tasks, setTasks }) {
 
       {/* Footer progress */}
       <div style={{ padding:'14px 20px', borderTop:`1px solid ${C.border}`, background:C.surface2 }}>
-        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8 }}>
-          <span style={{ fontSize:10, color:C.text3, fontFamily:"'Inter', sans-serif", letterSpacing:'0.04em' }}>WEEKLY PROGRESS</span>
-          <span style={{ fontSize:10, fontWeight:700, color: pct===100 ? C.green : C.accent, fontFamily:'JetBrains Mono,monospace' }}>{pct}%</span>
-        </div>
-        <div style={{ height:4, background:C.border, overflow:'hidden' }}>
-          <div style={{
-            height:'100%', width:`${pct}%`,
-            background: pct === 100
-              ? `linear-gradient(90deg, ${C.green}, #34d399)`
-              : `linear-gradient(90deg, ${C.accent}, ${C.cyan})`,
-            transition:'width 0.5s ease',
-            boxShadow: pct > 0 ? `0 0 6px ${C.accent}88` : 'none',
-          }}/>
-        </div>
       </div>
     </div>
   )
@@ -465,11 +430,6 @@ function QuickLinks({ week }) {
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const user  = useAuthStore(s => s.user)
-  const [tasks, setTasks] = useState([
-    { label:'Set up Express + Prisma backend', done:true,  time:'Completed 2 days ago' },
-    { label:'Build JWT auth endpoints',         done:true,  time:'Completed yesterday'  },
-    { label:'Connect React frontend to API',    done:false, time:'Due in 5 hours'       },
-  ])
 
   const { data, isLoading, isError } = useQuery({
     queryKey:['dashboard'],
@@ -553,7 +513,7 @@ export default function Dashboard() {
 
         {/* Right */}
         <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-          <WeeklyGoals tasks={tasks} setTasks={setTasks}/>
+          <WeeklyGoals activeTickets={activeTickets}/>
           <Announcements announcements={announcements}/>
         </div>
       </div>

@@ -223,9 +223,10 @@ async function runAIReview(ticket, submission) {
 
   await postGitHubComment(submission.prUrl, ticket, review)
 
-  if (review.verdict === 'MERGE_READY') {
-    await mergePR(owner, repo, pull_number)
-  }
+  // Auto-merge disabled — mentors review before merge
+  // if (review.verdict === 'MERGE_READY') {
+  //   await mergePR(owner, repo, pull_number)
+  // }
 
   return review
 }

@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { Bell, Search, ChevronDown, LogOut, User, Settings } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { useNavigate } from 'react-router-dom'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import api from '../../lib/api'
 
 const C = {
   bg:      '#161B22',
@@ -14,12 +16,6 @@ const C = {
   red:     '#F85149',
 }
 
-const NOTIFICATIONS = [
-  { id: 1, text: 'PR #31 reviewed — 2 comments',  time: '10m ago', unread: true  },
-  { id: 2, text: 'Week 4 lesson unlocked',          time: '1h ago',  unread: true  },
-  { id: 3, text: 'Mock interview scheduled: Fri',   time: '3h ago',  unread: false },
-]
-
 export default function Navbar({ title = 'Dashboard' }) {
   const [notifOpen, setNotifOpen] = useState(false)
   const [userOpen,  setUserOpen]  = useState(false)
@@ -29,8 +25,21 @@ export default function Navbar({ title = 'Dashboard' }) {
   const userRef  = useRef(null)
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
-  const name   = user?.name ?? 'Student'
-  const unread = NOTIFICATIONS.filter(n => n.unread).length
+  const queryClient = useQueryClient()
+  const name = user?.name ?? 'Student'
+
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: () => api.get('/student/notifications').then(r => r.data),
+    staleTime: 60_000,
+  })
+
+  const markRead = useMutation({
+    mutationFn: () => api.post('/student/notifications/read'),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+  })
+
+  const unread = notifications.filter(n => !n.read).length
 
   useEffect(() => {
     const handler = (e) => {
@@ -129,9 +138,13 @@ export default function Navbar({ title = 'Dashboard' }) {
                     <span style={{ marginLeft:6, fontSize:10, background:C.accent, color:'#fff', padding:'1px 6px', fontWeight:800 }}>{unread}</span>
                   )}
                 </span>
-                <span style={{ fontSize:11, color:C.text3, cursor:'pointer', fontFamily:"'Inter', sans-serif" }}>Mark read</span>
+                <span onClick={() => markRead.mutate()} style={{ fontSize:11, color:C.text3, cursor:'pointer', fontFamily:"'Inter', sans-serif" }}>Mark read</span>
               </div>
-              {NOTIFICATIONS.map(n => (
+              {notifications.length === 0 ? (
+                <div style={{ padding:'24px 16px', textAlign:'center', fontSize:12, color:C.text3, fontFamily:"'Inter', sans-serif" }}>
+                  No notifications yet
+                </div>
+              ) : notifications.map(n => (
                 <div key={n.id} style={{
                   display:'flex', alignItems:'flex-start', gap:12,
                   padding:'12px 16px',
@@ -144,11 +157,13 @@ export default function Navbar({ title = 'Dashboard' }) {
                 >
                   <div style={{
                     width:6, height:6, borderRadius:'50%', marginTop:5, flexShrink:0,
-                    background: n.unread ? C.accent : C.text3,
+                    background: !n.read ? C.accent : C.text3,
                   }}/>
                   <div style={{ flex:1 }}>
-                    <div style={{ fontSize:12, color:C.text, lineHeight:1.4, fontWeight: n.unread ? 500 : 400 }}>{n.text}</div>
-                    <div style={{ fontSize:10, color:C.text3, marginTop:2, fontFamily:'JetBrains Mono,monospace' }}>{n.time}</div>
+                    <div style={{ fontSize:12, color:C.text, lineHeight:1.4, fontWeight: !n.read ? 500 : 400 }}>{n.message}</div>
+                    <div style={{ fontSize:10, color:C.text3, marginTop:2, fontFamily:'JetBrains Mono,monospace' }}>
+                      {new Date(n.createdAt).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
               ))}

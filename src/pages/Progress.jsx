@@ -75,7 +75,7 @@ export default function Progress() {
   )
 
   const { currentWeek, overallGrade, totalPRs, mergedPRs, lessonsWatched, weeklyData, recentPRs } = data
-  const pct = Math.round((currentWeek / 8) * 100)
+  const pct = Math.round(((currentWeek - 1) / 12) * 100)
 
   return (
     <DashboardLayout title="Progress">
@@ -89,8 +89,8 @@ export default function Progress() {
             </div>
             <DonutChart pct={pct} />
             <div style={{ fontSize: 13, color: '#64748b', marginTop: 14, lineHeight: 1.5 }}>
-              <strong style={{ color: '#0f172a' }}>Week {currentWeek}</strong> of 8<br />
-              <span style={{ fontSize: 11 }}>{8 - currentWeek} weeks remaining</span>
+              <strong style={{ color: '#0f172a' }}>Week {currentWeek}</strong> of 12<br />
+              <span style={{ fontSize: 11 }}>{12 - currentWeek} weeks remaining</span>
             </div>
           </div>
 
@@ -123,7 +123,7 @@ export default function Progress() {
             <MiniStat value={`${overallGrade ?? '—'}/100`} label="Overall Grade" color="#4f46e5" />
             <MiniStat value={mergedPRs}                    label="PRs Merged"   color="#10b981" />
             <MiniStat value={lessonsWatched}               label="Lessons Done" color="#7c3aed" />
-            <MiniStat value={`${currentWeek} / 8`}         label="Week"         color="#f59e0b" />
+            <MiniStat value={`${currentWeek} / 12`}         label="Week"         color="#f59e0b" />
           </div>
 
           {/* Weekly bar chart */}
