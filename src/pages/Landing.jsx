@@ -841,8 +841,37 @@ function Footer() {
 // ─── Apply Modal ──────────────────────────────────────────────────────────────
 function ApplyModal({ onClose, initialPlan = 'Pro' }) {
   const planLabel = initialPlan === 'Basic' ? 'Basic — ₹9,999' : 'Pro — ₹14,999'
-  const [form, setForm] = useState({ name: '', email: '', phone: '', plan: planLabel })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', college: '', plan: planLabel })
   const [done, setDone] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!form.name || !form.email || !form.phone || !form.college) {
+      setError('All fields are required.'); return
+    }
+    setLoading(true); setError('')
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: form.name, email: form.email, phone: form.phone, college: form.college, plan: form.plan }),
+      })
+      setDone(true)
+    } catch {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const inputStyle = {
+    width: '100%', padding: '10px 12px', background: C.surface2,
+    border: `1px solid ${C.border}`, color: C.text, fontSize: 13,
+    fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box',
+    transition: 'border-color 0.15s, box-shadow 0.15s',
+  }
 
   return (
     <AnimatePresence>
@@ -851,7 +880,7 @@ function ApplyModal({ onClose, initialPlan = 'Pro' }) {
         onClick={e => { if (e.target === e.currentTarget) onClose() }}
       >
         <motion.div initial={{ opacity: 0, y: 28, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 28 }} transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          style={{ background: C.surface, border: `1px solid ${C.border2}`, borderTop: `2px solid ${C.accent}`, width: 460, padding: '36px', position: 'relative', boxShadow: glow(C.accent, 24) }}
+          style={{ background: C.surface, border: `1px solid ${C.border2}`, borderTop: `2px solid ${C.accent}`, width: 480, padding: '36px', position: 'relative', boxShadow: glow(C.accent, 24), maxHeight: '90vh', overflowY: 'auto' }}
         >
           <button onClick={onClose} style={{ position: 'absolute', top: 14, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: C.text3, fontSize: 20, fontFamily: 'JetBrains Mono,monospace', lineHeight: 1 }}>×</button>
 
@@ -859,7 +888,7 @@ function ApplyModal({ onClose, initialPlan = 'Pro' }) {
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
               <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em', textShadow: glow(C.green) }}>✓ APPLICATION RECEIVED</div>
               <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 12 }}>You're in the queue.</div>
-              <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 20 }}>We'll WhatsApp <strong style={{ color: C.accent }}>{form.phone || form.email}</strong> within 2 hours.</p>
+              <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 20 }}>We'll WhatsApp <strong style={{ color: C.accent }}>{form.phone}</strong> within 2 hours.</p>
               <div style={{ background: C.surface2, border: `1px solid ${C.border}`, padding: '14px 16px', textAlign: 'left' }}>
                 <div style={{ fontSize: 9, color: C.text3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.1em', marginBottom: 10 }}>WHAT HAPPENS NEXT</div>
                 {['Application reviewed same day', 'We contact you on WhatsApp within 2 hours', 'Pay to lock your seat', 'Instant access to Week 1 & Discord'].map((s, i) => (
@@ -872,16 +901,26 @@ function ApplyModal({ onClose, initialPlan = 'Pro' }) {
             </div>
           ) : (
             <>
-              <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 12, textShadow: glow() }}>APPLY FOR COHORT 3</div>
-              <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 22, fontWeight: 700, color: C.text, margin: '0 0 28px' }}>Reserve your seat</h2>
-              <form onSubmit={e => { e.preventDefault(); if (!form.name || !form.email) return; setDone(true) }}
-                style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
-              >
-                {[['Full name', 'name', 'text'], ['Email address', 'email', 'email'], ['Phone number', 'phone', 'tel']].map(([label, key, type]) => (
+              <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 8, textShadow: glow() }}>APPLY FOR COHORT 3</div>
+              <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 22, fontWeight: 700, color: C.text, margin: '0 0 6px' }}>Reserve your seat</h2>
+              <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>Cohort 3 starts July 7 · 8 seats remaining</p>
+
+              {error && (
+                <div style={{ fontSize: 12, color: C.red, fontFamily: "'Inter', sans-serif", padding: '8px 12px', border: `1px solid ${C.red}44`, marginBottom: 14 }}>{error}</div>
+              )}
+
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {[
+                  ['Full name', 'name', 'text', 'Your full name'],
+                  ['Email address', 'email', 'email', 'you@example.com'],
+                  ['Mobile number', 'phone', 'tel', '+91 98765 43210'],
+                  ['College / University', 'college', 'text', 'e.g. JNTU Hyderabad'],
+                ].map(([label, key, type, placeholder]) => (
                   <div key={key}>
                     <label style={{ fontSize: 9, fontWeight: 700, color: C.text3, letterSpacing: '0.12em', fontFamily: 'JetBrains Mono,monospace', display: 'block', marginBottom: 7 }}>{label.toUpperCase()}</label>
-                    <input type={type} value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })}
-                      style={{ width: '100%', padding: '10px 12px', background: C.surface2, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+                    <input type={type} value={form[key]} placeholder={placeholder}
+                      onChange={e => { setError(''); setForm({ ...form, [key]: e.target.value }) }}
+                      style={inputStyle}
                       onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = glow() }}
                       onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = 'none' }}
                     />
@@ -890,17 +929,17 @@ function ApplyModal({ onClose, initialPlan = 'Pro' }) {
                 <div>
                   <label style={{ fontSize: 9, fontWeight: 700, color: C.text3, letterSpacing: '0.12em', fontFamily: 'JetBrains Mono,monospace', display: 'block', marginBottom: 7 }}>PLAN</label>
                   <select value={form.plan} onChange={e => setForm({ ...form, plan: e.target.value })}
-                    style={{ width: '100%', padding: '10px 12px', background: C.surface2, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box' }}
+                    style={{ ...inputStyle, cursor: 'pointer' }}
                   >
                     <option>Pro — ₹14,999</option>
                     <option>Basic — ₹9,999</option>
                   </select>
                 </div>
-                <button type="submit"
-                  style={{ background: C.accent, border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '13px', letterSpacing: '0.1em', marginTop: 6, transition: 'box-shadow 0.2s' }}
-                  onMouseEnter={e => e.currentTarget.style.boxShadow = glow(C.accent, 16)}
+                <button type="submit" disabled={loading}
+                  style={{ background: C.accent, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '13px', letterSpacing: '0.1em', marginTop: 6, transition: 'box-shadow 0.2s, opacity 0.15s', opacity: loading ? 0.7 : 1 }}
+                  onMouseEnter={e => { if (!loading) e.currentTarget.style.boxShadow = glow(C.accent, 16) }}
                   onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
-                >SUBMIT APPLICATION</button>
+                >{loading ? 'SUBMITTING...' : 'SUBMIT APPLICATION'}</button>
               </form>
             </>
           )}

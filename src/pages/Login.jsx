@@ -19,7 +19,7 @@ const C = {
 function BrandPanel() {
   const stats = [
     { value: '65+', label: 'PRs merged'    },
-    { value: '8',   label: 'Weeks'         },
+    { value: '12',  label: 'Weeks'         },
     { value: '3',   label: 'Apps deployed' },
   ]
 
@@ -76,7 +76,7 @@ function BrandPanel() {
         </h2>
 
         <p style={{ fontSize:14, color:C.text3, lineHeight:1.75, fontFamily:"'Inter', sans-serif", maxWidth:340 }}>
-          Merge 65+ real pull requests, ship 3 production projects, and land your first developer role in 8 weeks.
+          Merge 65+ real pull requests, ship 3 production projects, and land your first developer role in 12 weeks.
         </p>
 
         {/* Stats */}
@@ -108,7 +108,7 @@ function BrandPanel() {
           }}>P</div>
           <div>
             <div style={{ fontSize:12, fontWeight:600, color:C.text, fontFamily:"'Inter', sans-serif" }}>Priya Sharma</div>
-            <div style={{ fontSize:11, color:C.text3, fontFamily:'JetBrains Mono,monospace', marginTop:1 }}>Cohort 2 · Razorpay</div>
+            <div style={{ fontSize:11, color:C.text3, fontFamily:'JetBrains Mono,monospace', marginTop:1 }}>Cohort 2 Graduate · Bengaluru</div>
           </div>
         </div>
       </div>

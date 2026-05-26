@@ -232,3 +232,13 @@ model RefreshToken {
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
+
+model Application {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  college   String
+  plan      String   @default("Pro")
+  createdAt DateTime @default(now())
+}
