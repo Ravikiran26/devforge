@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
 router.post('/', [
   body('ticketCode').trim().notEmpty(),
   body('title').trim().notEmpty(),
-  body('week').isInt({ min: 1, max: 8 }),
+  body('week').isInt({ min: 1, max: 12 }),
   body('priority').isIn(['LOW', 'MEDIUM', 'HIGH']),
 ], async (req, res) => {
   const errors = validationResult(req)

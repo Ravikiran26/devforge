@@ -41,7 +41,7 @@ export default function AdminLessons() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-lessons'] }); setShowModal(false); setForm(BLANK_FORM) },
   })
 
-  const weeks = ['All', '1','2','3','4','5','6','7','8']
+  const weeks = ['All', '1','2','3','4','5','6','7','8','9','10','11','12']
   const filtered = weekFilter === 'All' ? lessons : lessons.filter(l => l.week === parseInt(weekFilter))
 
   const published = lessons.filter(l => l.status === 'PUBLISHED').length
@@ -133,7 +133,7 @@ export default function AdminLessons() {
         <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:200 }}>
           <div style={{ background:'#fff', borderRadius:20, padding:32, width:520, maxHeight:'90vh', overflowY:'auto', boxShadow:'0 24px 64px rgba(0,0,0,0.2)' }}>
             <h2 style={{ fontSize:18, fontWeight:800, margin:'0 0 20px', color:'#0f172a' }}>Add New Lesson</h2>
-            {[['Lesson Code','lessonCode','text','e.g. W1D1'],['Title','title','text','e.g. Day 1 — GitHub Workflow'],['Week','week','number','1-8'],['Duration','duration','text','e.g. Day 1']].map(([l,k,t,p]) => (
+            {[['Lesson Code','lessonCode','text','e.g. W1D1'],['Title','title','text','e.g. Day 1 — GitHub Workflow'],['Week','week','number','1-12'],['Duration','duration','text','e.g. Day 1']].map(([l,k,t,p]) => (
               <div key={k} style={{ marginBottom:14 }}>
                 <label style={{ fontSize:13, fontWeight:600, color:'#374151', display:'block', marginBottom:5 }}>{l}</label>
                 <input type={t} placeholder={p} value={form[k]} onChange={setField(k)}

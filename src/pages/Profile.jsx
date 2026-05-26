@@ -59,8 +59,8 @@ export default function Profile() {
   const handleSave = () => { updateMutation.mutate({ bio: draftBio }); setEditing(false) }
 
   const planLabel = (plan || '').replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
-  const joinedDate = student.enrolledAt
-    ? new Date(student.enrolledAt).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
+  const joinedDate = data?.createdAt
+    ? new Date(data.createdAt).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
     : '—'
 
   return (
@@ -105,7 +105,7 @@ export default function Profile() {
                 padding: '3px 12px',
                 borderRadius: 999,
               }}>
-                Week {currentWeek} of 8
+                Week {currentWeek} of 12
               </span>
             </div>
 

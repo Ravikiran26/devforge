@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
 router.post('/', [
   body('lessonCode').trim().notEmpty(),
   body('title').trim().notEmpty(),
-  body('week').isInt({ min: 1, max: 8 }),
+  body('week').isInt({ min: 1, max: 12 }),
   body('duration').trim().notEmpty(),
 ], async (req, res) => {
   const errors = validationResult(req)

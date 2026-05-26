@@ -125,7 +125,7 @@ export default function Tickets() {
         <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:200 }}>
           <div style={{ background:'#fff', borderRadius:20, padding:32, width:460, boxShadow:'0 24px 64px rgba(0,0,0,0.2)' }}>
             <h2 style={{ fontSize:18, fontWeight:800, margin:'0 0 20px', color:'#0f172a' }}>Create New Ticket</h2>
-            {[['Ticket ID','ticketCode','text','e.g. P1-012'],['Title','title','text','e.g. Build CRUD endpoints'],['Week','week','number','1-8'],['Story Points','storyPoints','number','1-10'],['Description','description','text','Ticket description']].map(([l,k,t,p]) => (
+            {[['Ticket ID','ticketCode','text','e.g. P1-012'],['Title','title','text','e.g. Build CRUD endpoints'],['Week','week','number','1-12'],['Story Points','storyPoints','number','1-10'],['Description','description','text','Ticket description']].map(([l,k,t,p]) => (
               <div key={k} style={{ marginBottom:14 }}>
                 <label style={{ fontSize:13, fontWeight:600, color:'#374151', display:'block', marginBottom:5 }}>{l}</label>
                 <input type={t} placeholder={p} value={form[k]} onChange={setField(k)}

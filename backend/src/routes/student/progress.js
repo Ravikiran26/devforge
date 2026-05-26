@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 
     // Per-week stats
     const weekMap = {}
-    for (let w = 1; w <= 8; w++) {
+    for (let w = 1; w <= 12; w++) {
       weekMap[w] = { week: w, submissions: 0, avgScore: null, scores: [] }
     }
 
