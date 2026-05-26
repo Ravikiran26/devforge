@@ -19,6 +19,8 @@ const C = {
   dim:     '#3D2E1888',
 }
 
+const PILOT_SEATS_LEFT = 20
+
 const glow  = (color = C.accent, size = 12) => `0 0 ${size}px ${color}55, 0 0 ${size * 2}px ${color}22`
 const fade  = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.7 } } }
 const viewportOnce = { once: true, margin: '-40px' }
@@ -134,9 +136,9 @@ function Navbar({ onApply }) {
           onMouseLeave={e => e.currentTarget.style.color = C.text3}
         >LOGIN</button>
         <button onClick={onApply}
-          style={{ background: 'transparent', border: `1px solid ${C.accent}`, cursor: 'pointer', fontSize: 12, fontWeight: 700, color: C.accent, fontFamily: 'JetBrains Mono,monospace', padding: '8px 20px', letterSpacing: '0.08em', transition: 'background 0.15s, box-shadow 0.15s' }}
-          onMouseEnter={e => { e.currentTarget.style.background = `${C.accent}18`; e.currentTarget.style.boxShadow = glow() }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.boxShadow = 'none' }}
+          style={{ background: C.accent, border: `1px solid ${C.accent}`, cursor: 'pointer', fontSize: 12, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '8px 20px', letterSpacing: '0.08em', transition: 'box-shadow 0.15s, opacity 0.15s', boxShadow: glow() }}
+          onMouseEnter={e => { e.currentTarget.style.opacity = '0.88' }}
+          onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
         >APPLY →</button>
       </div>
     </motion.nav>
@@ -273,7 +275,7 @@ function Hero({ onApply }) {
           <motion.span animate={{ opacity: [1, 0.2, 1] }} transition={{ repeat: Infinity, duration: 1.4 }}
             style={{ width: 7, height: 7, borderRadius: '50%', background: C.green, display: 'inline-block', boxShadow: glow(C.green) }}
           />
-          <span style={{ fontSize: 11, color: C.text3, letterSpacing: '0.1em' }}>COHORT 3 · STARTING JULY 7 · 8 SEATS LEFT</span>
+          <span style={{ fontSize: 11, color: C.text3, letterSpacing: '0.1em' }}>COHORT 3 · STARTING JULY 7 · {PILOT_SEATS_LEFT} SEATS LEFT</span>
         </motion.div>
 
         {/* Prompt line */}
@@ -297,7 +299,7 @@ function Hero({ onApply }) {
         </div>
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 2.2 }}
-          style={{ fontSize: 16, color: C.text, lineHeight: 1.9, fontFamily: "'Inter', sans-serif", maxWidth: 560, margin: '0 auto 40px', textAlign: 'left', opacity: 0.82 }}
+          style={{ fontSize: 16, color: '#E8D5A3', lineHeight: 1.9, fontFamily: "'Inter', sans-serif", maxWidth: 560, margin: '0 auto 40px', textAlign: 'left' }}
         >
           Merge 65+ real pull requests, ship 3 production-grade apps, and build a GitHub profile that holds up in a technical interview.
         </motion.p>
