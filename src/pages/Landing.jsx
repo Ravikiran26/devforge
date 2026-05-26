@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, Check } from 'lucide-react'
@@ -261,7 +261,7 @@ function Hero({ onApply }) {
         {['$ git init', '$ npm install', '$ git add .', '$ git commit', '$ git push', '$ npm run dev', '$ git merge'].map((l, i) => <div key={i}>{l}</div>)}
       </div>
       <div style={{ position: 'absolute', right: 48, top: 200, zIndex: 0, pointerEvents: 'none', userSelect: 'none', opacity: 0.11, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, lineHeight: 2, textAlign: 'right' }}>
-        {['✓ tests passing', '✓ build success', '✓ linting clean', '✓ PR approved', '✓ deployed', '→ week 5 / 10'].map((l, i) => <div key={i}>{l}</div>)}
+        {['✓ tests passing', '✓ build success', '✓ linting clean', '✓ PR approved', '✓ deployed', '→ week 5 / 12'].map((l, i) => <div key={i}>{l}</div>)}
       </div>
 
       <div style={{ maxWidth: 1060, width: '100%', padding: '0 24px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
@@ -273,7 +273,7 @@ function Hero({ onApply }) {
           <motion.span animate={{ opacity: [1, 0.2, 1] }} transition={{ repeat: Infinity, duration: 1.4 }}
             style={{ width: 7, height: 7, borderRadius: '50%', background: C.green, display: 'inline-block', boxShadow: glow(C.green) }}
           />
-          <span style={{ fontSize: 11, color: C.text3, letterSpacing: '0.1em' }}>COHORT 3 · LIMITED SEATS</span>
+          <span style={{ fontSize: 11, color: C.text3, letterSpacing: '0.1em' }}>COHORT 3 · STARTING JULY 7 · 8 SEATS LEFT</span>
         </motion.div>
 
         {/* Prompt line */}
@@ -395,10 +395,10 @@ function ToolsBar() {
 // ─── Stats ────────────────────────────────────────────────────────────────────
 function Stats() {
   const stats = [
-    { value: '65+', label: 'pull requests merged',  sub: 'per student · every one reviewed' },
-    { value: '3',   label: 'products shipped',      sub: 'deployed to production'            },
-    { value: '12',  label: 'weeks',                 sub: 'from zero to job-ready portfolio'  },
-    { value: '3',   label: 'cohorts completed',     sub: 'with placement support'            },
+    { value: '65+',   label: 'pull requests merged',  sub: 'per student · every one reviewed'   },
+    { value: '3',     label: 'products shipped',      sub: 'deployed to production'              },
+    { value: '12',    label: 'weeks',                 sub: 'from zero to job-ready portfolio'    },
+    { value: '< 24h', label: 'mentor feedback',       sub: 'on every PR · no waiting days'       },
   ]
   return (
     <section style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
@@ -522,7 +522,7 @@ function HowItWorks() {
   const steps = [
     { n:'01', title:'Enroll & get access',   desc:'Immediately access the student portal, all lessons, and the Week 1 starter repo.' },
     { n:'02', title:'Build daily, PR daily', desc:'Every day you build a real feature and open a pull request against a real project.' },
-    { n:'03', title:'Reviews every PR',      desc:'Every PR gets reviewed for logic, naming, security, and structure. Fix, push, repeat.' },
+    { n:'03', title:'Get feedback on every PR', desc:'Every PR gets reviewed for logic, naming, security, and structure. Fix, push, repeat.' },
     { n:'04', title:'Ship & get placed',     desc:'3 deployed products, 65+ merged PRs, and a structured job application process.' },
   ]
   return (
@@ -548,11 +548,71 @@ function HowItWorks() {
   )
 }
 
+// ─── Who is this for ──────────────────────────────────────────────────────────
+function WhoIsThisFor() {
+  const fits = [
+    { icon: '✓', label: 'Final-year or recent CS/IT/ECE graduates', desc: 'No job yet, want a portfolio that actually shows you can build.' },
+    { icon: '✓', label: 'Self-taught developers stuck in tutorial hell', desc: 'You finish courses but can\'t build anything without a guide.' },
+    { icon: '✓', label: 'Working professionals switching to dev roles', desc: 'You can spare 3–4 hours a day and need structured, real output.' },
+    { icon: '✓', label: 'Students who want to skip internship queues', desc: 'Ship 3 real apps and show them instead of applying blind.' },
+  ]
+  const notFits = [
+    { icon: '✕', label: 'Complete beginners with no JavaScript exposure', desc: 'Learn JS basics first — variables, functions, arrays. Then join.' },
+    { icon: '✕', label: 'Anyone looking for live classes or recorded lectures', desc: 'This is not a course. It is a work environment.' },
+  ]
+  return (
+    <section style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginBottom: 52 }}>
+          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>./check-fit --honest</div>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: 0, textShadow: glow(C.text, 8) }}>
+            Who this is for.
+          </h2>
+        </motion.div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48 }}>
+          <div>
+            <div style={{ fontSize: 9, color: C.green, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow(C.green, 6) }}>GOOD FIT</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+              {fits.map((f, i) => (
+                <motion.div key={f.label} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.08 }}
+                  style={{ display: 'flex', gap: 14, padding: '16px 0', borderBottom: i < fits.length - 1 ? `1px solid ${C.border}` : 'none' }}
+                >
+                  <span style={{ color: C.green, fontFamily: 'JetBrains Mono,monospace', fontSize: 12, flexShrink: 0, marginTop: 2, textShadow: glow(C.green, 6) }}>{f.icon}</span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.text, fontFamily: "'Inter', sans-serif", marginBottom: 4 }}>{f.label}</div>
+                    <div style={{ fontSize: 12, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.65 }}>{f.desc}</div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 9, color: C.red, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow(C.red, 6) }}>NOT A FIT (YET)</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+              {notFits.map((f, i) => (
+                <motion.div key={f.label} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.08 }}
+                  style={{ display: 'flex', gap: 14, padding: '16px 0', borderBottom: i < notFits.length - 1 ? `1px solid ${C.border}` : 'none' }}
+                >
+                  <span style={{ color: C.red, fontFamily: 'JetBrains Mono,monospace', fontSize: 12, flexShrink: 0, marginTop: 2 }}>{f.icon}</span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.text, fontFamily: "'Inter', sans-serif", marginBottom: 4 }}>{f.label}</div>
+                    <div style={{ fontSize: 12, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.65 }}>{f.desc}</div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // ─── Pricing ──────────────────────────────────────────────────────────────────
 function Pricing({ onApply }) {
   const plans = [
     {
-      id: 'basic', name: 'Basic', price: '₹9,999', badge: null, tagline: 'Build real projects. Ship real code.',
+      id: 'basic', name: 'Basic', price: '₹9,999', emi: '₹3,500', badge: null, tagline: 'Build real projects. Ship real code.',
       desc: 'Full 12-week curriculum, AI code review on every PR, mentor grading, and community access.',
       features: [
         { title: 'Full 12-week project curriculum', sub: 'All lessons, project briefs, and code examples on day 1.' },
@@ -565,7 +625,7 @@ function Pricing({ onApply }) {
       cta: 'ENROLL — BASIC', accent: C.text3, recommended: false,
     },
     {
-      id: 'pro', name: 'Pro', price: '₹14,999', badge: 'MOST POPULAR', tagline: 'Build + get placement-ready.',
+      id: 'pro', name: 'Pro', price: '₹14,999', emi: '₹5,000', badge: 'MOST POPULAR', tagline: 'Build + get placement-ready.',
       desc: 'Everything in Basic plus resume preparation, LinkedIn setup, and a 1:1 mock interview.',
       features: [
         { title: 'Everything in Basic', sub: 'Full curriculum, AI reviews, mentor grading, certificate, lifetime access.' },
@@ -608,6 +668,7 @@ function Pricing({ onApply }) {
                 <div style={{ marginBottom: 16 }}>
                   <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 36, fontWeight: 700, color: p.recommended ? C.accent : C.text, textShadow: p.recommended ? glow() : 'none' }}>{p.price}</span>
                   <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: C.text3, marginLeft: 8 }}>one-time</span>
+                  <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace', marginTop: 5 }}>or {p.emi} × 3 EMI</div>
                 </div>
                 <p style={{ fontSize: 12, color: C.text2, lineHeight: 1.7, fontFamily: "'Inter', sans-serif", marginBottom: 20 }}>{p.desc}</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28, flex: 1 }}>
@@ -621,7 +682,7 @@ function Pricing({ onApply }) {
                     </div>
                   ))}
                 </div>
-                <button onClick={onApply}
+                <button onClick={() => onApply(p.name)}
                   style={{
                     width: '100%', padding: '12px', cursor: 'pointer',
                     fontWeight: 700, fontSize: 11, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.1em',
@@ -650,9 +711,9 @@ function Pricing({ onApply }) {
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 function Testimonials() {
   const quotes = [
-    { quote: 'I had 3 interviews lined up before the program even ended. The PR workflow alone is worth the fee — it is how real companies work.', name: 'Priya Sharma', detail: 'Cohort 2 · Now at Razorpay' },
-    { quote: "Every week I was genuinely scared I wouldn't finish — and then I did. That's the confidence that shows up in interviews.", name: 'Karan Mehta', detail: 'Cohort 2 · Now at Zerodha' },
-    { quote: "The code reviews were brutal in the best way. By Week 6 I was writing code that didn't get comments at all.", name: 'Ananya Roy', detail: 'Cohort 2 · Now at a Bangalore startup' },
+    { quote: 'I had 3 interviews lined up before the program even ended. The PR workflow alone is worth the fee — it is how real companies work.', name: 'Priya Sharma', detail: 'Cohort 2 Graduate · Bengaluru' },
+    { quote: "Every week I was genuinely scared I wouldn't finish — and then I did. That's the confidence that shows up in interviews.", name: 'Karan Mehta', detail: 'Cohort 2 Graduate · Hyderabad' },
+    { quote: "The code reviews were brutal in the best way. By Week 6 I was writing code that didn't get comments at all.", name: 'Ananya Roy', detail: 'Cohort 2 Graduate · Pune' },
   ]
   return (
     <section id="testimonials" style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
@@ -689,10 +750,13 @@ function Testimonials() {
 function FAQ() {
   const [open, setOpen] = useState(null)
   const items = [
+    { q: 'When does Cohort 3 start?', a: 'Cohort 3 starts July 7, 2025. Once enrolled, you get immediate access to Week 1 lessons, the starter repo, and the Discord community.' },
     { q: 'Do I need a CS degree?', a: 'No. Most students are engineering graduates from non-CS branches or working professionals. What matters is commitment and 3–4 focused hours daily.' },
     { q: 'What programming knowledge is required?', a: 'You should know basic JavaScript — variables, functions, arrays, loops. If you can write a function that filters an array, you are ready.' },
     { q: 'How is this different from YouTube tutorials?', a: 'Tutorials teach you to watch. This program teaches you to build. Every day you open a real pull request that gets reviewed. You cannot fake your way through that.' },
     { q: 'Can I do this while working full-time?', a: 'Yes. The program is fully async — no live sessions, no fixed schedule. 3–4 focused hours daily is recommended. Most students do early morning or evening blocks.' },
+    { q: 'What is the refund policy?', a: 'Full refund within 7 days if you haven\'t opened your first pull request. No questions asked. After that, no refunds — you\'ve started building.' },
+    { q: 'What laptop or setup do I need?', a: 'Any laptop made after 2015 works — Windows, Mac, or Linux. You need Node.js, Git, and VS Code installed. We send a setup guide on enrollment day. No paid tools required.' },
     { q: 'What happens after the program?', a: 'You leave with 3 deployed products, 65+ merged PRs, and a structured job application process. Discord access is lifetime.' },
   ]
   return (
@@ -775,8 +839,9 @@ function Footer() {
 }
 
 // ─── Apply Modal ──────────────────────────────────────────────────────────────
-function ApplyModal({ onClose }) {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', plan: 'Pro — ₹14,999' })
+function ApplyModal({ onClose, initialPlan = 'Pro' }) {
+  const planLabel = initialPlan === 'Basic' ? 'Basic — ₹9,999' : 'Pro — ₹14,999'
+  const [form, setForm] = useState({ name: '', email: '', phone: '', plan: planLabel })
   const [done, setDone] = useState(false)
 
   return (
@@ -794,10 +859,10 @@ function ApplyModal({ onClose }) {
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
               <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em', textShadow: glow(C.green) }}>✓ APPLICATION RECEIVED</div>
               <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 12 }}>You're in the queue.</div>
-              <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 20 }}>We'll email <strong style={{ color: C.accent }}>{form.email}</strong> within 24 hours.</p>
+              <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 20 }}>We'll WhatsApp <strong style={{ color: C.accent }}>{form.phone || form.email}</strong> within 2 hours.</p>
               <div style={{ background: C.surface2, border: `1px solid ${C.border}`, padding: '14px 16px', textAlign: 'left' }}>
                 <div style={{ fontSize: 9, color: C.text3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.1em', marginBottom: 10 }}>WHAT HAPPENS NEXT</div>
-                {['Application reviewed same day', 'Admission confirmation + payment link sent', 'Pay to lock your seat', 'Instant access to Week 1 & Discord'].map((s, i) => (
+                {['Application reviewed same day', 'We contact you on WhatsApp within 2 hours', 'Pay to lock your seat', 'Instant access to Week 1 & Discord'].map((s, i) => (
                   <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 6, fontSize: 12, color: C.text2, fontFamily: "'Inter', sans-serif" }}>
                     <span style={{ color: C.accent, fontFamily: 'JetBrains Mono,monospace' }}>{i + 1}.</span>
                     <span>{s}</span>
@@ -848,22 +913,30 @@ function ApplyModal({ onClose }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Landing() {
   const [showModal, setShowModal] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState('Pro')
+
+  const openModal = (plan) => {
+    if (plan) setSelectedPlan(plan)
+    setShowModal(true)
+  }
+
   return (
     <div style={{ background: C.bg, minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
       <ScrollProgress />
-      <Navbar onApply={() => setShowModal(true)} />
-      <Hero onApply={() => setShowModal(true)} />
+      <Navbar onApply={openModal} />
+      <Hero onApply={openModal} />
       <ToolsBar />
       <Stats />
       <Projects />
       <Curriculum />
       <HowItWorks />
-      <Pricing onApply={() => setShowModal(true)} />
+      <WhoIsThisFor />
+      <Pricing onApply={openModal} />
       <Testimonials />
       <FAQ />
-      <CTA onApply={() => setShowModal(true)} />
+      <CTA onApply={openModal} />
       <Footer />
-      {showModal && <ApplyModal onClose={() => setShowModal(false)} />}
+      {showModal && <ApplyModal onClose={() => setShowModal(false)} initialPlan={selectedPlan} />}
     </div>
   )
 }
