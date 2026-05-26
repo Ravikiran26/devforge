@@ -4,10 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import api from '../lib/api'
 
 const RESOURCES = [
-  { label: 'Discord Server',   desc: 'Ask doubts, share PRs, find study buddies', icon: '💬', url: 'https://discord.gg/XxFSFdHTU' },
-  { label: 'Cohort 3 Notion',  desc: 'Sprint docs, session recordings, resources', icon: '📋', url: '#' },
-  { label: 'GitHub Org',       desc: 'All starter repos and submission guidelines', icon: '🐙', url: '#' },
-  { label: 'Office Hours',     desc: 'Book 1:1 with mentor — 30 min slots',        icon: '📅', url: '#' },
+  { label: 'Discord Server', desc: 'Ask doubts, share PRs, get unblocked fast', icon: '💬', url: 'https://discord.gg/XxFSFdHTU' },
 ]
 
 const COLORS = ['#3B82F6','#10B981','#8B5CF6','#F59E0B','#EF4444','#06B6D4','#EC4899','#14B8A6']
@@ -76,7 +73,7 @@ export default function Community() {
         <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 18, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
           <div style={{ padding: '18px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 8 }}>
             <Users size={15} color="#4f46e5" />
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', fontFamily: "'Inter', sans-serif" }}>Cohort 3 — Students</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', fontFamily: "'Inter', sans-serif" }}>Batch 3 — Students</span>
             <span style={{ fontSize: 11, color: '#94a3b8', marginLeft: 4 }}>{students.length} enrolled</span>
           </div>
 
@@ -95,7 +92,7 @@ export default function Community() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                  {['#', 'Student', 'Week', 'PRs Merged', 'Avg Grade', 'Status'].map((h, i) => (
+                  {['#', 'Student', 'Week', 'Submitted', 'Avg Grade', 'Status'].map((h, i) => (
                     <th key={h} style={{ padding: '11px 18px', fontSize: 11, fontWeight: 700, color: '#94a3b8', textAlign: i < 2 ? 'left' : 'center', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>
                   ))}
                 </tr>
@@ -131,7 +128,7 @@ export default function Community() {
 
           {/* Stats summary */}
           <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 18, padding: 22 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Cohort Stats</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Batch Stats</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {[
                 [GitMerge, 'Total PRs',  students.reduce((a, s) => a + (s.mergedPRs || 0), 0), '#4f46e5'],

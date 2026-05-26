@@ -16,6 +16,7 @@ import Tickets          from './pages/admin/Tickets'
 import AdminLessons     from './pages/admin/AdminLessons'
 import Announcements    from './pages/admin/Announcements'
 import Payments         from './pages/admin/Payments'
+import AdminApplications from './pages/admin/AdminApplications'
 
 const P = ({ c: C }) => <ProtectedRoute><C /></ProtectedRoute>
 const A = ({ c: C }) => <AdminRoute><C /></AdminRoute>
@@ -44,7 +45,8 @@ export default function App() {
         <Route path="/admin/tickets"       element={<A c={Tickets}        />} />
         <Route path="/admin/lessons"       element={<A c={AdminLessons}   />} />
         <Route path="/admin/announcements" element={<A c={Announcements}  />} />
-        <Route path="/admin/payments"      element={<A c={Payments}       />} />
+        <Route path="/admin/payments"      element={<A c={Payments}          />} />
+        <Route path="/admin/applications" element={<A c={AdminApplications} />} />
       </Routes>
     </BrowserRouter>
   )

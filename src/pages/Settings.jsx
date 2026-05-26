@@ -353,7 +353,7 @@ export default function Settings() {
               <Toggle label="Session Reminders" desc="Reminder 1 hour before live coding sessions."           checked={notifs.sessionReminder} onChange={v => setNotifs({ ...notifs, sessionReminder: v })} />
               <Toggle label="PR Reviewed"        desc="Alert when mentor reviews your pull request."           checked={notifs.prReviewed}      onChange={v => setNotifs({ ...notifs, prReviewed: v })} />
               <Toggle label="Weekly Digest"      desc="Summary of your progress every Monday morning."        checked={notifs.weeklyDigest}    onChange={v => setNotifs({ ...notifs, weeklyDigest: v })} />
-              <Toggle label="Cohort Updates"     desc="Announcements and updates from your cohort."           checked={notifs.cohortUpdates}   onChange={v => setNotifs({ ...notifs, cohortUpdates: v })} />
+              <Toggle label="Batch Updates"      desc="Announcements and updates from your batch."            checked={notifs.cohortUpdates}   onChange={v => setNotifs({ ...notifs, cohortUpdates: v })} />
               <Toggle label="Email Notifications" desc="Also send notifications to your email inbox."         checked={notifs.emailNotifs}     onChange={v => setNotifs({ ...notifs, emailNotifs: v })} />
               <SaveButton onClick={() => showToast('Preferences saved!')} label="Save Preferences" />
             </SectionCard>

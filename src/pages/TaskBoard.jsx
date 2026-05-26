@@ -397,8 +397,18 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
             <Send size={13} />
             {submitMutation.isPending ? 'Submitting…' : 'Submit for Review'}
           </button>
-          <div style={{ fontSize: 11, color: '#94a3b8', textAlign: 'center', marginTop: 8 }}>
-            AI review runs automatically — results in 30–60 seconds
+          <div style={{ marginTop: 14, padding: '12px 14px', background: '#f8fafc', borderRadius: 10, border: '1px solid #e2e8f0' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', marginBottom: 8, letterSpacing: '0.06em' }}>WHAT HAPPENS NEXT</div>
+            {[
+              { step: '1', text: 'AI reviews your code in 30–60 seconds', color: '#4f46e5' },
+              { step: '2', text: 'Mentor grades your PR within 24 hours',  color: '#7c3aed' },
+              { step: '3', text: 'You get notified with your score',        color: '#059669' },
+            ].map(({ step, text, color }) => (
+              <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                <span style={{ width: 20, height: 20, borderRadius: '50%', background: `${color}18`, color, fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step}</span>
+                <span style={{ fontSize: 12, color: '#64748b' }}>{text}</span>
+              </div>
+            ))}
           </div>
         </div>
       )}

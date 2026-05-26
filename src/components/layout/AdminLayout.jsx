@@ -4,17 +4,18 @@ import { useAuthStore } from '../../store/authStore'
 import {
   LayoutDashboard, Users, BookOpen, Ticket,
   Megaphone, CreditCard, GraduationCap, Bell, LogOut,
-  Code2, ChevronDown,
+  Code2, ClipboardList,
 } from 'lucide-react'
 
 const NAV = [
-  { to: '/admin',               icon: LayoutDashboard, label: 'Dashboard'     },
-  { to: '/admin/cohorts',       icon: GraduationCap,   label: 'Cohorts'       },
-  { to: '/admin/students',      icon: Users,           label: 'Students'      },
-  { to: '/admin/tickets',       icon: Ticket,          label: 'Tickets'       },
-  { to: '/admin/lessons',       icon: BookOpen,        label: 'Lessons'       },
-  { to: '/admin/announcements', icon: Megaphone,       label: 'Announcements' },
-  { to: '/admin/payments',      icon: CreditCard,      label: 'Payments'      },
+  { to: '/admin',                icon: LayoutDashboard, label: 'Dashboard'     },
+  { to: '/admin/applications',   icon: ClipboardList,   label: 'Applications'  },
+  { to: '/admin/cohorts',        icon: GraduationCap,   label: 'Cohorts'       },
+  { to: '/admin/students',       icon: Users,           label: 'Students'      },
+  { to: '/admin/tickets',        icon: Ticket,          label: 'Tickets'       },
+  { to: '/admin/lessons',        icon: BookOpen,        label: 'Lessons'       },
+  { to: '/admin/announcements',  icon: Megaphone,       label: 'Announcements' },
+  { to: '/admin/payments',       icon: CreditCard,      label: 'Payments'      },
 ]
 
 function AdminSidebar() {
