@@ -78,9 +78,28 @@ app.use('/api/admin/applications',   authenticate, requireAdmin, adminApplicatio
 app.use('/api/admin/analytics',      authenticate, requireAdmin, adminAnalytics)
 
 // ─── Health check ─────────────────────────────────────────────────────────────
-app.get('/api/health', (_, res) => res.json({ status: 'ok', timestamp: new Date() }))
+const prisma = require('./lib/prisma')
+
+app.get('/api/health', async (_, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`
+    res.json({ status: 'ok', db: 'connected', timestamp: new Date() })
+  } catch (err) {
+    res.status(503).json({ status: 'error', db: 'disconnected', error: err.message })
+  }
+})
 
 app.use((_, res) => res.status(404).json({ error: 'Route not found' }))
 
 const PORT = process.env.PORT || 5000
-app.listen(PORT, () => console.log(`DevForge API running on http://localhost:${PORT}`))
+app.listen(PORT, async () => {
+  console.log(`DevForge API running on http://localhost:${PORT}`)
+  const missing = ['JWT_SECRET', 'JWT_REFRESH_SECRET', 'DATABASE_URL'].filter(k => !process.env[k])
+  if (missing.length) console.error(`[STARTUP] Missing env vars: ${missing.join(', ')}`)
+  try {
+    await prisma.$connect()
+    console.log('[STARTUP] Database connected')
+  } catch (err) {
+    console.error('[STARTUP] Database connection failed:', err.message)
+  }
+})
