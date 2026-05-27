@@ -96,6 +96,7 @@ model Student {
   location            String?
   githubUrl           String?
   bio                 String?
+  notificationPrefs   String?
   plan                Plan          @default(LIVE_COHORT)
   currentWeek         Int           @default(1)
   status              StudentStatus @default(ACTIVE)

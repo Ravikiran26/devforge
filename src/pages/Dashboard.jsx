@@ -80,7 +80,7 @@ function FirstMission({ week, navigate }) {
   const C = useTheme()
   const w = WEEK_FOCUS[week] || WEEK_FOCUS[1]
   return (
-    <div style={{
+    <div data-tour="welcome" style={{
       background: `linear-gradient(135deg, ${C.surface} 0%, ${C.accent}14 100%)`,
       border: `1px solid ${C.accent}44`,
       borderLeft: `3px solid ${C.accent}`,

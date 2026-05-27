@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Sidebar from './Sidebar'
 import Navbar from './Navbar'
-import OnboardingTour from '../OnboardingTour'
+import SpotlightTour from '../SpotlightTour'
 import { useIsMobile } from '../../lib/useIsMobile'
 import { useTheme } from '../../hooks/useTheme'
 import { useAuthStore } from '../../store/authStore'
@@ -17,7 +17,7 @@ export default function DashboardLayout({ title, children }) {
 
   return (
     <>
-    {showTour && <OnboardingTour onComplete={() => setTourDone(true)}/>}
+    {showTour && <SpotlightTour onComplete={() => setTourDone(true)}/>}
     <div style={{
       display: 'flex',
       minHeight: '100vh',

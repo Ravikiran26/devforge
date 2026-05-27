@@ -94,6 +94,7 @@ export default function Community() {
 
   const students    = data?.students    ?? []
   const recentWins  = data?.recentWins  ?? []
+  const cohortName  = data?.cohortName  ?? 'Your Cohort'
 
   return (
     <DashboardLayout title="Community">
@@ -130,7 +131,7 @@ export default function Community() {
           <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 18, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <div style={{ padding: '18px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 8 }}>
               <Users size={15} color="#4f46e5" />
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', fontFamily: "'Inter', sans-serif" }}>Batch 3 — Students</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', fontFamily: "'Inter', sans-serif" }}>{cohortName} — Students</span>
               <span style={{ fontSize: 11, color: '#94a3b8', marginLeft: 4 }}>{students.length} enrolled</span>
             </div>
 

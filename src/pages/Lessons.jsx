@@ -183,7 +183,7 @@ function MapView({ byWeek, maxUnlockedWeek, onSelectWeek }) {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+      <div data-tour="week-map" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
         {weeks.map(w => {
           const st       = weekStatus(w)
           const wl       = byWeek[w] || []

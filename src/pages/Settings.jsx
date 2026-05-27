@@ -355,7 +355,7 @@ export default function Settings() {
               <Toggle label="Weekly Digest"      desc="Summary of your progress every Monday morning."        checked={notifs.weeklyDigest}    onChange={v => setNotifs({ ...notifs, weeklyDigest: v })} />
               <Toggle label="Batch Updates"      desc="Announcements and updates from your batch."            checked={notifs.cohortUpdates}   onChange={v => setNotifs({ ...notifs, cohortUpdates: v })} />
               <Toggle label="Email Notifications" desc="Also send notifications to your email inbox."         checked={notifs.emailNotifs}     onChange={v => setNotifs({ ...notifs, emailNotifs: v })} />
-              <SaveButton onClick={() => showToast('Preferences saved!')} label="Save Preferences" />
+              <SaveButton onClick={() => profileMutation.mutate({ notificationPrefs: JSON.stringify(notifs) })} label="Save Preferences" />
             </SectionCard>
           )}
 

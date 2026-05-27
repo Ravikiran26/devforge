@@ -6,8 +6,8 @@ const prisma = require('../lib/prisma')
 const router = express.Router()
 
 const PLANS = {
-  SELF_PACED:   { label: 'Self-Paced',   amount: 999900  }, // ₹9,999
-  LIVE_COHORT:  { label: 'Live Cohort',  amount: 1499900 }, // ₹14,999
+  LIVE_COHORT: { label: 'Core',                          amount: 700000  }, // ₹7,000
+  MENTORED:    { label: 'Career (Resume + Mock Interview)', amount: 1200000 }, // ₹12,000
 }
 
 function getRazorpay() {

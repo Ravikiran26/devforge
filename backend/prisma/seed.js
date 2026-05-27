@@ -5,8 +5,8 @@ const bcrypt = require('bcryptjs')
 const prisma = new PrismaClient()
 const content = require('./lesson-content')
 
-// Returns the Friday of the given week number, relative to Cohort 3 start (June 2, 2025)
-const COHORT3_START = new Date('2025-06-02')
+// Returns the Friday of the given week number, relative to Cohort 3 start (June 1, 2026)
+const COHORT3_START = new Date('2026-06-01')
 function weekFriday(week) {
   const d = new Date(COHORT3_START)
   d.setDate(d.getDate() + (week - 1) * 7 + 4)
@@ -19,13 +19,16 @@ async function main() {
   // ── Cohorts ─────────────────────────────────────────────────────────────────
   const cohort3 = await prisma.cohort.upsert({
     where: { name: 'Cohort 3' },
-    update: {},
+    update: {
+      startDate: new Date('2026-06-01'),
+      endDate: new Date('2026-08-24'),
+    },
     create: {
       name: 'Cohort 3',
-      startDate: new Date('2025-06-02'),
-      endDate: new Date('2025-08-25'),   // 12 weeks from Jun 2
+      startDate: new Date('2026-06-01'),
+      endDate: new Date('2026-08-24'),   // 12 weeks from Jun 1
       status: 'ACTIVE',
-      maxStudents: 25,
+      maxStudents: 15,
     }
   })
 
@@ -34,8 +37,8 @@ async function main() {
     update: {},
     create: {
       name: 'Cohort 2',
-      startDate: new Date('2025-03-03'),
-      endDate: new Date('2025-04-25'),
+      startDate: new Date('2026-02-02'),
+      endDate: new Date('2026-04-27'),
       status: 'COMPLETED',
       maxStudents: 20,
     }
@@ -625,14 +628,7 @@ Acceptance Criteria:
 
   // ── Payments ─────────────────────────────────────────────────────────────────
   const paymentsRaw = [
-    { txnId:'TXN-001', studentId:students[1].id, plan:'LIVE_COHORT', amount:14999, method:'UPI',         status:'PAID'    },
-    { txnId:'TXN-002', studentId:students[2].id, plan:'LIVE_COHORT', amount:14999, method:'Card',        status:'PAID'    },
-    { txnId:'TXN-003', studentId:students[3].id, plan:'LIVE_COHORT', amount:14999, method:'UPI',         status:'PAID'    },
-    { txnId:'TXN-004', studentId:students[4].id, plan:'MENTORED',    amount:24999, method:'Net Banking', status:'PAID'    },
-    { txnId:'TXN-005', studentId:students[5].id, plan:'LIVE_COHORT', amount:7499,  method:'EMI',         status:'PARTIAL' },
-    { txnId:'TXN-006', studentId:students[6].id, plan:'LIVE_COHORT', amount:14999, method:'Card',        status:'PAID'    },
-    { txnId:'TXN-007', studentId:students[0].id, plan:'LIVE_COHORT', amount:14999, method:'UPI',         status:'PAID'    },
-    { txnId:'TXN-008', studentId:students[7].id, plan:'LIVE_COHORT', amount:14999, method:'UPI',         status:'PAID'    },
+    { txnId:'TXN-001', studentId:students[0].id, plan:'LIVE_COHORT', amount:7000, method:'UPI', status:'PAID' },
   ]
 
   for (const p of paymentsRaw) {

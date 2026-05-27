@@ -200,17 +200,19 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
 
   return (
     <div style={{
-      width: 360,
-      flexShrink: 0,
+      position: 'fixed',
+      top: 56,
+      right: 0,
+      width: 400,
+      height: 'calc(100vh - 56px)',
       background: '#fff',
-      border: '1px solid #e2e8f0',
-      borderRadius: 18,
+      borderLeft: '1px solid #e2e8f0',
       padding: 24,
-      position: 'sticky',
-      top: 24,
-      boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
-      maxHeight: 'calc(100vh - 100px)',
+      zIndex: 30,
+      boxShadow: '-4px 0 32px rgba(0,0,0,0.1)',
       overflowY: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
     }}>
 
       {/* Header */}
@@ -401,11 +403,17 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
           <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>
             Submit Your Work
           </div>
+          <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 8, padding: '10px 12px', marginBottom: 10, fontSize: 11, color: '#0369a1', lineHeight: 1.6 }}>
+            <strong style={{ display: 'block', marginBottom: 3 }}>How to submit:</strong>
+            1. Create a branch: <code style={{ background: '#e0f2fe', padding: '1px 4px', borderRadius: 3, fontFamily: 'monospace' }}>{sel.ticketCode.toLowerCase()}-short-desc</code><br/>
+            2. Push your code &amp; open a Pull Request on GitHub<br/>
+            3. Paste the PR URL below
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '3px 3px 3px 12px' }}>
             <GitPullRequest size={13} color="#94a3b8" style={{ flexShrink: 0 }} />
             <input
               value={prUrl}
-              onChange={e => setPrUrl(e.target.value)}
+              onChange={e => setPrUrl(e.target.value.trim())}
               placeholder="https://github.com/you/repo/pull/…"
               style={{
                 flex: 1, padding: '8px 0', border: 'none', fontSize: 12,
@@ -537,10 +545,22 @@ export default function TaskBoard() {
         </span>
       </div>
 
-      <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+      {/* Backdrop when panel open */}
+      {sel && (
+        <div
+          onClick={() => setSelected(null)}
+          style={{ position: 'fixed', inset: 0, zIndex: 29, background: 'rgba(0,0,0,0.18)' }}
+        />
+      )}
 
-        {/* Kanban columns */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, flex: 1, minWidth: 0 }}>
+      {/* Submit hint — tour target */}
+      <div data-tour="submit-hint" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 10, padding: '10px 16px', fontSize: 12, color: '#0369a1' }}>
+        <span style={{ fontSize: 14 }}>💡</span>
+        <span><strong>How it works:</strong> Finish the week's lessons → click a ticket → create a branch → push code → open a PR on GitHub → paste the PR URL inside the ticket.</span>
+      </div>
+
+      {/* Kanban columns */}
+      <div data-tour="kanban" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
           {COLS.map(col => {
             const colTickets = byCol(col.id)
             return (
@@ -578,17 +598,16 @@ export default function TaskBoard() {
           })}
         </div>
 
-        {/* Detail panel */}
-        {sel && (
-          <DetailPanel
-            ticket={sel}
-            onClose={() => setSelected(null)}
-            prUrl={prUrl}
-            setPrUrl={setPrUrl}
-            submitMutation={submitMutation}
-          />
-        )}
-      </div>
+      {/* Detail panel — fixed right drawer */}
+      {sel && (
+        <DetailPanel
+          ticket={sel}
+          onClose={() => setSelected(null)}
+          prUrl={prUrl}
+          setPrUrl={setPrUrl}
+          submitMutation={submitMutation}
+        />
+      )}
     </DashboardLayout>
   )
 }

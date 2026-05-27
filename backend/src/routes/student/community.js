@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
   try {
     const me = await prisma.student.findUnique({
       where: { userId: req.user.userId },
-      select: { cohortId: true },
+      select: { cohortId: true, cohort: { select: { name: true } } },
     })
 
     const students = await prisma.student.findMany({
@@ -65,7 +65,7 @@ router.get('/', async (req, res) => {
       reviewedAt: s.reviewedAt,
     }))
 
-    res.json({ students: result, recentWins })
+    res.json({ students: result, recentWins, cohortName: me?.cohort?.name ?? 'Your Cohort' })
   } catch (err) {
     console.error('[community]', err)
     res.status(500).json({ error: 'Server error' })

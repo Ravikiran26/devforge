@@ -42,14 +42,14 @@ router.put('/', [
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() })
 
-  const { name, college, location, githubUrl, bio } = req.body
+  const { name, college, location, githubUrl, bio, notificationPrefs } = req.body
 
   try {
     const [user, student] = await Promise.all([
       name ? prisma.user.update({ where: { id: req.user.userId }, data: { name } }) : null,
       prisma.student.update({
         where: { userId: req.user.userId },
-        data: { college, location, githubUrl, bio },
+        data: { college, location, githubUrl, bio, notificationPrefs },
       })
     ])
 

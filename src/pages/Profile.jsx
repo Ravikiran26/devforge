@@ -28,6 +28,7 @@ export default function Profile() {
   const updateMutation = useMutation({
     mutationFn: (body) => api.put('/student/profile', body),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['profile'] }),
+    onError: () => alert('Failed to save profile. Please try again.'),
   })
 
   if (isLoading) return <DashboardLayout title="Profile"><Spinner /></DashboardLayout>
@@ -227,7 +228,7 @@ export default function Profile() {
               [approvedPRs.length,                  'PRs Merged',   '#4f46e5'],
               [avgGrade ? `${avgGrade}/100` : '—', 'Avg Grade',    '#059669'],
               [prSubmissions.length,                'Submitted',    '#7c3aed'],
-              [`${currentWeek} / 8`,               'Current Week', '#f59e0b'],
+              [`${currentWeek} / 12`,              'Current Week', '#f59e0b'],
             ].map(([value, label, color]) => (
               <div key={label} style={{
                 background: '#fff',
@@ -248,7 +249,7 @@ export default function Profile() {
             <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 18, padding: '24px 26px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 18 }}>Weekly Performance</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-                {Array.from({ length: Math.min(8, currentWeek) }, (_, i) => i + 1).map(w => {
+                {Array.from({ length: Math.min(12, currentWeek) }, (_, i) => i + 1).map(w => {
                   const grade = weekGrades[w]
                   return (
                     <div key={w} style={{

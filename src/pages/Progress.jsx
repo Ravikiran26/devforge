@@ -136,7 +136,11 @@ function ActivityHeatmap({ activityDates = [] }) {
 
 function GradeTrend({ recentPRs }) {
   const scored = [...recentPRs].filter(p => p.score).reverse()
-  if (scored.length < 2) return null
+  if (scored.length < 2) return (
+    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '20px 24px', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>
+      Grade trend appears after your first 2 reviewed PRs.
+    </div>
+  )
 
   const scores = scored.map(p => p.score)
   const min = Math.min(...scores, 60)
@@ -289,7 +293,7 @@ export default function Progress() {
     </DashboardLayout>
   )
 
-  const { currentWeek, overallGrade, totalPRs, mergedPRs, lessonsWatched, weeklyData, recentPRs, activityDates = [], daysInactive } = data
+  const { currentWeek, overallGrade, totalPRs, mergedPRs, lessonsWatched, weeklyData = [], recentPRs = [], activityDates = [], daysInactive } = data
   const pct = Math.round(((currentWeek - 1) / 12) * 100)
 
   return (

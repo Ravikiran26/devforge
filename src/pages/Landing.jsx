@@ -19,7 +19,7 @@ const C = {
   dim:     '#3D2E1888',
 }
 
-const PILOT_SEATS_LEFT = 20
+const PILOT_SEATS_LEFT = 15
 
 const glow  = (color = C.accent, size = 12) => `0 0 ${size}px ${color}55, 0 0 ${size * 2}px ${color}22`
 const fade  = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.7 } } }
@@ -275,7 +275,7 @@ function Hero({ onApply }) {
           <motion.span animate={{ opacity: [1, 0.2, 1] }} transition={{ repeat: Infinity, duration: 1.4 }}
             style={{ width: 7, height: 7, borderRadius: '50%', background: C.green, display: 'inline-block', boxShadow: glow(C.green) }}
           />
-          <span style={{ fontSize: 11, color: C.text3, letterSpacing: '0.1em' }}>COHORT 3 · STARTING JULY 7 · {PILOT_SEATS_LEFT} SEATS LEFT</span>
+          <span style={{ fontSize: 11, color: C.text3, letterSpacing: '0.1em' }}>FOUNDING BATCH · JUNE 1 · {PILOT_SEATS_LEFT} SEATS · PRICE GOES UP AFTER THIS</span>
         </motion.div>
 
         {/* Prompt line */}
@@ -614,29 +614,41 @@ function WhoIsThisFor() {
 function Pricing({ onApply }) {
   const plans = [
     {
-      id: 'basic', name: 'Basic', price: '₹9,999', emi: '₹3,500', badge: null, tagline: 'Build real projects. Ship real code.',
-      desc: 'Full 12-week curriculum, AI code review on every PR, mentor grading, and community access.',
+      id: 'LIVE_COHORT',
+      name: 'Core',
+      price: '₹7,000',
+      badge: null,
+      tagline: 'Build real products. Ship real code.',
+      desc: 'Full 12-week curriculum, AI code review on every PR, mentor grading within 24 hours, and Discord community.',
       features: [
-        { title: 'Full 12-week project curriculum', sub: 'All lessons, project briefs, and code examples on day 1.' },
+        { title: 'Full 12-week project curriculum',      sub: 'All lessons, project briefs, and code examples unlocked on day 1.' },
         { title: 'AI code review on every pull request', sub: 'Every PR reviewed for logic, naming, security, and architecture.' },
-        { title: 'Mentor grading within 24 hours', sub: 'Human feedback on every submission — not just automated checks.' },
-        { title: 'Completion certificate', sub: 'Issued after 12 weeks and 65+ merged PRs. LinkedIn-ready.' },
-        { title: 'Community Discord access', sub: 'Ask questions, share progress, get unblocked by peers.' },
-        { title: 'Lifetime content access', sub: 'Curriculum updates go to your account forever.' },
+        { title: 'Mentor grading within 24 hours',       sub: 'Human feedback on every submission — not just automated checks.' },
+        { title: 'Completion certificate',               sub: 'Issued after 12 weeks and 65+ merged PRs. LinkedIn-ready.' },
+        { title: 'Discord community access',             sub: 'Ask questions, share PRs, get unblocked by peers.' },
+        { title: 'Lifetime content access',              sub: 'Curriculum updates go to your account forever.' },
       ],
-      cta: 'ENROLL — BASIC', accent: C.text3, recommended: false,
+      cta: 'ENROLL — CORE',
+      accent: C.text3,
+      recommended: false,
     },
     {
-      id: 'pro', name: 'Pro', price: '₹14,999', emi: '₹5,000', badge: 'MOST POPULAR', tagline: 'Build + get placement-ready.',
-      desc: 'Everything in Basic plus resume preparation, LinkedIn setup, and a 1:1 mock interview.',
+      id: 'MENTORED',
+      name: 'Career',
+      price: '₹12,000',
+      badge: 'MOST POPULAR',
+      tagline: 'Build + get placement-ready.',
+      desc: 'Everything in Core, plus resume preparation, LinkedIn setup, job strategy, and a live 1:1 mock interview.',
       features: [
-        { title: 'Everything in Basic', sub: 'Full curriculum, AI reviews, mentor grading, certificate, lifetime access.' },
-        { title: 'Resume writing & review', sub: 'Write a developer resume that gets past the first filter. We review it.' },
-        { title: 'LinkedIn profile preparation', sub: 'Headline, about section, and projects set up for recruiters.' },
-        { title: 'Job application strategy', sub: 'Which companies, what order, when and how to follow up.' },
-        { title: '1 mock interview session (1:1)', sub: '45-min interview with a working developer. Written feedback included.' },
+        { title: 'Everything in Core',               sub: 'Full curriculum, AI reviews, mentor grading, certificate, lifetime access.' },
+        { title: 'Resume writing & review',          sub: 'Write a developer resume that gets past the first filter. We review it.' },
+        { title: 'LinkedIn profile preparation',     sub: 'Headline, about section, and featured projects set up for recruiters.' },
+        { title: 'Job application strategy session', sub: 'Which companies, what order, when and how to follow up.' },
+        { title: '1:1 mock interview (45 min)',      sub: 'Live interview with a working developer. Written feedback included.' },
       ],
-      cta: 'ENROLL — PRO', accent: C.accent, recommended: true,
+      cta: 'ENROLL — CAREER',
+      accent: C.accent,
+      recommended: true,
     },
   ]
 
@@ -646,9 +658,19 @@ function Pricing({ onApply }) {
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginBottom: 56 }}>
           <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>cat ./pricing.json</div>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
-            <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: 0, textShadow: glow(C.text, 8) }}>
-              No hidden fees.<br /><span style={{ color: C.text3 }}>No subscriptions.</span>
-            </h2>
+            <div>
+              <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 12px', textShadow: glow(C.text, 8) }}>
+                Founding Batch pricing.<br /><span style={{ color: C.text3 }}>No fake discounts.</span>
+              </h2>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: `1px solid ${C.accent}44`, padding: '7px 14px', fontFamily: 'JetBrains Mono,monospace' }}>
+                <motion.span animate={{ opacity: [1,0.3,1] }} transition={{ repeat: Infinity, duration: 1.4 }}
+                  style={{ width: 6, height: 6, borderRadius: '50%', background: C.accent, display: 'inline-block', boxShadow: glow() }}
+                />
+                <span style={{ fontSize: 10, color: C.accent, letterSpacing: '0.1em' }}>
+                  15 founding seats · price goes up after Batch 1
+                </span>
+              </div>
+            </div>
             <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace', border: `1px solid ${C.border}`, padding: '8px 14px', letterSpacing: '0.06em' }}>7-day refund · no questions</div>
           </div>
         </motion.div>
@@ -657,22 +679,36 @@ function Pricing({ onApply }) {
           {plans.map((p, i) => (
             <motion.div key={p.id} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.1 }}>
               <ScanCard style={{
-                padding: '32px', display: 'flex', flexDirection: 'column', minHeight: 620,
+                padding: '32px', display: 'flex', flexDirection: 'column', minHeight: 580,
                 borderRight: i < 1 ? `1px solid ${C.border}` : 'none',
                 borderTop: `2px solid ${p.accent}`,
                 background: p.recommended ? `${C.accent}08` : 'transparent',
               }}>
                 <div style={{ height: 20, marginBottom: 14 }}>
-                  {p.badge && <span style={{ fontSize: 9, fontWeight: 700, color: p.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', textShadow: p.recommended ? glow() : 'none' }}>{p.badge}</span>}
+                  {p.badge && (
+                    <span style={{ fontSize: 9, fontWeight: 700, color: p.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', textShadow: p.recommended ? glow() : 'none' }}>
+                      {p.badge}
+                    </span>
+                  )}
                 </div>
+
                 <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 16, fontWeight: 700, color: C.text, marginBottom: 4 }}>{p.name}</div>
                 <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: C.text3, marginBottom: 20, letterSpacing: '0.04em' }}>{p.tagline}</div>
-                <div style={{ marginBottom: 16 }}>
-                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 36, fontWeight: 700, color: p.recommended ? C.accent : C.text, textShadow: p.recommended ? glow() : 'none' }}>{p.price}</span>
-                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: C.text3, marginLeft: 8 }}>one-time</span>
-                  <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace', marginTop: 5 }}>or {p.emi} × 3 EMI</div>
+
+                <div style={{ marginBottom: 20 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                    <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 40, fontWeight: 700, color: p.recommended ? C.accent : C.text, textShadow: p.recommended ? glow() : 'none', lineHeight: 1 }}>
+                      {p.price}
+                    </span>
+                    <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: C.text3 }}>one-time</span>
+                  </div>
+                  <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace', marginTop: 6 }}>
+                    Batch 2 price: <span style={{ color: C.text2 }}>{p.recommended ? '₹18,000' : '₹12,000'}</span>
+                  </div>
                 </div>
+
                 <p style={{ fontSize: 12, color: C.text2, lineHeight: 1.7, fontFamily: "'Inter', sans-serif", marginBottom: 20 }}>{p.desc}</p>
+
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28, flex: 1 }}>
                   {p.features.map(f => (
                     <div key={f.title} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
@@ -684,7 +720,9 @@ function Pricing({ onApply }) {
                     </div>
                   ))}
                 </div>
-                <button onClick={() => onApply(p.name)}
+
+                <button
+                  onClick={() => onApply(p.id)}
                   style={{
                     width: '100%', padding: '12px', cursor: 'pointer',
                     fontWeight: 700, fontSize: 11, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.1em',
@@ -700,6 +738,7 @@ function Pricing({ onApply }) {
             </motion.div>
           ))}
         </div>
+
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginTop: 28, textAlign: 'center' }}>
           <p style={{ fontSize: 11, color: C.text3, fontFamily: 'JetBrains Mono,monospace', lineHeight: 1.7 }}>
             7-day full refund if you haven't opened your first PR · <span style={{ color: C.text2 }}>support@devforge.in</span>
@@ -710,35 +749,48 @@ function Pricing({ onApply }) {
   )
 }
 
-// ─── Testimonials ─────────────────────────────────────────────────────────────
-function Testimonials() {
-  const quotes = [
-    { quote: 'I had 3 interviews lined up before the program even ended. The PR workflow alone is worth the fee — it is how real companies work.', name: 'Priya Sharma', detail: 'Cohort 2 Graduate · Bengaluru' },
-    { quote: "Every week I was genuinely scared I wouldn't finish — and then I did. That's the confidence that shows up in interviews.", name: 'Karan Mehta', detail: 'Cohort 2 Graduate · Hyderabad' },
-    { quote: "The code reviews were brutal in the best way. By Week 6 I was writing code that didn't get comments at all.", name: 'Ananya Roy', detail: 'Cohort 2 Graduate · Pune' },
+// ─── Outcomes ─────────────────────────────────────────────────────────────────
+function Outcomes() {
+  const outcomes = [
+    {
+      label: '3 DEPLOYED PRODUCTS',
+      title: 'Real apps. Live URLs.',
+      desc: 'Restaurant ordering system with Razorpay payments. GST billing SaaS with PDF invoices. AI-powered client support desk on GitHub Actions CI/CD. All public, all yours.',
+      stat: '3', unit: 'live products',
+    },
+    {
+      label: '65+ MERGED PULL REQUESTS',
+      title: 'A GitHub profile that speaks.',
+      desc: 'Every feature you build is a PR. Every PR gets reviewed for logic, security, and structure. By the end, your GitHub history shows consistent, professional-grade output.',
+      stat: '65+', unit: 'merged PRs',
+    },
+    {
+      label: 'INTERVIEW-READY',
+      title: 'Show work, not certificates.',
+      desc: 'Walk into any interview with deployed URLs, a PR history, and the ability to explain every line. No algorithmic trick questions — real code answers real questions.',
+      stat: '12', unit: 'weeks to job-ready',
+    },
   ]
   return (
-    <section id="testimonials" style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
+    <section style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
-          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>cat ./testimonials.log</div>
-          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 52px', textShadow: glow(C.text, 8) }}>
-            From the people who built.
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginBottom: 52 }}>
+          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>./what-you-leave-with --after=12weeks</div>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: 0, textShadow: glow(C.text, 8) }}>
+            What you leave with.
           </h2>
         </motion.div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 0 }}>
-          {quotes.map((q, i) => (
-            <motion.div key={q.name} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.1 }}>
-              <ScanCard style={{ padding: '32px', borderRight: i < 2 ? `1px solid ${C.border}` : 'none', height: '100%' }}>
-                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 40, color: C.accent, lineHeight: 1, marginBottom: 16, textShadow: glow() }}>"</div>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.text, lineHeight: 1.8, margin: '0 0 28px', opacity: 0.85 }}>{q.quote}</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 30, height: 30, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: 800, fontSize: 12, fontFamily: 'JetBrains Mono,monospace', boxShadow: glow() }}>{q.name[0]}</div>
-                  <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: C.text, fontFamily: "'Inter', sans-serif" }}>{q.name}</div>
-                    <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace', marginTop: 2 }}>{q.detail}</div>
-                  </div>
+          {outcomes.map((o, i) => (
+            <motion.div key={o.label} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.1 }}>
+              <ScanCard style={{ padding: '36px 32px', borderRight: i < 2 ? `1px solid ${C.border}` : 'none', height: '100%' }}>
+                <div style={{ fontSize: 8, fontWeight: 700, color: C.accent, letterSpacing: '0.16em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow() }}>{o.label}</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
+                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 48, fontWeight: 800, color: C.text, lineHeight: 1, textShadow: glow(C.text, 8) }}>{o.stat}</span>
+                  <span style={{ fontSize: 11, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>{o.unit}</span>
                 </div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: C.text2, fontFamily: "'Inter', sans-serif", marginBottom: 12, letterSpacing: '-0.01em' }}>{o.title}</div>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: C.text3, lineHeight: 1.75, margin: 0 }}>{o.desc}</p>
               </ScanCard>
             </motion.div>
           ))}
@@ -752,7 +804,7 @@ function Testimonials() {
 function FAQ() {
   const [open, setOpen] = useState(null)
   const items = [
-    { q: 'When does Cohort 3 start?', a: 'Cohort 3 starts July 7, 2025. Once enrolled, you get immediate access to Week 1 lessons, the starter repo, and the Discord community.' },
+    { q: 'When does Cohort 3 start?', a: 'Cohort 3 starts June 1, 2026. Once enrolled, you get immediate access to Week 1 lessons, the starter repo, and the Discord community.' },
     { q: 'Do I need a CS degree?', a: 'No. Most students are engineering graduates from non-CS branches or working professionals. What matters is commitment and 3–4 focused hours daily.' },
     { q: 'What programming knowledge is required?', a: 'You should know basic JavaScript — variables, functions, arrays, loops. If you can write a function that filters an array, you are ready.' },
     { q: 'How is this different from YouTube tutorials?', a: 'Tutorials teach you to watch. This program teaches you to build. Every day you open a real pull request that gets reviewed. You cannot fake your way through that.' },
@@ -859,8 +911,8 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
   const [error, setError] = useState('')
 
   const PLAN_OPTIONS = [
-    { value: 'LIVE_COHORT', label: 'Live Cohort — ₹14,999' },
-    { value: 'SELF_PACED',  label: 'Self-Paced — ₹9,999'  },
+    { value: 'LIVE_COHORT', label: 'Core — ₹7,000'                              },
+    { value: 'MENTORED',    label: 'Career (Resume + Mock Interview) — ₹12,000' },
   ]
 
   const handleSubmit = async (e) => {
@@ -936,7 +988,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
               <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 20 }}>We'll WhatsApp <strong style={{ color: C.accent }}>{form.phone}</strong> within 2 hours with login details.</p>
               <div style={{ background: C.surface2, border: `1px solid ${C.border}`, padding: '14px 16px', textAlign: 'left' }}>
                 <div style={{ fontSize: 9, color: C.text3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.1em', marginBottom: 10 }}>WHAT HAPPENS NEXT</div>
-                {['Payment confirmed & seat locked', 'Login details sent on WhatsApp within 2 hours', 'Cohort 3 kicks off July 7', 'Instant access to Week 1 lessons & Discord'].map((s, i) => (
+                {['Payment confirmed & seat locked', 'Login details sent on WhatsApp within 2 hours', 'Cohort 3 kicks off June 1', 'Instant access to Week 1 lessons & Discord'].map((s, i) => (
                   <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 6, fontSize: 12, color: C.text2, fontFamily: "'Inter', sans-serif" }}>
                     <span style={{ color: C.accent, fontFamily: 'JetBrains Mono,monospace' }}>{i + 1}.</span>
                     <span>{s}</span>
@@ -948,7 +1000,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
             <>
               <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 8, textShadow: glow() }}>APPLY FOR COHORT 3</div>
               <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 22, fontWeight: 700, color: C.text, margin: '0 0 6px' }}>Reserve your seat</h2>
-              <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>Cohort 3 starts July 7 · {PILOT_SEATS_LEFT} seats remaining · Pilot batch pricing</p>
+              <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>Cohort 3 starts June 1 · {PILOT_SEATS_LEFT} founding seats remaining · price goes up after Batch 1</p>
 
               {error && (
                 <div style={{ fontSize: 12, color: C.red, fontFamily: "'Inter', sans-serif", padding: '8px 12px', border: `1px solid ${C.red}44`, marginBottom: 14 }}>{error}</div>
@@ -1018,7 +1070,7 @@ export default function Landing() {
       <HowItWorks />
       <WhoIsThisFor />
       <Pricing onApply={openModal} />
-      <Testimonials />
+      <Outcomes />
       <FAQ />
       <CTA onApply={openModal} />
       <Footer />
