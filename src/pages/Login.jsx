@@ -111,11 +111,11 @@ function ActivityFeed() {
   const items = [
     { dot: C.green,  text: 'Karan merged LB-3 · GST Invoice API',    time: '2h ago'  },
     { dot: C.amber,  text: 'Divya submitted RF-5 · Socket.io PR',     time: '4h ago'  },
-    { dot: C.accent, text: 'Week 6 lessons published for Cohort 3',   time: '1d ago'  },
+    { dot: C.accent, text: 'Week 6 lessons published for Batch 1',   time: '1d ago'  },
   ]
   return (
     <div style={{ marginTop: 20 }}>
-      <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.12em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 10 }}>COHORT 3 · RECENT ACTIVITY</div>
+      <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.12em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 10 }}>BATCH 1 · RECENT ACTIVITY</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
         {items.map((item, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderBottom: i < items.length - 1 ? `1px solid ${C.border}` : 'none' }}>
@@ -173,7 +173,7 @@ function BrandPanel() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, border: `1px solid ${C.green}44`, padding: '4px 10px', borderRadius: 20 }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.green, boxShadow: glow(C.green, 6),
             animation: 'pulse 2s ease-in-out infinite' }} />
-          <span style={{ fontSize: 10, color: C.green, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.08em' }}>COHORT 3 ACTIVE</span>
+          <span style={{ fontSize: 10, color: C.green, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.08em' }}>BATCH 1 ACTIVE</span>
         </div>
       </div>
 
@@ -297,7 +297,7 @@ function LoginForm() {
         }}>
           <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.green, flexShrink: 0, animation: 'pulse 2s ease-in-out infinite' }} />
           <span style={{ fontSize: 11, color: C.green, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
-            Cohort 3 is active — Week 1 in progress
+            Batch 1 is active — Week 1 in progress
           </span>
         </div>
 
@@ -379,7 +379,7 @@ function LoginForm() {
         <div style={{ marginTop: 28, paddingTop: 24, borderTop: `1px solid ${C.border}` }}>
           <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", lineHeight: 1.7, margin: '0 0 8px' }}>
             Not enrolled yet?{' '}
-            <a href="/" style={{ color: C.accent, textDecoration: 'none', fontWeight: 700 }}>Apply for Cohort 3 →</a>
+            <a href="/" style={{ color: C.accent, textDecoration: 'none', fontWeight: 700 }}>Apply for Batch 1 →</a>
           </p>
           <p style={{ fontSize: 11, color: C.text3, fontFamily: 'JetBrains Mono,monospace', margin: 0 }}>
             support@devforge.in

@@ -862,7 +862,7 @@ function CTA({ onApply }) {
             style={{ background: C.accent, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '16px 52px', letterSpacing: '0.1em', transition: 'box-shadow 0.2s, transform 0.15s' }}
             onMouseEnter={e => { e.currentTarget.style.boxShadow = `${glow(C.accent, 28)}, 0 0 60px ${C.accent}33`; e.currentTarget.style.transform = 'scale(1.03)' }}
             onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'scale(1)' }}
-          >APPLY FOR COHORT 3 →</button>
+          >APPLY FOR BATCH 1 →</button>
         </motion.div>
       </div>
     </section>
@@ -998,7 +998,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
             </div>
           ) : (
             <>
-              <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 8, textShadow: glow() }}>APPLY FOR COHORT 3</div>
+              <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 8, textShadow: glow() }}>APPLY FOR BATCH 1</div>
               <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 22, fontWeight: 700, color: C.text, margin: '0 0 6px' }}>Reserve your seat</h2>
               <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>Batch 1 starts June 1 · {PILOT_SEATS_LEFT} seats remaining · price goes up after Batch 1</p>
 
