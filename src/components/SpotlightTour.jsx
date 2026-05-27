@@ -170,14 +170,24 @@ function Tooltip({ rect, step, stepIndex, total, onNext, onSkip, isLast, isPendi
   )
 }
 
+const STEP_KEY = 'devforge-tour-step'
+
 export default function SpotlightTour({ onComplete }) {
-  const [step, setStep]   = useState(0)
+  const [step, setStep]   = useState(() => {
+    const saved = sessionStorage.getItem(STEP_KEY)
+    return saved !== null ? parseInt(saved, 10) : 0
+  })
   const [rect, setRect]   = useState(null)
   const navigate          = useNavigate()
   const { user, accessToken, refreshToken, setAuth } = useAuthStore()
 
   const current = STEPS[step]
   const isLast  = step === STEPS.length - 1
+
+  const finishTour = () => {
+    sessionStorage.removeItem(STEP_KEY)
+    onComplete?.()
+  }
 
   const completeMutation = useMutation({
     mutationFn: () => api.post('/student/profile/onboarding/complete'),
@@ -189,10 +199,15 @@ export default function SpotlightTour({ onComplete }) {
           refreshToken,
         )
       }
-      onComplete?.()
+      finishTour()
     },
-    onError: () => onComplete?.(),
+    onError: () => finishTour(),
   })
+
+  // Persist step so remounts after navigation resume at the right step
+  useEffect(() => {
+    sessionStorage.setItem(STEP_KEY, step)
+  }, [step])
 
   const cancelRef = useRef(false)
 
@@ -246,7 +261,10 @@ export default function SpotlightTour({ onComplete }) {
     }
   }
 
-  const handleSkip = () => completeMutation.mutate()
+  const handleSkip = () => {
+    sessionStorage.removeItem(STEP_KEY)
+    completeMutation.mutate()
+  }
 
   if (!rect) return null
 
