@@ -3,6 +3,19 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import { Search, X, ExternalLink, Send, AlertCircle, CheckCircle2, Clock, Eye, GitPullRequest } from 'lucide-react'
 import api from '../lib/api'
+import { useAuthStore } from '../store/authStore'
+
+const PROJECTS = [
+  { id: 'RF', label: 'Restaurant Flow', weeks: '5–6', color: '#f59e0b', bg: '#fffbeb', border: '#fde68a' },
+  { id: 'LB', label: 'Lead Bill',       weeks: '7–9', color: '#4f46e5', bg: '#eef2ff', border: '#c7d2fe' },
+  { id: 'CA', label: 'ClientDesk AI',   weeks: '10–11', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe' },
+]
+
+function weekToProject(w) {
+  if (w >= 10) return 'CA'
+  if (w >= 7)  return 'LB'
+  return 'RF'
+}
 
 const COLS = [
   { id: 'UPCOMING',  label: 'Todo',        color: '#4f46e5', bg: '#eef2ff', icon: '○'  },
@@ -465,9 +478,13 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
 
 export default function TaskBoard() {
   const qc = useQueryClient()
+  const user = useAuthStore(s => s.user)
+  const currentWeek = user?.student?.currentWeek ?? 1
+
   const [search,   setSearch]   = useState('')
   const [selected, setSelected] = useState(null)
   const [prUrl,    setPrUrl]    = useState('')
+  const [project,  setProject]  = useState(() => weekToProject(currentWeek))
 
   const { data: tickets = [], isLoading, isError } = useQuery({
     queryKey: ['tickets'],
@@ -482,10 +499,12 @@ export default function TaskBoard() {
     },
   })
 
-  const filtered = tickets.filter(t =>
-    t.title.toLowerCase().includes(search.toLowerCase()) ||
-    t.ticketCode.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = tickets.filter(t => {
+    const matchProject = t.ticketCode.startsWith(project + '-')
+    const matchSearch  = t.title.toLowerCase().includes(search.toLowerCase()) ||
+                         t.ticketCode.toLowerCase().includes(search.toLowerCase())
+    return matchProject && matchSearch
+  })
 
   const byCol = (colId) => filtered.filter(t => t.status === colId)
 
@@ -502,6 +521,41 @@ export default function TaskBoard() {
 
   return (
     <DashboardLayout title="Assignments">
+
+      {/* Project tabs */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
+        {PROJECTS.map(p => {
+          const active = p.id === project
+          const isCurrentProject = weekToProject(currentWeek) === p.id
+          return (
+            <button
+              key={p.id}
+              onClick={() => { setProject(p.id); setSelected(null) }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '8px 18px', borderRadius: 10, cursor: 'pointer',
+                border: `1px solid ${active ? p.color : '#e2e8f0'}`,
+                background: active ? p.bg : '#fff',
+                fontFamily: "'Inter', sans-serif",
+                transition: 'all 0.15s',
+              }}
+            >
+              <span style={{ fontSize: 12, fontWeight: 700, color: active ? p.color : '#94a3b8', letterSpacing: '0.04em' }}>
+                {p.id}
+              </span>
+              <span style={{ fontSize: 12, color: active ? p.color : '#6b7280', fontWeight: active ? 600 : 400 }}>
+                {p.label}
+              </span>
+              <span style={{ fontSize: 10, color: '#94a3b8' }}>Wk {p.weeks}</span>
+              {isCurrentProject && (
+                <span style={{ fontSize: 9, fontWeight: 700, color: '#fff', background: p.color, padding: '2px 7px', borderRadius: 999, letterSpacing: '0.06em' }}>
+                  ACTIVE
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
 
       {/* Filter bar */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, alignItems: 'center' }}>
