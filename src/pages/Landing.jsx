@@ -539,9 +539,9 @@ function HowItWorks() {
             <motion.div key={s.n} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.1 }}
               style={{ paddingRight: i < 3 ? 36 : 0, paddingLeft: i > 0 ? 36 : 0, borderRight: i < 3 ? `1px solid ${C.border}` : 'none' }}
             >
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 36, fontWeight: 700, color: C.border2, marginBottom: 16, textShadow: glow(C.accent, 6) }}>{s.n}</div>
-              <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 700, color: C.text, margin: '0 0 10px' }}>{s.title}</h3>
-              <p style={{ fontSize: 13, color: C.text2, lineHeight: 1.75, fontFamily: "'Inter', sans-serif", margin: 0 }}>{s.desc}</p>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 42, fontWeight: 800, color: C.accent, marginBottom: 20, textShadow: glow(C.accent, 10), opacity: 0.9 }}>{s.n}</div>
+              <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: 17, fontWeight: 700, color: C.text, margin: '0 0 12px', letterSpacing: '-0.01em' }}>{s.title}</h3>
+              <p style={{ fontSize: 14, color: C.text2, lineHeight: 1.8, fontFamily: "'Inter', sans-serif", margin: 0 }}>{s.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -804,7 +804,7 @@ function Outcomes() {
 function FAQ() {
   const [open, setOpen] = useState(null)
   const items = [
-    { q: 'When does Cohort 3 start?', a: 'Cohort 3 starts June 1, 2026. Once enrolled, you get immediate access to Week 1 lessons, the starter repo, and the Discord community.' },
+    { q: 'When does the Founding Batch start?', a: 'Founding Batch starts June 1, 2026. Once enrolled, you get immediate access to Week 1 lessons, the starter repo, and the Discord community.' },
     { q: 'Do I need a CS degree?', a: 'No. Most students are engineering graduates from non-CS branches or working professionals. What matters is commitment and 3–4 focused hours daily.' },
     { q: 'What programming knowledge is required?', a: 'You should know basic JavaScript — variables, functions, arrays, loops. If you can write a function that filters an array, you are ready.' },
     { q: 'How is this different from YouTube tutorials?', a: 'Tutorials teach you to watch. This program teaches you to build. Every day you open a real pull request that gets reviewed. You cannot fake your way through that.' },
@@ -940,7 +940,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
         currency:    data.currency,
         order_id:    data.orderId,
         name:        'DevForge',
-        description: `${data.planLabel} — Cohort 3`,
+        description: `${data.planLabel} — Founding Batch`,
         prefill:     { name: data.name, email: data.email, contact: data.phone },
         theme:       { color: '#F59E0B' },
         modal:       { ondismiss: () => setLoading(false) },
@@ -988,7 +988,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
               <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 20 }}>We'll WhatsApp <strong style={{ color: C.accent }}>{form.phone}</strong> within 2 hours with login details.</p>
               <div style={{ background: C.surface2, border: `1px solid ${C.border}`, padding: '14px 16px', textAlign: 'left' }}>
                 <div style={{ fontSize: 9, color: C.text3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.1em', marginBottom: 10 }}>WHAT HAPPENS NEXT</div>
-                {['Payment confirmed & seat locked', 'Login details sent on WhatsApp within 2 hours', 'Cohort 3 kicks off June 1', 'Instant access to Week 1 lessons & Discord'].map((s, i) => (
+                {['Payment confirmed & seat locked', 'Login details sent on WhatsApp within 2 hours', 'Founding Batch kicks off June 1', 'Instant access to Week 1 lessons & Discord'].map((s, i) => (
                   <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 6, fontSize: 12, color: C.text2, fontFamily: "'Inter', sans-serif" }}>
                     <span style={{ color: C.accent, fontFamily: 'JetBrains Mono,monospace' }}>{i + 1}.</span>
                     <span>{s}</span>
@@ -1000,7 +1000,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
             <>
               <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 8, textShadow: glow() }}>APPLY FOR COHORT 3</div>
               <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 22, fontWeight: 700, color: C.text, margin: '0 0 6px' }}>Reserve your seat</h2>
-              <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>Cohort 3 starts June 1 · {PILOT_SEATS_LEFT} founding seats remaining · price goes up after Batch 1</p>
+              <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>Founding Batch starts June 1 · {PILOT_SEATS_LEFT} seats remaining · price goes up after this batch</p>
 
               {error && (
                 <div style={{ fontSize: 12, color: C.red, fontFamily: "'Inter', sans-serif", padding: '8px 12px', border: `1px solid ${C.red}44`, marginBottom: 14 }}>{error}</div>
