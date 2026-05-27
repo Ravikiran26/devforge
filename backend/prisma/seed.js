@@ -17,16 +17,23 @@ async function main() {
   console.log('🌱 Seeding database...')
 
   // ── Cohorts ─────────────────────────────────────────────────────────────────
-  const cohort3 = await prisma.cohort.upsert({
+  // Handle rename from old "Cohort 3" to "Batch 1"
+  await prisma.cohort.updateMany({
     where: { name: 'Cohort 3' },
+    data: { name: 'Batch 1' },
+  })
+
+  const cohort3 = await prisma.cohort.upsert({
+    where: { name: 'Batch 1' },
     update: {
       startDate: new Date('2026-06-01'),
       endDate: new Date('2026-08-24'),
+      maxStudents: 15,
     },
     create: {
-      name: 'Cohort 3',
+      name: 'Batch 1',
       startDate: new Date('2026-06-01'),
-      endDate: new Date('2026-08-24'),   // 12 weeks from Jun 1
+      endDate: new Date('2026-08-24'),
       status: 'ACTIVE',
       maxStudents: 15,
     }
