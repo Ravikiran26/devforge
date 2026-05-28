@@ -180,19 +180,21 @@ export default function Settings() {
     queryFn: () => api.get('/student/profile').then(r => r.data),
   })
 
-  const [name,     setName]     = useState('')
-  const [college,  setCollege]  = useState('')
-  const [github,   setGithub]   = useState('')
-  const [location, setLocation] = useState('')
+  const [name,     setName]     = useState(() => data?.name || '')
+  const [college,  setCollege]  = useState(() => data?.student?.college || '')
+  const [github,   setGithub]   = useState(() => data?.student?.githubUrl || '')
+  const [location, setLocation] = useState(() => data?.student?.location || '')
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (data) {
-      setName(data.name || '')
-      setCollege(data.student?.college || '')
-      setGithub(data.student?.githubUrl || '')
-      setLocation(data.student?.location || '')
+      setName(n => n || data.name || '')
+      setCollege(n => n || data.student?.college || '')
+      setGithub(n => n || data.student?.githubUrl || '')
+      setLocation(n => n || data.student?.location || '')
     }
   }, [data])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const [curPwd,     setCurPwd]     = useState('')
   const [newPwd,     setNewPwd]     = useState('')

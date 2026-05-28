@@ -169,7 +169,7 @@ export default function Profile() {
                 [MapPin,    location || '—',           'Location'],
                 [Calendar,  `Joined ${joinedDate}`,   'Joined'],
                 [GitBranch, githubUrl || '—',          'GitHub'],
-              ].map(([Icon, text, title], i) => (
+              ].map(([Icon, text], i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left' }}>
                   <div style={{ width: 28, height: 28, borderRadius: 8, background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0', flexShrink: 0 }}>
                     <Icon size={12} color="#94a3b8" />

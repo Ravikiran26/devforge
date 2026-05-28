@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import AdminLayout from '../../components/layout/AdminLayout'
-import { Users, Zap, IndianRupee, ClipboardList, ArrowRight, TrendingUp } from 'lucide-react'
+import { Users, Zap, IndianRupee, ClipboardList, ArrowRight } from 'lucide-react'
 import api from '../../lib/api'
 
 function Spinner() {

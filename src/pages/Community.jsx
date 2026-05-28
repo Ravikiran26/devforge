@@ -41,7 +41,7 @@ function WinWall({ wins = [] }) {
 
   const timeAgo = (dateStr) => {
     if (!dateStr) return ''
-    const diff = Date.now() - new Date(dateStr)
+    const diff = +new Date() - new Date(dateStr)
     const d = Math.floor(diff / 86400000)
     const h = Math.floor(diff / 3600000)
     if (d > 0) return `${d}d ago`

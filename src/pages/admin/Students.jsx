@@ -12,12 +12,6 @@ const STATUS_STYLE = {
 
 const INITIALS_COLORS = ['#4f46e5', '#0891b2', '#7c3aed', '#059669', '#dc2626', '#d97706', '#0284c7', '#9333ea']
 
-function gradeColor(g) {
-  if (!g && g !== 0) return '#94a3b8'
-  if (g >= 90) return '#059669'
-  if (g >= 75) return '#4f46e5'
-  return '#dc2626'
-}
 
 function Spinner() {
   return (

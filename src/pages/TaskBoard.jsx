@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '../components/layout/DashboardLayout'
-import { Search, X, ExternalLink, Send, AlertCircle, CheckCircle2, Clock, Eye, GitPullRequest } from 'lucide-react'
+import { Search, X, ExternalLink, Send, AlertCircle, CheckCircle2, Clock, GitPullRequest } from 'lucide-react'
 import api from '../lib/api'
 import { useAuthStore } from '../store/authStore'
 
@@ -182,7 +182,7 @@ function StuckButton({ ticketId }) {
     try {
       await api.post(`/student/tickets/${ticketId}/stuck`)
       setSent(true)
-    } catch {}
+    } catch { /* fire-and-forget */ }
     setSending(false)
   }, [ticketId])
 

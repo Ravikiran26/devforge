@@ -117,7 +117,7 @@ function CodeBlock({ blockType, code }) {
 
 function renderTextLine(line, i, R) {
   const t = line.trim()
-  if (/^[A-Z][A-Z0-9\s\-]{3,}$/.test(t) && t.length < 55 && !t.startsWith('•') && !t.startsWith('☐'))
+  if (/^[A-Z][A-Z0-9\s-]{3,}$/.test(t) && t.length < 55 && !t.startsWith('•') && !t.startsWith('☐'))
     return <div key={i} style={{ fontSize:11, fontWeight:800, color:R.accent, letterSpacing:'0.1em', marginTop: i===0 ? 0 : 32, marginBottom:10, fontFamily:"'Inter', sans-serif" }}>{t}</div>
   if (/^─+$/.test(t))
     return <hr key={i} style={{ border:'none', borderTop:`1px solid ${R.border}`, margin:'24px 0' }}/>
@@ -282,6 +282,42 @@ function SkillsUnlocked({ completedWeeks, C }) {
   )
 }
 
+function LessonRow({ l, last, onSelectLesson }) {
+  const C = useTheme()
+  return (
+    <div
+      onClick={() => onSelectLesson(l.id)}
+      style={{ display:'flex', alignItems:'center', gap:16, padding:'14px 24px', borderBottom: last ? 'none' : `1px solid ${C.border}`, cursor:'pointer', transition:'background 0.12s' }}
+      onMouseEnter={e => e.currentTarget.style.background = C.surface2}
+      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+    >
+      <div style={{ width:9, height:9, flexShrink:0, background: l.watched ? C.green : 'transparent', border: `1px solid ${l.watched ? C.green : C.border2}`, boxShadow: l.watched ? glow(C.green, 6) : 'none' }}/>
+      <div style={{ flex:1, minWidth:0 }}>
+        <div style={{ fontSize:13, fontWeight:500, color: l.watched ? C.text3 : C.text, marginBottom:3, fontFamily:"'Inter', sans-serif" }}>{l.title}</div>
+        {l.duration && (
+          <div style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color: C.text3, fontFamily:'JetBrains Mono,monospace' }}>
+            <Clock size={10}/>{l.duration}
+          </div>
+        )}
+      </div>
+      <div style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
+        {l.watched && <span style={{ fontSize:9, fontWeight:700, color: C.green, letterSpacing:'0.08em', fontFamily:'JetBrains Mono,monospace' }}>✓ DONE</span>}
+        <span style={{ fontSize:10, fontWeight:500, color: C.text3, background: C.surface2, border:`1px solid ${C.border}`, padding:'3px 9px', fontFamily:'JetBrains Mono, monospace' }}>{l.lessonCode}</span>
+        <ChevronRight size={13} color={C.text3}/>
+      </div>
+    </div>
+  )
+}
+
+function SectionLabel({ label }) {
+  const C = useTheme()
+  return (
+    <div style={{ padding:'7px 24px', fontSize:9, fontWeight:700, color: C.text3, letterSpacing:'0.14em', background: C.surface, borderBottom:`1px solid ${C.border}`, borderTop:`1px solid ${C.border}`, fontFamily:'JetBrains Mono,monospace' }}>
+      {label}
+    </div>
+  )
+}
+
 // ── Browse view ───────────────────────────────────────────────────────────────
 function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap, byWeek }) {
   const C = useTheme()
@@ -297,45 +333,6 @@ function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap, byWe
 
   const foundations = weekLessons.filter(l => l.lessonCode.startsWith('L'))
   const dailies     = weekLessons.filter(l => !l.lessonCode.startsWith('L'))
-
-  function LessonRow({ l, last }) {
-    return (
-      <div
-        onClick={() => onSelectLesson(l.id)}
-        style={{ display:'flex', alignItems:'center', gap:16, padding:'14px 24px', borderBottom: last ? 'none' : `1px solid ${C.border}`, cursor:'pointer', transition:'background 0.12s' }}
-        onMouseEnter={e => e.currentTarget.style.background = C.surface2}
-        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-      >
-        <div style={{
-          width:9, height:9, flexShrink:0,
-          background: l.watched ? C.green : 'transparent',
-          border: `1px solid ${l.watched ? C.green : C.border2}`,
-          boxShadow: l.watched ? glow(C.green, 6) : 'none',
-        }}/>
-        <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontSize:13, fontWeight:500, color: l.watched ? C.text3 : C.text, marginBottom:3, fontFamily:"'Inter', sans-serif" }}>{l.title}</div>
-          {l.duration && (
-            <div style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color: C.text3, fontFamily:'JetBrains Mono,monospace' }}>
-              <Clock size={10}/>{l.duration}
-            </div>
-          )}
-        </div>
-        <div style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
-          {l.watched && <span style={{ fontSize:9, fontWeight:700, color: C.green, letterSpacing:'0.08em', fontFamily:'JetBrains Mono,monospace' }}>✓ DONE</span>}
-          <span style={{ fontSize:10, fontWeight:500, color: C.text3, background: C.surface2, border:`1px solid ${C.border}`, padding:'3px 9px', fontFamily:'JetBrains Mono, monospace' }}>{l.lessonCode}</span>
-          <ChevronRight size={13} color={C.text3}/>
-        </div>
-      </div>
-    )
-  }
-
-  function SectionLabel({ label }) {
-    return (
-      <div style={{ padding:'7px 24px', fontSize:9, fontWeight:700, color: C.text3, letterSpacing:'0.14em', background: C.surface, borderBottom:`1px solid ${C.border}`, borderTop:`1px solid ${C.border}`, fontFamily:'JetBrains Mono,monospace' }}>
-        {label}
-      </div>
-    )
-  }
 
   return (
     <div>
@@ -370,14 +367,14 @@ function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap, byWe
         {foundations.length > 0 && (
           <>
             <SectionLabel label="PREREQUISITES"/>
-            {foundations.map((l, i) => <LessonRow key={l.id} l={l} last={i === foundations.length - 1 && dailies.length === 0}/>)}
+            {foundations.map((l, i) => <LessonRow key={l.id} l={l} last={i === foundations.length - 1 && dailies.length === 0} onSelectLesson={onSelectLesson}/>)}
           </>
         )}
 
         {dailies.length > 0 && (
           <>
             {foundations.length > 0 && <SectionLabel label="DAILY LESSONS"/>}
-            {dailies.map((l, i) => <LessonRow key={l.id} l={l} last={i === dailies.length - 1}/>)}
+            {dailies.map((l, i) => <LessonRow key={l.id} l={l} last={i === dailies.length - 1} onSelectLesson={onSelectLesson}/>)}
           </>
         )}
 

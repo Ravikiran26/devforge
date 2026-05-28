@@ -28,6 +28,7 @@ const viewportOnce = { once: true, margin: '-40px' }
 // ─── Typewriter ───────────────────────────────────────────────────────────────
 function useTypewriter(text, speed = 48) {
   const [displayed, setDisplayed] = useState('')
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setDisplayed('')
     let i = 0
@@ -38,6 +39,7 @@ function useTypewriter(text, speed = 48) {
     }, speed)
     return () => clearInterval(id)
   }, [text, speed])
+  /* eslint-enable react-hooks/set-state-in-effect */
   return displayed
 }
 
@@ -146,7 +148,7 @@ function Navbar({ onApply }) {
 }
 
 // ─── Dashboard mockup ─────────────────────────────────────────────────────────
-function DashboardMockup({ embedded = false }) {
+function DashboardMockup() {
   const tickets = [
     { code: 'LB-005', title: 'Invoice PDF upload — Cloudinary', status: 'In Review',   color: C.red    },
     { code: 'LB-006', title: 'Dashboard revenue aggregation',    status: 'In Progress', color: C.accent },
@@ -951,7 +953,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(response),
             })
-          } catch {}
+          } catch { /* payment webhook optional */ }
           setDone(true)
           setLoading(false)
         },
