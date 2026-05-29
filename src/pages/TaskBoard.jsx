@@ -24,6 +24,16 @@ const COLS = [
   { id: 'REVIEWED',  label: 'Done',        color: '#10b981', bg: '#ecfdf5', icon: '●'  },
 ]
 
+// Column is derived from the student's own submission, not the global ticket status
+function studentStatus(ticket) {
+  const sub = ticket.mySubmission
+  if (!sub) return 'UPCOMING'
+  if (sub.status === 'APPROVED') return 'REVIEWED'
+  if (sub.status === 'NEEDS_CHANGES' || sub.verdict === 'NEEDS_CHANGES' || sub.verdict === 'MAJOR_REWORK') return 'IN_REVIEW'
+  if (sub.status === 'IN_REVIEW') return 'ACTIVE'
+  return 'UPCOMING'
+}
+
 const P_STYLE = {
   HIGH:   { color: '#dc2626', bg: '#fef2f2', border: '#fecaca' },
   MEDIUM: { color: '#2563eb', bg: '#eff6ff', border: '#bfdbfe' },
@@ -162,7 +172,7 @@ function TicketCard({ ticket: t, col, isSelected, onClick }) {
           </span>
         )}
       </div>
-      {t.dueDate && t.status !== 'REVIEWED' && (
+      {t.dueDate && studentStatus(t) !== 'REVIEWED' && (
         <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
           <DueBadge dueDate={t.dueDate} />
         </div>
@@ -506,7 +516,7 @@ export default function TaskBoard() {
     return matchProject && matchSearch
   })
 
-  const byCol = (colId) => filtered.filter(t => t.status === colId)
+  const byCol = (colId) => filtered.filter(t => studentStatus(t) === colId)
 
   if (isLoading) return <DashboardLayout title="Task Board"><Spinner /></DashboardLayout>
   if (isError) return (
