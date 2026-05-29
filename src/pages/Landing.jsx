@@ -967,8 +967,10 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
         },
       })
       rzp.open()
-    } catch {
-      setError('Something went wrong. Please try again.')
+    } catch (err) {
+      setError(err?.message?.includes('fetch') || err?.message?.includes('Failed')
+        ? 'Cannot reach server. Check your internet connection.'
+        : `Error: ${err?.message || 'Something went wrong. Please try again.'}`)
       setLoading(false)
     }
   }

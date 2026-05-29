@@ -39,7 +39,22 @@ const adminAnalytics     = require('./routes/admin/analytics')
 const app = express()
 
 app.use(helmet())
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173', credentials: true }))
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  /\.vercel\.app$/,
+].filter(Boolean)
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true)
+    const allowed = allowedOrigins.some(o =>
+      o instanceof RegExp ? o.test(origin) : o === origin
+    )
+    cb(allowed ? null : new Error('CORS blocked'), allowed)
+  },
+  credentials: true,
+}))
 app.use(express.json())
 
 // 100 requests per 15 minutes per IP
