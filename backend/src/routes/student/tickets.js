@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
 
     const tickets = await prisma.ticket.findMany({
       where: whereClause,
-      orderBy: [{ week: 'asc' }, { priority: 'desc' }],
+      orderBy: [{ week: 'asc' }, { id: 'asc' }],
       include: {
         submissions: {
           where: { studentId: student.id },
