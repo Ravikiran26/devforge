@@ -873,23 +873,29 @@ function CTA({ onApply }) {
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 function Footer() {
+  const links = [
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Refund Policy', href: '/refund' },
+    { label: 'support@sprintforge.in', href: 'mailto:support@sprintforge.in' },
+  ]
   return (
-    <footer style={{ padding: '36px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <footer style={{ padding: '36px 48px', borderTop: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <div style={{ width: 22, height: 22, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: glow() }}>
-          <span style={{ fontSize: 9, fontWeight: 800, color: '#000', fontFamily: 'JetBrains Mono,monospace' }}>DF</span>
+          <span style={{ fontSize: 9, fontWeight: 800, color: '#000', fontFamily: 'JetBrains Mono,monospace' }}>SF</span>
         </div>
-        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, fontSize: 13, color: C.text3 }}>DevForge</span>
+        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, fontSize: 13, color: C.text3 }}>SprintForge</span>
       </div>
-      <div style={{ display: 'flex', gap: 28 }}>
-        {['Privacy', 'Terms', 'support@devforge.in'].map(l => (
-          <a key={l} href="#" style={{ fontSize: 11, color: C.text3, textDecoration: 'none', fontFamily: 'JetBrains Mono,monospace', transition: 'color 0.15s' }}
+      <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+        {links.map(l => (
+          <a key={l.href} href={l.href} style={{ fontSize: 11, color: C.text3, textDecoration: 'none', fontFamily: 'JetBrains Mono,monospace', transition: 'color 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.color = C.accent}
             onMouseLeave={e => e.currentTarget.style.color = C.text3}
-          >{l}</a>
+          >{l.label}</a>
         ))}
       </div>
-      <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>© 2025 DevForge</div>
+      <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>© 2026 SprintForge</div>
     </footer>
   )
 }

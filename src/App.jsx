@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute'
 import Landing from './pages/Landing'
 import Login   from './pages/Login'
+import PrivacyPolicy from './pages/legal/PrivacyPolicy'
+import Terms         from './pages/legal/Terms'
+import Refund        from './pages/legal/Refund'
 import Dashboard      from './pages/Dashboard'
 import TaskBoard      from './pages/TaskBoard'
 import Lessons        from './pages/Lessons'
@@ -27,8 +30,11 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Public */}
-        <Route path="/"      element={<Landing />} />
-        <Route path="/login" element={<Login />}   />
+        <Route path="/"        element={<Landing />}       />
+        <Route path="/login"   element={<Login />}         />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms"   element={<Terms />}         />
+        <Route path="/refund"  element={<Refund />}        />
 
         {/* Student portal */}
         <Route path="/dashboard" element={<P c={Dashboard}  />} />
