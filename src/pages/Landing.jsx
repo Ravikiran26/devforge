@@ -933,44 +933,17 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
     setLoading(true); setError('')
 
     try {
-      const ok = await loadRazorpay()
-      if (!ok) { setError('Failed to load payment gateway. Please try again.'); setLoading(false); return }
-
-      const res = await fetch(`${API_URL}/payment/order`, {
+      const res = await fetch(`${API_URL}/apply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: String(form.name || ''), email: String(form.email || ''), phone: String(form.phone || ''), college: String(form.college || ''), plan: String(form.plan || 'LIVE_COHORT') }),
+        body: JSON.stringify({ name: String(form.name), email: String(form.email), phone: String(form.phone), college: String(form.college), plan: String(form.plan) }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Something went wrong.'); setLoading(false); return }
-
-      const rzp = new window.Razorpay({
-        key:         data.keyId,
-        amount:      data.amount,
-        currency:    data.currency,
-        order_id:    data.orderId,
-        name:        'DevForge',
-        description: `${data.planLabel} — Batch 1`,
-        prefill:     { name: data.name, email: data.email, contact: data.phone },
-        theme:       { color: '#F59E0B' },
-        modal:       { ondismiss: () => setLoading(false) },
-        handler: async (response) => {
-          try {
-            await fetch(`${API_URL}/payment/verify`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(response),
-            })
-          } catch { /* payment webhook optional */ }
-          setDone(true)
-          setLoading(false)
-        },
-      })
-      rzp.open()
+      setDone(true)
+      setLoading(false)
     } catch (err) {
-      setError(err?.message?.includes('fetch') || err?.message?.includes('Failed')
-        ? 'Cannot reach server. Check your internet connection.'
-        : `Error: ${err?.message || 'Something went wrong. Please try again.'}`)
+      setError(err?.message || 'Something went wrong. Please try again.')
       setLoading(false)
     }
   }
@@ -1047,9 +1020,9 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
                   style={{ background: C.accent, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '13px', letterSpacing: '0.1em', marginTop: 6, transition: 'box-shadow 0.2s, opacity 0.15s', opacity: loading ? 0.7 : 1, boxShadow: glow() }}
                   onMouseEnter={e => { if (!loading) e.currentTarget.style.boxShadow = glow(C.accent, 20) }}
                   onMouseLeave={e => e.currentTarget.style.boxShadow = glow()}
-                >{loading ? 'OPENING PAYMENT...' : 'PAY & LOCK SEAT →'}</button>
+                >{loading ? 'RESERVING SEAT...' : 'RESERVE SEAT →'}</button>
                 <p style={{ fontSize: 10, color: C.text3, fontFamily: "'Inter', sans-serif", textAlign: 'center', margin: 0 }}>
-                  Secured by Razorpay · UPI, Cards, Net Banking accepted
+                  Early access · Batch 1 starts June 1 · Limited seats
                 </p>
               </form>
             </>
