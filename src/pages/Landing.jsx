@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, Check } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://devforge-production-742c.up.railway.app/api'
+
 // ─── Amber Terminal tokens ────────────────────────────────────────────────────
 const C = {
   bg:      '#090805',
@@ -934,7 +936,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
       const ok = await loadRazorpay()
       if (!ok) { setError('Failed to load payment gateway. Please try again.'); setLoading(false); return }
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/payment/order`, {
+      const res = await fetch(`${API_URL}/payment/order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: form.name, email: form.email, phone: form.phone, college: form.college, plan: form.plan }),
@@ -954,7 +956,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
         modal:       { ondismiss: () => setLoading(false) },
         handler: async (response) => {
           try {
-            await fetch(`${import.meta.env.VITE_API_URL}/payment/verify`, {
+            await fetch(`${API_URL}/payment/verify`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(response),
