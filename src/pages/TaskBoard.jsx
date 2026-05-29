@@ -210,6 +210,70 @@ function StuckButton({ ticketId }) {
   )
 }
 
+// ─── Description renderer ────────────────────────────────────────────────────
+
+function inlineCode(text) {
+  // Split on patterns: ALL_CAPS_VAR, /api/paths, src/path.ext, { json }, ENUM | ENUM
+  const parts = []
+  const re = /(`[^`]+`|[A-Z][A-Z0-9_]{2,}(?:\.[A-Z0-9_]+)*|(?:src|lib|prisma|api|routes|services)\/[\w./:-]+|\{[^}]{1,80}\}|(?:[A-Z_]{3,}\s*\|\s*[A-Z_]{3,}(?:\s*\|\s*[A-Z_]+)*))/g
+  let last = 0, m
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index))
+    const val = m[0].replace(/^`|`$/g, '')
+    parts.push(<code key={m.index} style={{ fontFamily: 'monospace', fontSize: 11, background: '#f1f5f9', color: '#4f46e5', padding: '1px 5px', borderRadius: 4, fontWeight: 600 }}>{val}</code>)
+    last = m.index + m[0].length
+  }
+  if (last < text.length) parts.push(text.slice(last))
+  return parts
+}
+
+function DescriptionBlock({ text }) {
+  if (!text) return null
+  const lines = text.split('\n')
+  const introLines = []
+  const criteria = []
+  let inCriteria = false
+
+  for (const line of lines) {
+    const t = line.trim()
+    if (!t) continue
+    if (t === 'Acceptance Criteria:') { inCriteria = true; continue }
+    if (inCriteria && /^\d+\./.test(t)) {
+      criteria.push(t.replace(/^\d+\.\s*/, ''))
+    } else if (!inCriteria) {
+      introLines.push(t)
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {introLines.length > 0 && (
+        <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.7, margin: 0, fontFamily: "'Inter', sans-serif" }}>
+          {introLines.join(' ')}
+        </p>
+      )}
+
+      {criteria.length > 0 && (
+        <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, overflow: 'hidden' }}>
+          <div style={{ padding: '8px 14px', background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', fontSize: 10, fontWeight: 700, color: '#64748b', letterSpacing: '0.08em' }}>
+            ACCEPTANCE CRITERIA
+          </div>
+          {criteria.map((item, i) => (
+            <div key={i} style={{ display: 'flex', gap: 12, padding: '10px 14px', borderBottom: i < criteria.length - 1 ? '1px solid #f1f5f9' : 'none', alignItems: 'flex-start' }}>
+              <span style={{ width: 20, height: 20, borderRadius: '50%', background: '#e0e7ff', color: '#4f46e5', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                {i + 1}
+              </span>
+              <span style={{ fontSize: 12, color: '#374151', lineHeight: 1.65, fontFamily: "'Inter', sans-serif" }}>
+                {inlineCode(item)}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Detail Panel ─────────────────────────────────────────────────────────────
 
 function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) {
@@ -288,8 +352,7 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
       {/* Description */}
       {sel.description && (
         <div style={{ marginBottom: 18 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Description</div>
-          <div style={{ fontSize: 13, color: '#475569', lineHeight: 1.65 }}>{sel.description}</div>
+          <DescriptionBlock text={sel.description} />
         </div>
       )}
 
