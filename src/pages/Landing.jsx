@@ -915,10 +915,13 @@ function loadRazorpay() {
 }
 
 function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', college: '', plan: initialPlan })
-  const [done, setDone] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const navigate = useNavigate()
+  const [form, setForm]         = useState({ name: '', email: '', phone: '', college: '', plan: initialPlan })
+  const [step, setStep]         = useState('apply')   // 'apply' | 'password' | 'done'
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm]   = useState('')
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState('')
 
   const PLAN_OPTIONS = [
     { value: 'LIVE_COHORT', label: 'Core — ₹7,000'                              },
@@ -931,7 +934,6 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
       setError('All fields are required.'); return
     }
     setLoading(true); setError('')
-
     try {
       const res = await fetch(`${API_URL}/apply`, {
         method: 'POST',
@@ -940,7 +942,32 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Something went wrong.'); setLoading(false); return }
-      setDone(true)
+      setStep('password')
+      setLoading(false)
+    } catch (err) {
+      setError(err?.message || 'Something went wrong. Please try again.')
+      setLoading(false)
+    }
+  }
+
+  const handleSetPassword = async (e) => {
+    e.preventDefault()
+    if (password.length < 8) { setError('Password must be at least 8 characters.'); return }
+    if (password !== confirm) { setError('Passwords do not match.'); return }
+    setLoading(true); setError('')
+    try {
+      const res = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: String(form.name), email: String(form.email), password, college: String(form.college), plan: String(form.plan) }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        // Already registered — just send them to login
+        if (res.status === 409) { setStep('done'); setLoading(false); return }
+        setError(data.error || 'Failed to create account.'); setLoading(false); return
+      }
+      setStep('done')
       setLoading(false)
     } catch (err) {
       setError(err?.message || 'Something went wrong. Please try again.')
@@ -966,20 +993,49 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
         >
           <button onClick={onClose} style={{ position: 'absolute', top: 14, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: C.text3, fontSize: 20, fontFamily: 'JetBrains Mono,monospace', lineHeight: 1 }}>×</button>
 
-          {done ? (
+          {step === 'done' ? (
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em', textShadow: glow(C.green) }}>✓ PAYMENT SUCCESSFUL</div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 12 }}>Seat locked. You're in.</div>
-              <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 20 }}>We'll WhatsApp <strong style={{ color: C.accent }}>{form.phone}</strong> within 2 hours with login details.</p>
-              <div style={{ background: C.surface2, border: `1px solid ${C.border}`, padding: '14px 16px', textAlign: 'left' }}>
-                <div style={{ fontSize: 9, color: C.text3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.1em', marginBottom: 10 }}>WHAT HAPPENS NEXT</div>
-                {['Payment confirmed & seat locked', 'Login details sent on WhatsApp within 2 hours', 'Batch 1 kicks off June 1', 'Instant access to Week 1 lessons & Discord'].map((s, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 6, fontSize: 12, color: C.text2, fontFamily: "'Inter', sans-serif" }}>
-                    <span style={{ color: C.accent, fontFamily: 'JetBrains Mono,monospace' }}>{i + 1}.</span>
-                    <span>{s}</span>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em', textShadow: glow(C.green) }}>✓ ACCOUNT CREATED</div>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 12 }}>You're in. Seat locked.</div>
+              <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 24 }}>
+                Your account is ready. Log in with <strong style={{ color: C.accent }}>{form.email}</strong> and the password you just set.
+              </p>
+              <button
+                onClick={() => navigate('/login')}
+                style={{ background: C.accent, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '12px 32px', letterSpacing: '0.08em', boxShadow: glow(), width: '100%' }}
+              >
+                GO TO LOGIN →
+              </button>
+            </div>
+          ) : step === 'password' ? (
+            <div>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em', textShadow: glow(C.green) }}>✓ SEAT RESERVED</div>
+              <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: C.text, margin: '0 0 6px' }}>Set your password</h2>
+              <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>
+                Create a password for <strong style={{ color: C.accent }}>{form.email}</strong> — you'll use this to log in.
+              </p>
+              {error && (
+                <div style={{ fontSize: 12, color: C.red, fontFamily: "'Inter', sans-serif", padding: '8px 12px', border: `1px solid ${C.red}44`, marginBottom: 14 }}>{error}</div>
+              )}
+              <form onSubmit={handleSetPassword} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {[['Password', password, setPassword], ['Confirm password', confirm, setConfirm]].map(([label, val, setter]) => (
+                  <div key={label}>
+                    <label style={{ fontSize: 9, fontWeight: 700, color: C.text3, letterSpacing: '0.12em', fontFamily: 'JetBrains Mono,monospace', display: 'block', marginBottom: 7 }}>{label.toUpperCase()}</label>
+                    <input
+                      type="password" value={val} placeholder="Min. 8 characters"
+                      onChange={e => { setError(''); setter(e.target.value) }}
+                      style={inputStyle}
+                      onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = glow() }}
+                      onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = 'none' }}
+                    />
                   </div>
                 ))}
-              </div>
+                <button type="submit" disabled={loading}
+                  style={{ background: C.accent, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '13px', letterSpacing: '0.1em', marginTop: 6, opacity: loading ? 0.7 : 1, boxShadow: glow() }}
+                >
+                  {loading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT & LOGIN →'}
+                </button>
+              </form>
             </div>
           ) : (
             <>
