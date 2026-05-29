@@ -229,21 +229,27 @@ function inlineCode(text) {
 
 function DescriptionBlock({ text }) {
   if (!text) return null
-  const lines = text.split('\n')
-  const introLines = []
-  const criteria = []
-  let inCriteria = false
 
-  for (const line of lines) {
-    const t = line.trim()
-    if (!t) continue
-    if (t === 'Acceptance Criteria:') { inCriteria = true; continue }
-    if (inCriteria && /^\d+\./.test(t)) {
-      criteria.push(t.replace(/^\d+\.\s*/, ''))
-    } else if (!inCriteria) {
-      introLines.push(t)
+  // Split at "Acceptance Criteria:" regardless of newlines
+  const sepIdx = text.indexOf('Acceptance Criteria:')
+  const introText = (sepIdx === -1 ? text : text.slice(0, sepIdx)).trim()
+  const rest = sepIdx === -1 ? '' : text.slice(sepIdx + 'Acceptance Criteria:'.length).trim()
+
+  // Parse numbered items — handle both newline-separated and inline "1. ... 2. ..."
+  const criteria = []
+  if (rest) {
+    const byNewline = rest.split(/\n(?=\d+\.)/)
+    if (byNewline.length > 1) {
+      byNewline.forEach(p => { const c = p.replace(/^\d+\.\s*/, '').trim(); if (c) criteria.push(c) })
+    } else {
+      // Inline format: split at " 2. " " 3. " etc. (space + digit + dot)
+      rest.split(/(?<=\S) (?=\d+\.\s)/).forEach(p => {
+        const c = p.replace(/^\d+\.\s*/, '').trim(); if (c) criteria.push(c)
+      })
     }
   }
+
+  const introLines = introText ? [introText] : []
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
