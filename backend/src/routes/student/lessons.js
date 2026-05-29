@@ -9,11 +9,11 @@ router.get('/', async (req, res) => {
     const student = await prisma.student.findUnique({ where: { userId: req.user.userId } })
     if (!student) return res.status(404).json({ error: 'Student not found' })
 
+    const whereClause = { status: 'PUBLISHED' }
+    if (student.cohortId) whereClause.cohortId = student.cohortId
+
     const lessons = await prisma.lesson.findMany({
-      where: {
-        status: 'PUBLISHED',
-        cohortId: student.cohortId,
-      },
+      where: whereClause,
       orderBy: [{ week: 'asc' }, { id: 'asc' }],
       include: {
         progress: {

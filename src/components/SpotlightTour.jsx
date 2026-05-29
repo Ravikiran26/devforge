@@ -45,29 +45,35 @@ function getRect(selector) {
   return { top: r.top, left: r.left, width: r.width, height: r.height, bottom: r.bottom, right: r.right }
 }
 
+const TOOLTIP_HEIGHT = 230
+
 function Tooltip({ rect, step, stepIndex, total, onNext, onSkip, isLast, isPending }) {
-  const { placement, title, body } = step
+  const { placement: preferredPlacement, title, body } = step
   const pad = PAD
   const holeTop    = rect.top - pad
   const holeLeft   = rect.left - pad
   const holeWidth  = rect.width + pad * 2
   const holeHeight = rect.height + pad * 2
 
+  // Auto-flip to 'top' if tooltip would overflow the bottom of the viewport
+  const wouldOverflowBottom = preferredPlacement === 'bottom' &&
+    (holeTop + holeHeight + 14 + TOOLTIP_HEIGHT > window.innerHeight)
+  const placement = wouldOverflowBottom ? 'top' : preferredPlacement
+
   const tooltipWidth = 320
   let tooltipStyle = { position: 'fixed', width: tooltipWidth, zIndex: 10001 }
 
+  const centerLeft = Math.min(
+    Math.max(holeLeft + holeWidth / 2 - tooltipWidth / 2, 12),
+    window.innerWidth - tooltipWidth - 12,
+  )
+
   if (placement === 'bottom') {
     tooltipStyle.top  = holeTop + holeHeight + 14
-    tooltipStyle.left = Math.min(
-      Math.max(holeLeft + holeWidth / 2 - tooltipWidth / 2, 12),
-      window.innerWidth - tooltipWidth - 12,
-    )
+    tooltipStyle.left = centerLeft
   } else {
-    tooltipStyle.bottom = window.innerHeight - holeTop + 14
-    tooltipStyle.left   = Math.min(
-      Math.max(holeLeft + holeWidth / 2 - tooltipWidth / 2, 12),
-      window.innerWidth - tooltipWidth - 12,
-    )
+    tooltipStyle.top  = Math.max(holeTop - TOOLTIP_HEIGHT - 14, 12)
+    tooltipStyle.left = centerLeft
   }
 
   const arrowBase = { position: 'absolute', width: 0, height: 0, left: '50%', transform: 'translateX(-50%)' }
