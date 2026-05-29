@@ -959,7 +959,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
       const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: String(form.name), email: String(form.email), password, college: String(form.college), plan: String(form.plan) }),
+        body: JSON.stringify({ name: String(form.name), email: String(form.email), password, college: String(form.college), plan: ['LIVE_COHORT', 'MENTORED'].includes(form.plan) ? form.plan : 'LIVE_COHORT' }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -1092,10 +1092,10 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Landing() {
   const [showModal, setShowModal] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState('Pro')
+  const [selectedPlan, setSelectedPlan] = useState('LIVE_COHORT')
 
   const openModal = (plan) => {
-    if (plan) setSelectedPlan(plan)
+    if (plan && typeof plan === 'string') setSelectedPlan(plan)
     setShowModal(true)
   }
 
