@@ -1,4 +1,14 @@
 require('dotenv').config()
+const Sentry = require('@sentry/node')
+
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'production',
+    tracesSampleRate: 0.2,
+  })
+}
+
 const express = require('express')
 const cors = require('cors')
 const helmet = require('helmet')
@@ -88,6 +98,8 @@ app.get('/api/health', async (_, res) => {
     res.status(503).json({ status: 'error', db: 'disconnected', error: err.message })
   }
 })
+
+if (process.env.SENTRY_DSN) Sentry.setupExpressErrorHandler(app)
 
 app.use((_, res) => res.status(404).json({ error: 'Route not found' }))
 
