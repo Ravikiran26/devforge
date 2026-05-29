@@ -939,7 +939,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
       const res = await fetch(`${API_URL}/payment/order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: form.name, email: form.email, phone: form.phone, college: form.college, plan: form.plan }),
+        body: JSON.stringify({ name: String(form.name || ''), email: String(form.email || ''), phone: String(form.phone || ''), college: String(form.college || ''), plan: String(form.plan || 'LIVE_COHORT') }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Something went wrong.'); setLoading(false); return }
@@ -1028,7 +1028,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
                   <div key={key}>
                     <label style={{ fontSize: 9, fontWeight: 700, color: C.text3, letterSpacing: '0.12em', fontFamily: 'JetBrains Mono,monospace', display: 'block', marginBottom: 7 }}>{label.toUpperCase()}</label>
                     <input type={type} value={form[key]} placeholder={placeholder}
-                      onChange={e => { setError(''); setForm({ ...form, [key]: e.target.value }) }}
+                      onChange={e => { const v = e.target.value; setError(''); setForm(prev => ({ ...prev, [key]: v })) }}
                       style={inputStyle}
                       onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = glow() }}
                       onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = 'none' }}
@@ -1037,7 +1037,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
                 ))}
                 <div>
                   <label style={{ fontSize: 9, fontWeight: 700, color: C.text3, letterSpacing: '0.12em', fontFamily: 'JetBrains Mono,monospace', display: 'block', marginBottom: 7 }}>PLAN</label>
-                  <select value={form.plan} onChange={e => setForm({ ...form, plan: e.target.value })}
+                  <select value={form.plan} onChange={e => { const v = e.target.value; setForm(prev => ({ ...prev, plan: v })) }}
                     style={{ ...inputStyle, cursor: 'pointer' }}
                   >
                     {PLAN_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
