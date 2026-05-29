@@ -200,7 +200,7 @@ async function main() {
 
     // ── PROJECT 1: Restaurant Flow (Jira project key: RF) — Weeks 5–6 ─────────
     {
-      ticketCode: 'RF-1',
+      ticketCode: 'RFC1-1',
       title: 'Restaurant + Menu Schema Setup',
       week: 5, priority: 'LOW', status: 'REVIEWED', storyPoints: 2,
       description: `Set up the PostgreSQL schema and Express server for Restaurant Flow. Design models for restaurant, menu, orders, and payments.
@@ -216,7 +216,7 @@ Acceptance Criteria:
 8. .env.example lists all required variable names — no hardcoded values anywhere`,
     },
     {
-      ticketCode: 'RF-2',
+      ticketCode: 'RFC1-2',
       title: 'Menu API + Place Order API',
       week: 5, priority: 'HIGH', status: 'REVIEWED', storyPoints: 5,
       description: `Build the public menu browsing API and the order placement endpoint. Customers don't need accounts — they browse and order.
@@ -232,7 +232,7 @@ Acceptance Criteria:
 8. GET /api/orders/:id — returns order with all items and status. Available without auth (customer tracks by ID)`,
     },
     {
-      ticketCode: 'RF-3',
+      ticketCode: 'RFC1-3',
       title: 'Razorpay Payment Integration',
       week: 5, priority: 'HIGH', status: 'IN_REVIEW', storyPoints: 5,
       description: `Customers pay online using Razorpay before their order is confirmed. Payment must be verified server-side using HMAC-SHA256 before marking any order as paid.
@@ -248,7 +248,7 @@ Acceptance Criteria:
 8. Failed payment → order stays PENDING, no status change`,
     },
     {
-      ticketCode: 'RF-4',
+      ticketCode: 'RFC1-4',
       title: 'Order Status Management API',
       week: 5, priority: 'MEDIUM', status: 'ACTIVE', storyPoints: 3,
       description: `Restaurant staff update order status as orders progress from kitchen to delivery. Status transitions are enforced — you cannot skip steps.
@@ -264,7 +264,7 @@ Acceptance Criteria:
 8. Response includes updated order with new status and relevant timestamp`,
     },
     {
-      ticketCode: 'RF-5',
+      ticketCode: 'RFC1-5',
       title: 'Socket.io Real-Time Order Updates',
       week: 6, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Customers see live order status updates without refreshing. Kitchen staff see new orders arrive in real time. Socket.io rooms keyed by orderId and restaurantId.
@@ -280,7 +280,7 @@ Acceptance Criteria:
 8. CORS configured for Socket.io matching Express CORS settings — CLIENT_URL from .env`,
     },
     {
-      ticketCode: 'RF-6',
+      ticketCode: 'RFC1-6',
       title: 'React — Customer Ordering Page',
       week: 6, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Customer-facing page to browse the menu, build a cart, and place + pay for an order. Mobile-friendly, no account needed.
@@ -296,7 +296,7 @@ Acceptance Criteria:
 8. Razorpay checkout widget opens after order placed — payment must complete before order is confirmed`,
     },
     {
-      ticketCode: 'RF-7',
+      ticketCode: 'RFC1-7',
       title: 'React — Kitchen Dashboard (Real-Time)',
       week: 6, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Staff dashboard showing live incoming orders and status controls. New orders appear instantly via Socket.io — no page refresh required.
@@ -312,7 +312,7 @@ Acceptance Criteria:
 8. Orders auto-sorted: PENDING/CONFIRMED first, then PREPARING, then READY — DELIVERED hidden`,
     },
     {
-      ticketCode: 'RF-8',
+      ticketCode: 'RFC1-8',
       title: 'Full Stack Deploy — Railway + Vercel',
       week: 6, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
       description: `Deploy Restaurant Flow to production. Backend on Railway, frontend on Vercel, PostgreSQL on Neon. Razorpay and Socket.io must work in production.
@@ -330,7 +330,7 @@ Acceptance Criteria:
 
     // ── PROJECT 2: Lead Bill (Jira project key: LB) — Weeks 7–9 ───────────────
     {
-      ticketCode: 'LB-1',
+      ticketCode: 'LBC1-1',
       title: 'Express Server + Prisma Setup',
       week: 7, priority: 'LOW', status: 'UPCOMING', storyPoints: 2,
       description: `Bootstrap the Lead Bill backend. Create the Express server with proper folder structure and connect it to PostgreSQL using Prisma.
@@ -346,7 +346,7 @@ Acceptance Criteria:
 8. Prisma client exported from a single src/lib/prisma.js file — not instantiated in every route file`,
     },
     {
-      ticketCode: 'LB-2',
+      ticketCode: 'LBC1-2',
       title: 'Client Management API',
       week: 7, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
       description: `Build the full CRUD API for managing clients. A client stores details needed for GST-correct invoicing: name, GST number, address, state.
@@ -362,7 +362,7 @@ Acceptance Criteria:
 8. Consistent response shape: { success: true, data: {...} } or { success: false, error: "message" }`,
     },
     {
-      ticketCode: 'LB-3',
+      ticketCode: 'LBC1-3',
       title: 'Invoice Creation API with GST Calculation',
       week: 7, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Build the invoice API that auto-calculates GST correctly. Same-state: CGST + SGST (9%+9% for 18%). Different-state: IGST (18%). System detects this automatically from stored state fields.
@@ -379,7 +379,7 @@ Acceptance Criteria:
 9. PUT /api/invoices/:id/status — update status: DRAFT | SENT | PAID | OVERDUE. Only owner can update`,
     },
     {
-      ticketCode: 'LB-4',
+      ticketCode: 'LBC1-4',
       title: 'PDF Invoice Generation',
       week: 8, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Generate a professional PDF invoice on demand using pdf-lib. The PDF must look like a real invoice: logo area, invoice number, GST breakdown, bank details, itemized table.
@@ -394,7 +394,7 @@ Acceptance Criteria:
 7. Response headers: Content-Disposition: attachment; filename="INV-2024-0001.pdf"`,
     },
     {
-      ticketCode: 'LB-5',
+      ticketCode: 'LBC1-5',
       title: 'Payment Tracking + Overdue Detection',
       week: 8, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
       description: `Track which invoices are paid and which are overdue. Add a dashboard summary endpoint.
@@ -409,7 +409,7 @@ Acceptance Criteria:
 7. Payment history preserved — do NOT overwrite previous payment records, append each payment`,
     },
     {
-      ticketCode: 'LB-6',
+      ticketCode: 'LBC1-6',
       title: 'React — Client Management UI',
       week: 8, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 5,
       description: `Build the client management page in React. Add clients, see the list, edit details. Clean and instant — no page reloads.
@@ -425,7 +425,7 @@ Acceptance Criteria:
 8. Edit client opens inline form or modal — not a separate page`,
     },
     {
-      ticketCode: 'LB-7',
+      ticketCode: 'LBC1-7',
       title: 'React — Invoice Form with Live GST Preview',
       week: 9, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Dynamic invoice creation form. Pick client, add line items, select GST rate, see live GST breakdown. GST type (CGST+SGST vs IGST) shows automatically based on selected client's state.
@@ -441,7 +441,7 @@ Acceptance Criteria:
 8. Form state preserved if API call fails — user does not lose their entered data`,
     },
     {
-      ticketCode: 'LB-8',
+      ticketCode: 'LBC1-8',
       title: 'React — Dashboard with Outstanding Summary',
       week: 9, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
       description: `The freelancer's home screen. Shows total outstanding, overdue invoices, this month's revenue, and recent invoices. All real data from the API.
@@ -459,7 +459,7 @@ Acceptance Criteria:
 
     // ── PROJECT 3: ClientDesk AI (Jira project key: CA) — Weeks 10–11 ─────────
     {
-      ticketCode: 'CA-1',
+      ticketCode: 'CAC1-1',
       title: 'Support Desk Schema + Express Setup',
       week: 10, priority: 'LOW', status: 'UPCOMING', storyPoints: 2,
       description: `Design the PostgreSQL schema for ClientDesk AI — a support desk where customers submit tickets and AI generates the first draft reply. Agents review and approve before it is sent.
@@ -475,7 +475,7 @@ Acceptance Criteria:
 8. .gitignore includes node_modules/, .env, *.log`,
     },
     {
-      ticketCode: 'CA-2',
+      ticketCode: 'CAC1-2',
       title: 'Ticket CRUD API + Agent Auth',
       week: 10, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
       description: `Customers submit support tickets without accounts (email only). Agents log in and manage tickets. Different auth flows for each type of user.
@@ -491,7 +491,7 @@ Acceptance Criteria:
 8. POST /api/tickets/:id/messages — agent posts a reply. Status auto-updates to REPLIED`,
     },
     {
-      ticketCode: 'CA-3',
+      ticketCode: 'CAC1-3',
       title: 'Claude AI Auto-Reply Generation',
       week: 10, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `When a new ticket arrives, automatically generate an AI draft reply using the Claude API. The agent reviews, edits if needed, and approves before it is sent to the customer.
@@ -507,7 +507,7 @@ Acceptance Criteria:
 8. If Claude API fails: AiDraft created with body: null and error field — ticket still works, agent replies manually`,
     },
     {
-      ticketCode: 'CA-4',
+      ticketCode: 'CAC1-4',
       title: 'Email Notifications via Nodemailer',
       week: 10, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
       description: `Send email to customers: ticket received confirmation and reply notification. Use Nodemailer with SMTP — Mailtrap for testing.
@@ -523,7 +523,7 @@ Acceptance Criteria:
 8. HTML email template — not plain text. Minimal but professional: ticket number, message, link`,
     },
     {
-      ticketCode: 'CA-5',
+      ticketCode: 'CAC1-5',
       title: 'GitHub Actions CI/CD Pipeline',
       week: 11, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Set up GitHub Actions to run tests on every push. PRs that fail checks do not get merged. Passing CI triggers Railway auto-deploy.
@@ -539,7 +539,7 @@ Acceptance Criteria:
 8. Branch protection rule: "ci" check must pass before merge is allowed`,
     },
     {
-      ticketCode: 'CA-6',
+      ticketCode: 'CAC1-6',
       title: 'React — Customer Support Portal',
       week: 11, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Customer-facing page to submit tickets and track status. No account needed — customers track by ticket number and email.
@@ -555,7 +555,7 @@ Acceptance Criteria:
 8. All API calls through src/lib/api.js — no raw fetch`,
     },
     {
-      ticketCode: 'CA-7',
+      ticketCode: 'CAC1-7',
       title: 'React — Agent Dashboard',
       week: 11, priority: 'HIGH', status: 'UPCOMING', storyPoints: 5,
       description: `Agent dashboard to manage support tickets. Shows queue, AI drafts awaiting approval, and ability to reply to customers.
@@ -571,7 +571,7 @@ Acceptance Criteria:
 8. Priority and status dropdowns allow updates without leaving the page`,
     },
     {
-      ticketCode: 'CA-8',
+      ticketCode: 'CAC1-8',
       title: 'Production Deploy + Health Monitoring',
       week: 11, priority: 'MEDIUM', status: 'UPCOMING', storyPoints: 3,
       description: `Final ticket. Deploy ClientDesk AI to production with CI/CD active. Confirm the full system works end-to-end in production including AI replies and email.
@@ -609,7 +609,7 @@ Acceptance Criteria:
     tickets.push(ticket)
   }
 
-  console.log('✓ Tickets seeded  (24 tickets: RF-001→008, LB-001→008, CA-001→008)')
+  console.log('✓ Tickets seeded  (24 tickets: RFC1-1→8, LBC1-1→8, CAC1-1→8)')
 
   // ── PR Submissions (none for Ravikiran — fresh start) ────────────────────────
   const ravi = students[0]

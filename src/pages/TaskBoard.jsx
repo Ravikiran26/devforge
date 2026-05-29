@@ -6,15 +6,15 @@ import api from '../lib/api'
 import { useAuthStore } from '../store/authStore'
 
 const PROJECTS = [
-  { id: 'RF', label: 'Restaurant Flow', weeks: '5–6', color: '#f59e0b', bg: '#fffbeb', border: '#fde68a' },
-  { id: 'LB', label: 'Lead Bill',       weeks: '7–9', color: '#4f46e5', bg: '#eef2ff', border: '#c7d2fe' },
-  { id: 'CA', label: 'ClientDesk AI',   weeks: '10–11', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe' },
+  { id: 'RFC1', label: 'Restaurant Flow', weeks: '5–6',   color: '#f59e0b', bg: '#fffbeb', border: '#fde68a' },
+  { id: 'LBC1', label: 'Lead Bill',       weeks: '7–9',   color: '#4f46e5', bg: '#eef2ff', border: '#c7d2fe' },
+  { id: 'CAC1', label: 'ClientDesk AI',   weeks: '10–11', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe' },
 ]
 
 function weekToProject(w) {
-  if (w >= 10) return 'CA'
-  if (w >= 7)  return 'LB'
-  return 'RF'
+  if (w >= 10) return 'CAC1'
+  if (w >= 7)  return 'LBC1'
+  return 'RFC1'
 }
 
 const COLS = [
@@ -172,11 +172,6 @@ function TicketCard({ ticket: t, col, isSelected, onClick }) {
           </span>
         )}
       </div>
-      {t.dueDate && studentStatus(t) !== 'REVIEWED' && (
-        <div style={{ marginTop: 8, display: 'flex', justifyContent: 'flex-end' }}>
-          <DueBadge dueDate={t.dueDate} />
-        </div>
-      )}
     </div>
   )
 }
@@ -289,17 +284,6 @@ function DetailPanel({ ticket: sel, onClose, prUrl, setPrUrl, submitMutation }) 
           </div>
         ))}
       </div>
-      {sel.dueDate && (
-        <div style={{ background: '#f8fafc', borderRadius: 10, padding: '10px 12px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>Due Date</div>
-            <span style={{ fontSize: 12, color: '#374151' }}>
-              {new Date(sel.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-            </span>
-          </div>
-          {sel.status !== 'REVIEWED' && <DueBadge dueDate={sel.dueDate} />}
-        </div>
-      )}
 
       {/* Description */}
       {sel.description && (

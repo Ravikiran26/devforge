@@ -11,9 +11,9 @@ function getClients() {
 // ─── Project detection ────────────────────────────────────────────────────────
 
 function detectProject(ticketCode = '') {
-  if (ticketCode.startsWith('RF')) return 'restaurantflow'
-  if (ticketCode.startsWith('CA')) return 'clientdeskai'
-  if (ticketCode.startsWith('LB')) return 'leadbill'
+  if (ticketCode.startsWith('RFC')) return 'restaurantflow'
+  if (ticketCode.startsWith('CAC')) return 'clientdeskai'
+  if (ticketCode.startsWith('LBC')) return 'leadbill'
   return 'foundation'
 }
 
