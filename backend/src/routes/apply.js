@@ -10,8 +10,11 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'name, email, phone, and college are required.' })
   }
   try {
-    const application = await prisma.application.create({
-      data: { name: name.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), college: college.trim(), plan: plan || 'Pro' }
+    const email_clean = email.trim().toLowerCase()
+    const application = await prisma.application.upsert({
+      where: { email: email_clean },
+      update: { name: name.trim(), phone: phone.trim(), college: college.trim(), plan: plan || 'LIVE_COHORT' },
+      create: { name: name.trim(), email: email_clean, phone: phone.trim(), college: college.trim(), plan: plan || 'LIVE_COHORT' },
     })
     res.status(201).json({ success: true, id: application.id })
   } catch (err) {
