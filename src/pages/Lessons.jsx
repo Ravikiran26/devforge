@@ -140,11 +140,11 @@ function renderTextLine(line, i, R) {
     </div>
   }
   if (line.startsWith('  ') && t.length > 0)
-    return <div key={i} style={{ background: R.surface, border:`1px solid ${R.border}`, borderLeft:`2px solid ${R.accent}`, padding:'4px 14px', margin:'3px 0', fontFamily:'JetBrains Mono, monospace', fontSize:13, color: R.text, lineHeight:1.85 }}>{t}</div>
+    return <div key={i} style={{ background: R.surface, border:`1px solid ${R.border}`, borderLeft:`2px solid ${R.accent}`, padding:'8px 16px', margin:'4px 0', fontFamily:"'Inter', sans-serif", fontSize:14, color: R.text2, lineHeight:1.75 }}>{t}</div>
   if (!t) return <div key={i} style={{ height:10 }}/>
   if (t.endsWith('?') || /^What |^Why |^How /.test(t))
-    return <div key={i} style={{ fontSize:16, fontWeight:700, color: R.text, marginTop:20, marginBottom:8, fontFamily:"'Inter', sans-serif" }}>{t}</div>
-  return <p key={i} style={{ fontSize:14, color: R.text2, lineHeight:1.85, margin:'0 0 6px', fontFamily:"'Inter', sans-serif" }}>{t}</p>
+    return <div key={i} style={{ fontSize:17, fontWeight:700, color: R.text, marginTop:24, marginBottom:10, fontFamily:"'Inter', sans-serif", letterSpacing:'-0.01em' }}>{t}</div>
+  return <p key={i} style={{ fontSize:15, color: R.text2, lineHeight:1.9, margin:'0 0 8px', fontFamily:"'Inter', sans-serif", letterSpacing:'-0.005em' }}>{t}</p>
 }
 
 function Spinner() {
@@ -392,7 +392,7 @@ function BrowseView({ activeWeek, weekLessons, onSelectLesson, onBackToMap, byWe
 }
 
 // ── Reading view ──────────────────────────────────────────────────────────────
-function ReadingView({ lesson, onBack, onMarkDone, isPending, weekLessons, onSelectLesson }) {
+function ReadingView({ lesson, onBack, onMarkDone, isPending, weekLessons, onSelectLesson, allLessons, onSelectCrossWeekLesson }) {
   const C = useTheme()
   const [bgMode, setBgMode] = useState('theme')
   const R = bgMode === 'light' ? THEMES.light : C
@@ -413,6 +413,12 @@ function ReadingView({ lesson, onBack, onMarkDone, isPending, weekLessons, onSel
   const currentIndex = weekLessons.findIndex(l => l.id === lesson.id)
   const prev = weekLessons[currentIndex - 1] || null
   const next = weekLessons[currentIndex + 1] || null
+
+  // Cross-week: first lesson of the next week (if no more lessons this week)
+  const nextWeekTheme = WEEK_THEMES[lesson.week + 1]
+  const nextWeekFirst = !next && allLessons
+    ? (allLessons.filter(l => l.week === lesson.week + 1).sort((a, b) => a.id - b.id)[0] || null)
+    : null
   const segments = parseSegments(lesson.description || '')
   const theme = WEEK_THEMES[lesson.week]
 
@@ -491,6 +497,14 @@ function ReadingView({ lesson, onBack, onMarkDone, isPending, weekLessons, onSel
               </div>
               <ChevronRight size={15} color={C.accent}/>
             </button>
+          ) : nextWeekFirst ? (
+            <button onClick={() => onSelectCrossWeekLesson(nextWeekFirst.id, nextWeekFirst.week)} style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 20px', border:`1px solid ${nextWeekTheme?.color ?? C.accent}55`, background: `${nextWeekTheme?.color ?? C.accent}10`, cursor:'pointer', color: nextWeekTheme?.color ?? C.accent, fontSize:12, fontWeight:700, fontFamily:"'Inter', sans-serif" }}>
+              <div style={{ textAlign:'right' }}>
+                <div style={{ fontSize:9, color: R.text3, marginBottom:2, fontFamily:'JetBrains Mono,monospace' }}>CONTINUE TO WEEK {lesson.week + 1}</div>
+                <div>{nextWeekFirst.title}</div>
+              </div>
+              <ChevronRight size={15} color={nextWeekTheme?.color ?? C.accent}/>
+            </button>
           ) : (
             <button onClick={onBack} style={{ display:'flex', alignItems:'center', gap:8, padding:'12px 20px', border:'none', background: C.accent, cursor:'pointer', color:'#fff', fontSize:11, fontWeight:700, fontFamily:'JetBrains Mono,monospace', letterSpacing:'0.06em' }}>
               <CheckCircle size={14}/> Back to Week {lesson.week}
@@ -535,6 +549,7 @@ export default function Lessons() {
   const handleSelectLesson = (id) => { setActiveLessonId(id); setView('reading') }
   const handleBackFromReading = () => { setActiveLessonId(null); setView('browse') }
   const handleBackToMap    = () => { setActiveLessonId(null); setActiveWeek(null); setView('map') }
+  const handleSelectCrossWeekLesson = (id, week) => { setActiveWeek(week); setActiveLessonId(id); setView('reading') }
 
   return (
     <DashboardLayout title="Lessons">
@@ -545,7 +560,7 @@ export default function Lessons() {
         <BrowseView activeWeek={activeWeek} weekLessons={weekLessons} onSelectLesson={handleSelectLesson} onBackToMap={handleBackToMap} byWeek={byWeek}/>
       )}
       {view === 'reading' && activeLesson && (
-        <ReadingView lesson={activeLesson} onBack={handleBackFromReading} onMarkDone={(id) => watchMutation.mutate(id)} isPending={watchMutation.isPending} weekLessons={weekLessons} onSelectLesson={handleSelectLesson}/>
+        <ReadingView lesson={activeLesson} onBack={handleBackFromReading} onMarkDone={(id) => watchMutation.mutate(id)} isPending={watchMutation.isPending} weekLessons={weekLessons} onSelectLesson={handleSelectLesson} allLessons={lessons} onSelectCrossWeekLesson={handleSelectCrossWeekLesson}/>
       )}
     </DashboardLayout>
   )
