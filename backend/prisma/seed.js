@@ -129,7 +129,7 @@ async function main() {
     { lessonCode:'W4D4', week:4, title:'Day 4 — Restaurant Flow Kickoff',                       duration:'40 mins', status:'PUBLISHED', description: content['W4D4'] },
 
     // ── WEEK 5 — Project 1: Restaurant Flow (Backend + Payments) ─────────────
-    { lessonCode:'W5L1', week:5, title:'Restaurant Flow — Schema and Project Setup',            duration:'30 mins', status:'PUBLISHED' },
+    { lessonCode:'W5L1', week:5, title:'Restaurant Flow — Project Kickoff',                    duration:'20 mins', status:'PUBLISHED', description: content['W5L1'] },
     { lessonCode:'W5L2', week:5, title:'Menu API and Order Placement',                          duration:'40 mins', status:'PUBLISHED' },
     { lessonCode:'W5L3', week:5, title:'Razorpay Payment Integration',                          duration:'45 mins', status:'PUBLISHED' },
     { lessonCode:'W5L4', week:5, title:'Order Status Management and Transitions',               duration:'35 mins', status:'PUBLISHED' },
@@ -143,7 +143,7 @@ async function main() {
     { lessonCode:'W6L5', week:6, title:'Deploying Restaurant Flow — Vercel + Railway',          duration:'40 mins', status:'PUBLISHED' },
 
     // ── WEEK 7 — Project 2: Lead Bill (Backend + GST) ─────────────────────────
-    { lessonCode:'W7L1', week:7, title:'Lead Bill — Schema Design and Express Setup',           duration:'30 mins', status:'DRAFT' },
+    { lessonCode:'W7L1', week:7, title:'Lead Bill — Project Kickoff',                          duration:'20 mins', status:'DRAFT', description: content['W7L1'] },
     { lessonCode:'W7L2', week:7, title:'Client Management API with Soft Delete',                duration:'40 mins', status:'DRAFT' },
     { lessonCode:'W7L3', week:7, title:'Invoice API — Line Items and Server-Side Totals',       duration:'45 mins', status:'DRAFT' },
     { lessonCode:'W7L4', week:7, title:'GST Logic — Same-State vs Different-State Calculation', duration:'40 mins', status:'DRAFT' },
@@ -164,7 +164,7 @@ async function main() {
     { lessonCode:'W9L5', week:9, title:'Deploying Lead Bill — Vercel + Railway',                duration:'40 mins', status:'DRAFT' },
 
     // ── WEEK 10 — Project 3: ClientDesk AI (Backend + Claude) ─────────────────
-    { lessonCode:'W10L1', week:10, title:'ClientDesk AI — Schema and Express Setup',            duration:'30 mins', status:'DRAFT' },
+    { lessonCode:'W10L1', week:10, title:'ClientDesk AI — Project Kickoff',                    duration:'20 mins', status:'DRAFT', description: content['W10L1'] },
     { lessonCode:'W10L2', week:10, title:'Ticket CRUD API and Agent Authentication',            duration:'40 mins', status:'DRAFT' },
     { lessonCode:'W10L3', week:10, title:'Claude AI Auto-Reply Integration',                    duration:'45 mins', status:'DRAFT' },
     { lessonCode:'W10L4', week:10, title:'Email Notifications with Nodemailer',                 duration:'35 mins', status:'DRAFT' },

@@ -6,9 +6,30 @@ import api from '../lib/api'
 import { useAuthStore } from '../store/authStore'
 
 const PROJECTS = [
-  { id: 'RFC1', label: 'Restaurant Flow', weeks: '5–6',   color: '#f59e0b', bg: '#fffbeb', border: '#fde68a' },
-  { id: 'LBC1', label: 'Lead Bill',       weeks: '7–9',   color: '#4f46e5', bg: '#eef2ff', border: '#c7d2fe' },
-  { id: 'CAC1', label: 'ClientDesk AI',   weeks: '10–11', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe' },
+  {
+    id: 'RFC1', label: 'Restaurant Flow', weeks: '5–6', color: '#f59e0b', bg: '#fffbeb', border: '#fde68a',
+    repo: 'restaurant-flow (fresh repo)',
+    what: 'A food ordering system. Customers browse a menu, place orders, and pay via Razorpay. Kitchen staff see orders arrive live and update status. Customers see real-time updates without refreshing.',
+    stack: ['Node.js + Express', 'PostgreSQL + Prisma', 'Razorpay', 'Socket.io', 'React + TanStack Query', 'Railway + Vercel'],
+    users: ['Customer — browse menu, order, pay, track status', 'Staff — kitchen dashboard, live order feed, status controls'],
+    endGoal: 'Full-stack ordering app deployed to production with live Razorpay payments and real-time order tracking.',
+  },
+  {
+    id: 'LBC1', label: 'Lead Bill', weeks: '7–9', color: '#4f46e5', bg: '#eef2ff', border: '#c7d2fe',
+    repo: 'your Mini Lead Manager repo (extend it — never restart)',
+    what: 'A GST billing SaaS for freelancers. Manage clients, create invoices with line items, auto-calculate GST, generate downloadable PDFs, upload files to Cloudinary, and track paid/overdue invoices on a live dashboard.',
+    stack: ['Express + Prisma (same repo)', 'pdf-lib (server-side PDF)', 'Cloudinary (file storage)', 'React dashboard'],
+    users: ['Freelancer/business — manage clients, create and send invoices, track payments'],
+    endGoal: 'Billing SaaS with PDF invoice generation, file uploads, and a real-time revenue dashboard.',
+  },
+  {
+    id: 'CAC1', label: 'ClientDesk AI', weeks: '10–11', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe',
+    repo: 'clientdesk-ai (fresh repo)',
+    what: 'An AI-powered customer support desk. Companies register, support agents handle tickets, and Claude API drafts replies that agents review before sending. Fully deployed with a GitHub Actions CI/CD pipeline.',
+    stack: ['Express + Prisma (multi-tenant)', 'Claude API (AI drafts)', 'Nodemailer (email)', 'GitHub Actions CI/CD', 'React agent dashboard'],
+    users: ['Company admin — manage agents, view analytics', 'Support agent — handle tickets, use AI drafts', 'Customer — raise tickets, get email updates'],
+    endGoal: 'Multi-tenant AI SaaS with automated CI/CD — every push to main deploys to production automatically.',
+  },
 ]
 
 function weekToProject(w) {
@@ -207,6 +228,76 @@ function StuckButton({ ticketId }) {
     >
       🆘 {sending ? 'Notifying mentor…' : "I'm Stuck — Raise Hand"}
     </button>
+  )
+}
+
+// ─── Project Brief ───────────────────────────────────────────────────────────
+
+function ProjectBrief({ project }) {
+  const [open, setOpen] = useState(false)
+  const p = PROJECTS.find(x => x.id === project)
+  if (!p) return null
+
+  return (
+    <div style={{ marginBottom: 18, border: `1px solid ${p.border}`, borderLeft: `3px solid ${p.color}`, borderRadius: 10, overflow: 'hidden', background: p.bg }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 16 }}>📋</span>
+          <div>
+            <span style={{ fontSize: 13, fontWeight: 700, color: p.color, fontFamily: "'Inter', sans-serif" }}>Project Brief — {p.label}</span>
+            <span style={{ fontSize: 11, color: '#94a3b8', marginLeft: 10, fontFamily: "'Inter', sans-serif" }}>Weeks {p.weeks}</span>
+          </div>
+        </div>
+        <span style={{ fontSize: 18, color: p.color, fontWeight: 300, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>⌄</span>
+      </button>
+
+      {open && (
+        <div style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ height: 1, background: p.border }} />
+
+          {/* What you're building */}
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: p.color, letterSpacing: '0.08em', marginBottom: 6, fontFamily: "'Inter', sans-serif" }}>WHAT YOU ARE BUILDING</div>
+            <p style={{ fontSize: 13, color: '#374151', lineHeight: 1.7, margin: 0, fontFamily: "'Inter', sans-serif" }}>{p.what}</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            {/* Users */}
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: p.color, letterSpacing: '0.08em', marginBottom: 6, fontFamily: "'Inter', sans-serif" }}>USERS</div>
+              {p.users.map((u, i) => (
+                <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 5, fontSize: 12, color: '#475569', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>
+                  <span style={{ color: p.color, flexShrink: 0 }}>→</span> {u}
+                </div>
+              ))}
+            </div>
+
+            {/* Tech stack */}
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: p.color, letterSpacing: '0.08em', marginBottom: 6, fontFamily: "'Inter', sans-serif" }}>TECH STACK</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                {p.stack.map(s => (
+                  <span key={s} style={{ fontSize: 10, fontWeight: 600, color: p.color, background: '#fff', border: `1px solid ${p.border}`, padding: '2px 8px', borderRadius: 999, fontFamily: "'Inter', sans-serif" }}>{s}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Repo + End goal */}
+          <div style={{ background: '#fff', border: `1px solid ${p.border}`, borderRadius: 8, padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', gap: 8, fontSize: 12, color: '#374151', fontFamily: "'Inter', sans-serif" }}>
+              <span style={{ fontWeight: 700, color: p.color, flexShrink: 0 }}>Repo:</span> {p.repo}
+            </div>
+            <div style={{ display: 'flex', gap: 8, fontSize: 12, color: '#374151', fontFamily: "'Inter', sans-serif" }}>
+              <span style={{ fontWeight: 700, color: p.color, flexShrink: 0 }}>End goal:</span> {p.endGoal}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -619,6 +710,9 @@ export default function TaskBoard() {
           )
         })}
       </div>
+
+      {/* Project brief */}
+      <ProjectBrief project={project} />
 
       {/* Filter bar */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, alignItems: 'center' }}>

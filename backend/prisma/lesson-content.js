@@ -8573,4 +8573,286 @@ The difference between a passing project and one that impresses in an interview:
   • Code is structured — reviewers can read any file and understand it in 30 seconds
 `,
 
+// ─── PROJECT KICKOFFS ────────────────────────────────────────────────────────
+
+'W5L1': `
+PROJECT KICKOFF — RESTAURANT FLOW
+You are about to build a real food ordering system from scratch. By the end of Week 6, customers will be able to browse a menu, place orders, and pay online. Restaurant staff will see those orders arrive live on a kitchen dashboard and push status updates that customers see in real time — no page refresh.
+
+This is not a tutorial. There is no step-by-step guide. You will get tickets, acceptance criteria, and a tech stack. The rest is on you.
+
+──────────────────────────────
+WHAT YOU ARE BUILDING
+──────────────────────────────
+
+Restaurant Flow has two sides:
+
+Customer side
+• Browse a restaurant's menu grouped by category
+• Add items to a cart, see running total in ₹
+• Enter name and phone, place an order
+• Pay via Razorpay (UPI, card, netbanking)
+• Get an order ID and see live status updates: PENDING → CONFIRMED → PREPARING → READY → DELIVERED
+
+Staff side (kitchen dashboard)
+• Protected route — requires login
+• See all active orders in real time as they come in
+• Click a button to move each order through status stages
+• New orders appear at the top instantly — no refresh
+
+──────────────────────────────
+THE TECH STACK AND WHY
+──────────────────────────────
+
+• Node.js + Express — REST API for menu, orders, payment
+• PostgreSQL + Prisma — stores restaurants, menus, orders, payments
+• Razorpay — payment gateway. You create an order server-side, verify the payment signature server-side with HMAC-SHA256. The client never handles money logic
+• Socket.io — real-time communication. When a staff member updates an order status, that update is pushed to the customer's browser instantly over a persistent connection
+• React + TanStack Query — customer ordering page and kitchen dashboard
+• Railway (backend) + Vercel (frontend) — production deployment
+
+──────────────────────────────
+HOW THE 8 TICKETS FIT TOGETHER
+──────────────────────────────
+
+  RFC1-1  Schema setup — defines every model in Prisma before writing a single API
+  RFC1-2  Menu + Order API — customers can browse and place orders
+  RFC1-3  Razorpay — customers pay, you verify server-side before confirming
+  RFC1-4  Order Status API — staff move orders through stages with validation
+  RFC1-5  Socket.io — wire up real-time events for both customers and staff
+  RFC1-6  Customer page — React UI: menu → cart → checkout → live status
+  RFC1-7  Kitchen dashboard — React UI: live order feed, status controls
+  RFC1-8  Deploy — Railway backend, Vercel frontend, production Razorpay keys
+
+Do them in order. RFC1-2 depends on RFC1-1 being done. RFC1-5 depends on RFC1-4.
+
+──────────────────────────────
+A NOTE ON AI TOOLS
+──────────────────────────────
+
+You can and should use Cursor, Claude, or Copilot while building. Use them to write faster, understand errors, and explore options.
+
+The rule: every line of code you submit in a PR must be code you can explain. If a mentor asks "why is the Razorpay signature verified this way?" you need to be able to answer. That is what you are training — judgment, not typing speed.
+
+──────────────────────────────
+BEFORE YOU START RFC1-1
+──────────────────────────────
+
+☐ Create a new GitHub repository called restaurant-flow (fresh repo — not your Mini Lead Manager)
+☐ Clone it locally and open in VS Code
+☐ Run git checkout -b rfc1-1-schema-setup
+☐ Create folder structure: src/routes/, src/lib/, prisma/
+☐ Run npm init -y and install: express, @prisma/client, prisma, dotenv, cors, jsonwebtoken, bcryptjs
+☐ Create .env with DATABASE_URL and JWT_SECRET
+☐ Create .env.example with the same keys but no values
+☐ Run npx prisma init
+☐ You are ready. Open RFC1-1 and start with the schema
+
+COMMON MISTAKES
+• Starting the schema without planning all the relationships first — draw it on paper first
+• Storing prices as decimal/float — always use integers (paise). ₹150 = 15000 paise
+• Instantiating Prisma Client in every route file — export one singleton from src/lib/prisma.js
+• Committing .env to GitHub — add it to .gitignore before your first commit
+`,
+
+'W7L1': `
+PROJECT KICKOFF — LEAD BILL
+You are not starting from scratch. Lead Bill is a direct evolution of the Mini Lead Manager you built in Weeks 1–4. Same repository. Same database. You are adding a full GST billing system on top of existing code.
+
+This is intentional. In real companies, you never build from scratch. You extend what exists. Week 7 is your first experience working in a live codebase — adding features without breaking what already works.
+
+──────────────────────────────
+WHAT YOU ARE BUILDING
+──────────────────────────────
+
+Lead Bill is a billing SaaS for freelancers and small businesses. Users manage their clients, create GST invoices, generate downloadable PDFs, upload supporting documents, and track which invoices are paid or overdue.
+
+The final product has:
+
+Invoice management
+• Create invoices with multiple line items
+• GST auto-calculated (CGST + SGST for same state, IGST for different state)
+• Invoice total = subtotal + GST — always calculated server-side
+• Invoice status: DRAFT → SENT → PAID → OVERDUE
+
+PDF generation
+• Every invoice can be downloaded as a PDF
+• Generated server-side using pdf-lib — not a third-party API
+• PDF includes company logo, line items table, GST breakdown, total
+
+File storage
+• Clients can upload logos and supporting documents
+• Files stored on Cloudinary — not on your server filesystem
+• Server stores only the Cloudinary URL, never the file itself
+
+Dashboard
+• Revenue this month vs last month
+• Overdue invoices count and amount
+• Recent activity feed
+• All numbers come from real database aggregates — not hardcoded
+
+──────────────────────────────
+THE TECH STACK AND WHY
+──────────────────────────────
+
+• Express + Prisma — same backend you already have, extended
+• pdf-lib — generate PDFs in Node.js without any browser or external service
+• Cloudinary — file upload and storage API. You send a file, it returns a URL
+• React + TanStack Query — the frontend dashboard you built in Week 3, extended
+• GST logic — Indian tax rules: same state = CGST + SGST (9% + 9%), different state = IGST (18%)
+
+──────────────────────────────
+HOW THE 8 TICKETS FIT TOGETHER
+──────────────────────────────
+
+  LBC1-1  Extend the Express server — add Invoice, InvoiceItem, Payment models to your existing schema
+  LBC1-2  Invoice API — create invoices with line items, server-side totals, GST calculation
+  LBC1-3  GST logic — same-state vs inter-state detection, correct tax breakdown
+  LBC1-4  PDF generation — server-side invoice PDF with pdf-lib
+  LBC1-5  Cloudinary upload — file upload endpoint, store URL in DB
+  LBC1-6  Dashboard aggregates — revenue, overdue, activity from real queries
+  LBC1-7  React frontend — invoice list, create form, PDF download, dashboard
+  LBC1-8  Deploy — updated Railway backend, updated Vercel frontend
+
+──────────────────────────────
+CRITICAL: NEVER RESTART THE REPO
+──────────────────────────────
+
+This is the most important rule for Lead Bill:
+  • Do NOT create a new repository
+  • Do NOT delete your Mini Lead Manager code
+  • Add new models to your existing schema
+  • Add new routes alongside your existing routes
+  • The Lead and Client tables from Week 4 stay — you are building on top of them
+
+If you think "I will just start fresh" — that is the wrong instinct. Learning to extend a live codebase is the skill.
+
+──────────────────────────────
+BEFORE YOU START LBC1-1
+──────────────────────────────
+
+☐ Pull the latest main branch of your Mini Lead Manager repo
+☐ Run git checkout -b lbc1-1-schema-extension
+☐ Make sure npm run dev works — the existing server boots without errors
+☐ Open your existing schema.prisma — you will add Invoice, InvoiceItem, Payment models here
+☐ Have your .env ready with DATABASE_URL pointing to your existing database
+
+COMMON MISTAKES
+• Creating a new repo — do not do this
+• Rounding GST amounts — store as integers (paise), calculate with integer math
+• Generating PDFs on the client — always server-side with pdf-lib
+• Storing uploaded files on the server filesystem — Railway's filesystem is ephemeral (deleted on deploy). Always use Cloudinary
+`,
+
+'W10L1': `
+PROJECT KICKOFF — CLIENTDESK AI
+This is your final project. ClientDesk AI is an AI-powered customer support desk. Companies register on the platform, their support agents log in, customers raise support tickets, and the AI assistant (Claude API) drafts responses that agents review and send.
+
+By the end of Week 11, you will have a multi-tenant SaaS application with a full CI/CD pipeline running on GitHub Actions. Every push to main automatically runs tests, builds Docker, and deploys to production.
+
+──────────────────────────────
+WHAT YOU ARE BUILDING
+──────────────────────────────
+
+ClientDesk AI serves three types of users:
+
+Company admin
+• Registers the company on the platform
+• Manages agents and their permissions
+• Sees analytics: ticket volume, response time, resolution rate
+
+Support agent
+• Logs in, sees their assigned support tickets
+• Opens a ticket, reads the customer's message
+• Clicks "Generate AI Draft" — Claude API generates a response based on ticket context
+• Agent reviews the draft, edits if needed, and sends it
+• Agent can approve or reject the AI draft — this trains future behaviour
+
+Customer
+• Submits a support ticket (no account needed for basic tier)
+• Gets email notification when their ticket is resolved
+• Can see ticket status via a public link
+
+──────────────────────────────
+THE TECH STACK AND WHY
+──────────────────────────────
+
+• Express + Prisma — multi-tenant backend (every query scoped to companyId)
+• Claude API (Anthropic) — AI draft generation. You send the ticket subject + message history, Claude returns a professional response draft
+• Nodemailer — send email notifications to customers when tickets are updated
+• GitHub Actions — CI/CD pipeline. On push to main: run lint → run tests → build → deploy to Railway
+• React — agent dashboard, ticket view, AI draft interface
+• Railway (backend) + Vercel (frontend) — same production stack as before
+
+──────────────────────────────
+THE KEY CONCEPT — MULTI-TENANCY
+──────────────────────────────
+
+Multi-tenancy means multiple companies share the same database but never see each other's data.
+
+Every query in your backend must be scoped:
+  ✓  prisma.ticket.findMany({ where: { companyId: req.user.companyId } })
+  ✗  prisma.ticket.findMany()   ← this leaks all companies' data
+
+This is the most important architectural discipline in ClientDesk. One missing companyId filter is a data breach.
+
+──────────────────────────────
+HOW THE 8 TICKETS FIT TOGETHER
+──────────────────────────────
+
+  CAC1-1  Schema — Company, Agent, Customer, SupportTicket, Message, AiDraft models
+  CAC1-2  Auth — company registration, agent login, JWT with companyId in payload
+  CAC1-3  Ticket API — create tickets, list with filters, assign to agents
+  CAC1-4  AI Draft — Claude API integration, prompt engineering, draft storage
+  CAC1-5  Email notifications — Nodemailer, send on ticket create and resolve
+  CAC1-6  React frontend — agent dashboard, ticket detail, AI draft UI
+  CAC1-7  GitHub Actions CI/CD — lint, test, build, deploy pipeline
+  CAC1-8  Production polish — environment variables, error monitoring, final deploy
+
+──────────────────────────────
+HOW TO CALL THE CLAUDE API
+──────────────────────────────
+
+CODE EXAMPLE
+import Anthropic from '@anthropic-ai/sdk'
+
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+
+const response = await client.messages.create({
+  model: 'claude-haiku-4-5-20251001',
+  max_tokens: 500,
+  messages: [{
+    role: 'user',
+    content: \`You are a support agent for \${company.name}.
+A customer submitted this ticket:
+Subject: \${ticket.subject}
+Message: \${ticket.message}
+
+Write a professional, helpful response in 3-4 sentences.\`
+  }]
+})
+
+const draft = response.content[0].text
+---
+
+The prompt is everything. A vague prompt gives a vague response. Experiment with how you describe the company's tone and the context you provide.
+
+──────────────────────────────
+BEFORE YOU START CAC1-1
+──────────────────────────────
+
+☐ Create a new GitHub repository called clientdesk-ai
+☐ This is a fresh repo — not Lead Bill, not Restaurant Flow
+☐ Plan the multi-tenant schema on paper before writing any code
+☐ Every model must have a companyId — draw the relationships before opening Prisma
+☐ Add ANTHROPIC_API_KEY to your .env — get a key from console.anthropic.com
+☐ You will set up GitHub Actions in CAC1-7 — do not skip it, CI/CD is a core skill
+
+COMMON MISTAKES
+• Missing companyId on a model — adds it later and breaks everything
+• Calling Claude API from the frontend — API keys must never leave your backend
+• Building CI/CD last as an afterthought — it is a ticket, treat it like one
+• Not validating that the agent belongs to the same company as the ticket they are accessing
+`,
+
 }
