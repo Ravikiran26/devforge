@@ -2887,15 +2887,13 @@ COMMON MISTAKES
 
 'W1D1': `
 WHAT YOU ARE BUILDING IN THIS PROGRAM
-By the end of Week 10 you will have three deployed full-stack applications on your GitHub and 65+ merged pull requests. But it all starts from one project that grows with you:
+By the end of Week 12 you will have three deployed full-stack applications on your GitHub and 24+ merged pull requests. But it all starts from one project that grows with you:
 
-  Week 1 — Mini Lead Manager: your first Git repo. JavaScript scripts that work with lead data.
-  Week 2 — Mini Lead Manager backend: a real Express API with a PostgreSQL database for leads.
-  Week 3 — Mini Lead Manager frontend: a React UI connected to your own backend.
-  Week 4 — Authentication added. Your Mini Lead Manager officially becomes Lead Bill.
-  Weeks 5–6 — Lead Bill grows: invoices, GST, PDF export, Cloudinary, deployed to production.
-  Weeks 7–8 — Restaurant Flow: Razorpay payments + Socket.io real-time orders.
-  Week 9 — ClientDesk AI: AI-powered support desk with Claude API + CI/CD pipeline.
+  Weeks 1–4 — Foundation: Mini Lead Manager — your first Git repo, Express API, React UI, and JWT auth. Built from scratch, week by week.
+  Weeks 5–6 — Restaurant Flow (fresh repo): Razorpay payments + Socket.io real-time orders. Customers order. Kitchen sees it live.
+  Weeks 7–9 — Lead Bill (same repo as Mini Lead Manager, evolved): GST invoices, PDF export, Cloudinary uploads, deployed billing SaaS.
+  Weeks 10–11 — ClientDesk AI (fresh repo): AI-powered support desk with Claude API drafts, multi-tenancy, and GitHub Actions CI/CD.
+  Week 12 — Career: portfolio, resume, mock interviews, job prep.
 
 The key thing: you are not practising exercises and then starting a project. You start the project on Day 1. Every week adds real features to something you already own.
 
