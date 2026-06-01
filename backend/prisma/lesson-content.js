@@ -948,19 +948,37 @@ Make sure the star (*) is next to feat/day-1-profile-card. If you are on main, s
 
 'W1D2': `
 JAVASCRIPT FUNDAMENTALS — PART 1
-JavaScript is the programming language of the web. It runs in every browser and on every server (via Node.js). Before you write a single line of React or Express, you need to understand how JavaScript thinks.
 
-Today covers the core building blocks: variables, data types, conditionals, functions, and array methods. These are concepts you will use every single day for the rest of the program.
+JavaScript is the programming language of the web. It runs in your browser and on servers. Everything you build in this program — the backend API, the frontend UI, the database queries — is written in JavaScript. Today you learn the core building blocks that everything else is built on.
+
+This lesson takes about 2 to 3 hours. Do every exercise. Do not just read.
+
+──────────────────────────────
+HOW TO RUN TODAY'S EXERCISES
+──────────────────────────────
+
+Today's exercises run in the browser console — not the terminal.
+
+How to open it:
+1. Open Google Chrome
+2. Press F12 on your keyboard (or right-click anywhere on the page → Inspect)
+3. Click the Console tab at the top
+4. You will see a cursor. Type code there and press Enter to run it.
+
+Every time you see TRY IN CONSOLE, open Chrome and run it there.
+Every time you see CODE EXAMPLE, that is code you save to a .js file and run with Node.js.
 
 ──────────────────────────────
 VARIABLES — STORING DATA
 ──────────────────────────────
 
-A variable is a named container for a value. JavaScript has three ways to declare variables:
+A variable is a box that holds a value. You give the box a name so you can use the value later.
 
-  const  → value never reassigned. Use this by default.
-  let    → value can be reassigned. Use when the value changes (loop counters, form state).
-  var    → old style. Never use var. It has scoping bugs that caused problems for a decade.
+JavaScript has three keywords to create variables:
+
+  const  → the value never changes after you set it. Use this by default.
+  let    → the value can change. Use when you need to update it (like a counter or score).
+  var    → old style from 2009. Never use var — it has bugs that confused developers for years.
 
 TRY IN CONSOLE
 > const name = "Ravi"
@@ -970,21 +988,38 @@ TRY IN CONSOLE
 > console.log(name, age, score)
 ---
 
-Rule: start with const for everything. If you get an error saying you cannot reassign, switch to let. Never reach for var.
+You will see: Ravi 24 10
+
+Try to reassign a const and see what happens:
+
+TRY IN CONSOLE
+> const city = "Hyderabad"
+> city = "Bangalore"
+---
+
+You will see: TypeError: Assignment to constant variable.
+That error is correct — const means it cannot be changed. This is not a mistake in your code. It is the rule working as expected.
+
+Simple rule: always start with const. If you get that error, change it to let.
 
 ──────────────────────────────
-DATA TYPES — WHAT VALUES LOOK LIKE
+DATA TYPES — WHAT KINDS OF VALUES EXIST
 ──────────────────────────────
 
-JavaScript has 7 primitive types. You will use these 6 constantly:
+Every value in JavaScript has a type. There are two categories:
 
-  string   → text in quotes: "Ravi", 'hello', \`template\`
-  number   → integers and decimals: 42, 3.14, -7
-  boolean  → true or false (no quotes)
-  null     → intentional empty value. You set it explicitly.
-  undefined → value was never assigned. JavaScript sets this automatically.
-  array    → ordered list of values: [1, "two", true]
-  object   → key-value pairs: { name: "Ravi", age: 24 }
+VALUE TYPES — simple values, copied directly:
+  string    → text inside quotes: "Ravi", 'hello', \`template\`
+  number    → any number: 42, 3.14, -7, 0
+  boolean   → only two possible values: true or false (no quotes)
+  null      → intentionally empty. You set this yourself when a value does not exist yet.
+  undefined → not yet given a value. JavaScript sets this automatically.
+
+REFERENCE TYPES — complex values, stored differently in memory:
+  array     → an ordered list: [1, "two", true]
+  object    → named properties: { name: "Ravi", age: 24 }
+
+The typeof operator tells you what type a value is:
 
 TRY IN CONSOLE
 > typeof "hello"
@@ -996,13 +1031,22 @@ TRY IN CONSOLE
 > typeof {}
 ---
 
-Note: typeof null returns "object" — this is a 30-year-old JavaScript bug. null is not an object. Just know it exists.
+Two things that will surprise you:
+• typeof null returns "object" — this is a known JavaScript bug from 1995. null is NOT an object. Just accept it exists.
+• typeof [] also returns "object" — arrays are objects internally. To check if something is an array, use Array.isArray(value), not typeof.
+
+TRY IN CONSOLE
+> Array.isArray([1, 2, 3])
+> Array.isArray("hello")
+---
+
+You will see: true, then false.
 
 ──────────────────────────────
-STRINGS — TEXT MANIPULATION
+STRINGS — WORKING WITH TEXT
 ──────────────────────────────
 
-Strings are text. You will use these every day when displaying data.
+Strings are text. You will use these every day — for names, messages, status labels, button text.
 
 TRY IN CONSOLE
 > const firstName = "Ravi"
@@ -1016,7 +1060,7 @@ TRY IN CONSOLE
 > console.log(full.split(" "))
 ---
 
-Template literals use backticks and let you embed variables directly:
+Template literals — the better way to combine text and variables:
 
 TRY IN CONSOLE
 > const city = "Hyderabad"
@@ -1024,10 +1068,13 @@ TRY IN CONSOLE
 > console.log(message)
 ---
 
-Template literals are cleaner than + concatenation. Use them whenever you are mixing text and variables.
+You will see: Hello Ravi, welcome to Hyderabad!
+
+Template literals use backtick characters ( ` ) not regular quotes. Put variables inside \${ }.
+This is cleaner than using + to join text and variables. Use template literals whenever you mix text with variables.
 
 ──────────────────────────────
-NUMBERS AND OPERATORS
+NUMBERS AND MATH OPERATORS
 ──────────────────────────────
 
 TRY IN CONSOLE
@@ -1035,20 +1082,45 @@ TRY IN CONSOLE
 > const gst = price * 0.18
 > const total = price + gst
 > console.log("Price:", price)
-> console.log("GST:", gst)
+> console.log("GST (18%):", gst)
 > console.log("Total:", total)
-> console.log(10 % 3)
 ---
 
-% is the modulo operator. It returns the remainder after division. 10 % 3 = 1. Useful for checking if a number is even or odd: num % 2 === 0.
+You will see: Price: 1000 / GST (18%): 180 / Total: 1180
 
-Comparison operators (always use === not ==):
-  ===   strictly equal (value AND type match)
+The basic math operators:
+  +   add
+  -   subtract
+  *   multiply
+  /   divide
+  %   remainder after division (called modulo)
+
+TRY IN CONSOLE
+> console.log(10 % 3)
+> console.log(10 % 2)
+> console.log(11 % 2)
+---
+
+10 % 3 = 1 (10 divided by 3 leaves remainder 1)
+10 % 2 = 0 (even number — no remainder)
+11 % 2 = 1 (odd number — remainder 1)
+
+You will use % to check if a number is even or odd: if (num % 2 === 0) it is even.
+
+──────────────────────────────
+COMPARISON OPERATORS
+──────────────────────────────
+
+Comparisons return true or false. You use them inside if statements to make decisions.
+
+  ===   equal (value AND type must both match) — always use this
   !==   not equal
   >     greater than
   <     less than
   >=    greater than or equal
   <=    less than or equal
+
+The most important rule in JavaScript:
 
 TRY IN CONSOLE
 > 5 === 5
@@ -1056,25 +1128,28 @@ TRY IN CONSOLE
 > 5 == "5"
 ---
 
-5 === "5" is false (number vs string). 5 == "5" is true because == does type coercion. Always use === to avoid surprise bugs.
+5 === 5   → true  (same value, same type)
+5 === "5" → false (number vs string — different types)
+5 == "5"  → true  (== converts types before comparing — causes bugs)
+
+Always use === (triple equals). Never use == (double equals). == does "type coercion" which produces unexpected results. This is one of the most common bug sources for beginners.
 
 ──────────────────────────────
 CONDITIONALS — MAKING DECISIONS
 ──────────────────────────────
 
-CODE EXAMPLE
-function getStatusLabel(status) {
-  if (status === 'NEW') {
-    return 'New Lead'
-  } else if (status === 'CONTACTED') {
-    return 'Contacted'
-  } else if (status === 'CLOSED') {
-    return 'Deal Closed'
-  } else {
-    return 'Unknown'
-  }
-}
+An if statement runs code only when a condition is true.
+
+TRY IN CONSOLE
+> const score = 85
+> if (score >= 60) {
+>   console.log("Pass")
+> } else {
+>   console.log("Fail")
+> }
 ---
+
+Multiple conditions with else if:
 
 TRY IN CONSOLE
 > function getStatusLabel(status) {
@@ -1088,22 +1163,24 @@ TRY IN CONSOLE
 > getStatusLabel('RANDOM')
 ---
 
-Ternary operator — a one-line if/else for simple cases:
+You will see: 'New Lead', 'Deal Closed', 'Unknown'
+
+Ternary operator — a short way to write a simple if/else on one line:
 
   condition ? valueIfTrue : valueIfFalse
 
 TRY IN CONSOLE
-> const score = 85
-> const grade = score >= 60 ? "Pass" : "Fail"
-> console.log(grade)
+> const marks = 72
+> const result = marks >= 60 ? "Pass" : "Fail"
+> console.log(result)
 ---
 
-Use ternary for simple yes/no decisions. Use if/else when you have multiple branches or complex logic.
+Use ternary only for simple yes/no decisions. Use if/else when you have 3 or more conditions or complex logic.
 
-Logical operators:
-  &&   AND — both conditions must be true
-  ||   OR  — at least one must be true
-  !    NOT — flips true to false
+Logical operators — combine multiple conditions:
+  &&   AND — both sides must be true
+  ||   OR  — at least one side must be true
+  !    NOT — flips true to false, false to true
 
 TRY IN CONSOLE
 > const isLoggedIn = true
@@ -1113,40 +1190,48 @@ TRY IN CONSOLE
 > console.log(!isLoggedIn)
 ---
 
+false (both must be true — isAdmin is false)
+true  (one is enough — isLoggedIn is true)
+false (flips true to false)
+
 ──────────────────────────────
-FUNCTIONS — REUSABLE BLOCKS OF LOGIC
+FUNCTIONS — REUSABLE BLOCKS OF CODE
 ──────────────────────────────
 
-A function is a named, reusable block of code. You define it once and call it many times with different inputs.
+A function is a named block of code you write once and run many times with different inputs.
 
-CODE EXAMPLE
-// Function declaration
-function calculateGST(price, rate) {
-  const tax = price * (rate / 100)
-  return price + tax
-}
+There are two ways to write a function. Learn both — you will see both everywhere.
 
-// Arrow function — shorter syntax for the same thing
-const calculateGST = (price, rate) => {
-  const tax = price * (rate / 100)
-  return price + tax
-}
-
-// One-liner arrow function — implicit return when no braces
-const double = (n) => n * 2
----
+WAY 1 — Function declaration (clearest to read):
 
 TRY IN CONSOLE
-> const calculateGST = (price, rate) => price + (price * rate / 100)
+> function calculateGST(price, rate) {
+>   const tax = price * (rate / 100)
+>   return price + tax
+> }
 > calculateGST(1000, 18)
 > calculateGST(500, 12)
-> const double = n => n * 2
-> double(7)
 ---
 
-Arrow functions are the standard in modern JavaScript and React. You will see them everywhere.
+You will see: 1180, then 560
 
-Default parameters — used when an argument is not passed:
+The word return sends the result back. Without return, the function gives back undefined.
+
+WAY 2 — Arrow function (shorter, used everywhere in modern JavaScript):
+
+TRY IN CONSOLE
+> const calculateGSTArrow = (price, rate) => {
+>   const tax = price * (rate / 100)
+>   return price + tax
+> }
+> calculateGSTArrow(1000, 18)
+---
+
+Same result. Arrow functions use => instead of the function keyword. You will use this style in almost all your code going forward.
+
+Both do the same thing. Function declarations are easier to read when learning. Arrow functions are shorter and used in most modern code.
+
+Default parameters — a value used when the caller does not pass one:
 
 TRY IN CONSOLE
 > const greet = (name = "Student") => \`Hello, \${name}!\`
@@ -1154,11 +1239,14 @@ TRY IN CONSOLE
 > greet()
 ---
 
+greet("Priya") → Hello, Priya!
+greet()        → Hello, Student!   (uses the default)
+
 ──────────────────────────────
 ARRAYS — WORKING WITH LISTS
 ──────────────────────────────
 
-An array holds an ordered list of values. In real apps, arrays represent lists of leads, users, products, messages.
+An array is an ordered list of values. In real apps, arrays are everywhere — a list of leads, a list of orders, a list of students.
 
 TRY IN CONSOLE
 > const leads = ["Ravi", "Priya", "Rahul", "Sneha"]
@@ -1169,42 +1257,63 @@ TRY IN CONSOLE
 > console.log(leads)
 ---
 
-The 4 array methods you will use in every React component:
+leads.length   → 4 (number of items)
+leads[0]       → "Ravi" (first item — index starts at 0, not 1)
+leads[3]       → "Sneha" (last item — index is length minus 1)
+push adds to the end of the array.
 
-.map() — transform every item into something new, returns new array
+The 4 array methods you will use in almost every project:
+
+.map() — create a new array by transforming every item
+
 TRY IN CONSOLE
-> const nums = [1, 2, 3, 4, 5]
-> const doubled = nums.map(n => n * 2)
-> console.log(doubled)
+> const prices = [100, 200, 300]
+> const withGST = prices.map(p => p * 1.18)
+> console.log(withGST)
 ---
 
-.filter() — keep only items that pass a test, returns new array
+You will see: [118, 236, 354]
+.map() goes through every item, runs your function, and returns a brand new array.
+
+.filter() — create a new array keeping only the items that pass a test
+
 TRY IN CONSOLE
-> const prices = [200, 1500, 800, 3000, 450]
-> const expensive = prices.filter(p => p > 1000)
-> console.log(expensive)
+> const amounts = [200, 1500, 800, 3000, 450]
+> const bigOnes = amounts.filter(a => a > 1000)
+> console.log(bigOnes)
 ---
 
-.find() — returns the first item that passes a test (not an array)
+You will see: [1500, 3000]
+
+.find() — find the first item that matches (returns the item, not an array)
+
 TRY IN CONSOLE
-> const leads = [{id:1, name:"Ravi", status:"NEW"}, {id:2, name:"Priya", status:"WON"}, {id:3, name:"Rahul", status:"NEW"}]
+> const leads = [
+>   { id: 1, name: "Ravi",  status: "NEW" },
+>   { id: 2, name: "Priya", status: "WON" },
+>   { id: 3, name: "Rahul", status: "NEW" }
+> ]
 > const found = leads.find(l => l.id === 2)
 > console.log(found)
 ---
 
-.forEach() — runs a function for each item, returns nothing
+You will see: { id: 2, name: "Priya", status: "WON" }
+If nothing matches, .find() returns undefined.
+
+.forEach() — run code for every item, returns nothing
+
 TRY IN CONSOLE
-> const fruits = ["apple", "mango", "banana"]
-> fruits.forEach(f => console.log("Fruit:", f))
+> const cities = ["Hyderabad", "Vijayawada", "Vizag"]
+> cities.forEach(c => console.log("City:", c))
 ---
 
-Rule: use .map() when you need a new array, .filter() to remove items, .find() to look up one item, .forEach() only when you just need to do something with each item and don't need the result back.
+Key difference: .map() gives you a new array. .forEach() gives you nothing — you use it only to do something with each item (like printing or saving).
 
 ──────────────────────────────
-OBJECTS — KEY-VALUE DATA
+OBJECTS — NAMED DATA
 ──────────────────────────────
 
-An object holds named properties. Every piece of data in your app — a lead, a user, an invoice — is an object.
+An object groups related data under one name. A lead, a user, an invoice — all of these are objects in your code.
 
 TRY IN CONSOLE
 > const lead = {
@@ -1220,7 +1329,9 @@ TRY IN CONSOLE
 > console.log(lead.status)
 ---
 
-Destructuring — pull properties out into their own variables:
+Two ways to read a property: lead.name or lead["name"]. Both work. Use the dot style (lead.name) normally.
+
+Destructuring — pull values out of an object into separate variables:
 
 TRY IN CONSOLE
 > const { name, phone, status } = lead
@@ -1229,19 +1340,30 @@ TRY IN CONSOLE
 > console.log(status)
 ---
 
-Spread operator — copy an object and override some fields:
+Instead of writing lead.name, lead.phone, lead.status every time — destructuring gives you shorter variable names to work with.
+
+Spread operator — copy an object and change specific fields:
 
 TRY IN CONSOLE
-> const updatedLead = { ...lead, status: "CLOSED", updatedAt: new Date() }
-> console.log(updatedLead)
-> console.log(lead)
+> const updatedLead = { ...lead, status: "CLOSED" }
+> console.log(updatedLead.status)
+> console.log(lead.status)
 ---
 
-The original lead is unchanged. ...lead copies all properties. Then you add or override specific ones. This is how state updates work in React — you never mutate the original, you create a new copy.
+updatedLead.status → "CLOSED"
+lead.status        → "CONTACTED"  (original is unchanged)
+
+...lead copies all properties into the new object. Then you add or override specific ones. The original lead is never touched. This pattern keeps your data safe from accidental changes.
 
 ──────────────────────────────
-PUTTING IT TOGETHER — A MINI LEAD TRACKER
+PUTTING IT TOGETHER — MINI LEAD TRACKER
 ──────────────────────────────
+
+Open VS Code. Create a new file called leads.js. Paste this code, save it, then run it with Node.js:
+
+TRY IT NOW
+$ node leads.js
+---
 
 CODE EXAMPLE
 const leads = [
@@ -1251,42 +1373,62 @@ const leads = [
   { id: 4, name: "Sneha Patel",  service: "Web Dev",    status: "CLOSED",    value: 25000 },
 ]
 
-// Get all NEW leads
+// 1. Get all NEW leads
 const newLeads = leads.filter(l => l.status === 'NEW')
 console.log("New leads:", newLeads.length)
 
-// Get just the names
+// 2. Get just the names of all leads
 const names = leads.map(l => l.name)
-console.log("Names:", names)
+console.log("All names:", names)
 
-// Find one lead by id
-const lead = leads.find(l => l.id === 2)
-console.log("Found:", lead.name)
+// 3. Find one lead by id
+const found = leads.find(l => l.id === 2)
+console.log("Found:", found.name)
 
-// Total pipeline value
-const total = leads.reduce((sum, l) => sum + l.value, 0)
+// 4. Total pipeline value — add up all values
+let total = 0
+leads.forEach(l => { total = total + l.value })
 console.log("Total pipeline: ₹" + total)
 
-// Summary line per lead
+// 5. Print a summary line for every lead
 leads.forEach(l => {
   console.log(\`\${l.name} — \${l.service} — \${l.status} — ₹\${l.value}\`)
 })
 ---
 
-SUBMISSION CHECKLIST
-☐ All console exercises run without errors
-☐ Can explain the difference between const and let
-☐ Can write an arrow function with a default parameter
-☐ Can filter, map, and find on an array of objects
-☐ Can destructure an object and spread-copy it with changes
-☐ PR: feat/day-2-js-fundamentals with your mini lead tracker code
+Expected output:
+New leads: 2
+All names: [ 'Ravi Kumar', 'Priya Sharma', 'Rahul Mehta', 'Sneha Patel' ]
+Found: Priya Sharma
+Total pipeline: ₹98000
+Ravi Kumar — Web Dev — NEW — ₹15000
+...
 
+If your output matches, everything is working correctly. If not, check for typos — JavaScript is case-sensitive (status and Status are different).
+
+──────────────────────────────
+SUBMISSION CHECKLIST
+──────────────────────────────
+
+☐ Browser console opens in Chrome with F12 — all TRY IN CONSOLE exercises ran without errors
+☐ Can explain the difference between const and let — and when to use each
+☐ Can explain the difference between value types and reference types
+☐ Understand why === is used instead of ==
+☐ Can write a function in both styles: function declaration and arrow function
+☐ Can use .filter(), .map(), .find(), .forEach() on an array of objects
+☐ Can destructure an object and spread-copy it with a changed value
+☐ leads.js file created and runs correctly with node leads.js
+☐ PR: feat/day-2-js-fundamentals pushed to GitHub with your leads.js file
+
+──────────────────────────────
 COMMON MISTAKES
-• Using == instead of === — always use triple equals
-• Forgetting return in a function — without return, the function returns undefined
-• Mutating an array with push() inside React — use [...arr, newItem] instead
-• Confusing .map() and .forEach() — map returns a new array, forEach returns nothing
-• Accessing undefined properties — if lead.phone is undefined, you never set it or the key name is wrong
+──────────────────────────────
+
+• Using == instead of === — always use triple equals. Double equals converts types silently and creates bugs that are hard to find.
+• Forgetting return inside a function — without return, the function gives back undefined. If your function is giving undefined, check if you wrote return.
+• Confusing .map() and .forEach() — map gives you a new array. forEach gives you nothing. If you need the result, use map.
+• Array index starts at 0, not 1 — the first item is leads[0], not leads[1]. Trying to access leads[4] on a 4-item array gives undefined.
+• Accessing a property that does not exist — lead.Phone (capital P) is undefined if the property is lead.phone (lowercase p). JavaScript is case-sensitive.
 `,
 
 // ─────────────────────────────────────────────────────────────────────────────
