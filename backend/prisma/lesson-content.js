@@ -2887,61 +2887,93 @@ COMMON MISTAKES
 
 'W1D1': `
 WHAT YOU ARE BUILDING IN THIS PROGRAM
-By the end of Week 12 you will have three deployed full-stack applications on your GitHub and 24+ merged pull requests. But it all starts from one project that grows with you:
 
-  Weeks 1–4 — Foundation: Mini Lead Manager — your first Git repo, Express API, React UI, and JWT auth. Built from scratch, week by week.
-  Weeks 5–6 — Restaurant Flow (fresh repo): Razorpay payments + Socket.io real-time orders. Customers order. Kitchen sees it live.
-  Weeks 7–9 — Lead Bill (same repo as Mini Lead Manager, evolved): GST invoices, PDF export, Cloudinary uploads, deployed billing SaaS.
-  Weeks 10–11 — ClientDesk AI (fresh repo): AI-powered support desk with Claude API drafts, multi-tenancy, and GitHub Actions CI/CD.
-  Week 12 — Career: portfolio, resume, mock interviews, job prep.
+By the end of Week 12, you will have three real applications running on the internet. Not practice exercises — real apps that you built, deployed, and can show to any recruiter.
 
-The key thing: you are not practising exercises and then starting a project. You start the project on Day 1. Every week adds real features to something you already own.
+Here is what you will build:
 
-──────────────────────────────────────────────────
+  Weeks 1–4 — Mini Lead Manager: A simple app to track business leads. You will build it from scratch, starting today.
+  Weeks 5–6 — Restaurant Flow: A food ordering app. Customers place orders. Kitchen staff see them arrive live on screen. Payments via Razorpay.
+  Weeks 7–9 — Lead Bill: The same Mini Lead Manager app, grown into a full billing system with GST invoices and PDF downloads.
+  Weeks 10–11 — ClientDesk AI: An AI-powered support desk where Claude AI writes the first draft of customer replies.
+  Week 12 — Career prep: Portfolio, resume, mock interviews, job preparation.
 
-WHAT IS THE TERMINAL?
+The most important thing: you do not practise exercises and then start a real project later. You start the real project today — on Day 1. Every week you add new features to something you already built and own.
 
-The terminal is a text-based way to control your computer. Instead of clicking icons and folders, you type commands. Every professional developer uses it every single day.
-
-Think of it like this: clicking "New Folder" in Windows Explorer is the exact same thing as typing a command in the terminal. But the terminal is faster, works on any computer in the world, and is how servers are controlled — servers that run websites don't have a mouse or a screen.
-
-By the end of today, you will be comfortable enough with the terminal that it stops feeling scary. It is just a tool — like learning a keyboard shortcut for the first time.
+This lesson takes about 2 to 3 hours. Go slowly. Do every step. Do not skip anything.
 
 ──────────────────────────────────────────────────
 
-HOW TO OPEN THE TERMINAL
+STEP 1 — INSTALL YOUR CODE EDITOR (VS CODE)
 
-On Mac: Press Cmd + Space, type "Terminal", press Enter.
-On Windows: You will use Git Bash — we install it below. After installing, search "Git Bash" and open it.
+A code editor is the app you use to write code. Think of it like Microsoft Word, but for code instead of documents. The editor used by developers all over the world is called VS Code (Visual Studio Code). It is free.
 
-When the terminal opens, you will see a blinking cursor. That means it is ready. Type a command and press Enter to run it.
+Install it now:
+
+TRY IT NOW
+1. Open your browser and go to: code.visualstudio.com
+2. Click the Download button for your computer (Windows or Mac)
+3. Install it like any normal app (open the downloaded file and follow the steps)
+---
+
+You do not need to open VS Code right now. We will use it later in this lesson.
 
 ──────────────────────────────────────────────────
 
-THE 6 COMMANDS YOU NEED TODAY
+STEP 2 — WHAT IS THE TERMINAL?
 
-You do not need to memorise hundreds of commands. These 6 are enough to navigate like a developer:
+The terminal is a way to control your computer by typing commands instead of clicking buttons.
 
-• pwd — Print Working Directory. Shows you where you are right now.
-• ls — List. Shows all files and folders inside the current folder.
-• cd foldername — Change Directory. Move into a folder.
-• cd .. — Go back one folder. The two dots mean "parent folder".
-• mkdir foldername — Make Directory. Creates a new folder.
-• touch filename — Creates a new empty file.
+You already know how to create a folder by right-clicking → New Folder. In the terminal, you do the same thing by typing one command. Same result, much faster.
 
-Let's practice all of them right now.
+At first the terminal looks scary. It is not. It is just a tool. Like learning to type on a keyboard — it feels strange for one day, then it becomes second nature.
+
+Every developer at every company — Swiggy, Razorpay, Zerodha, Google — uses the terminal every single day.
+
+──────────────────────────────────────────────────
+
+STEP 3 — OPEN THE TERMINAL
+
+On Mac:
+Press Cmd + Space. Type Terminal. Press Enter. A window opens with a blinking cursor.
+
+On Windows:
+You will use an app called Git Bash (not the normal Command Prompt).
+We install Git in the next step. After installing, search "Git Bash" in the Start Menu and open it.
+
+⚠️ Windows users — this is important:
+Always use Git Bash. Never use Command Prompt or PowerShell for this program.
+The commands will not work in those apps. If you run a command and see an error like "'touch' is not recognized", you are in the wrong terminal. Close it and open Git Bash.
+
+When Git Bash or Terminal opens, you will see a blinking cursor on a dark screen. That means it is waiting for you. Type a command and press Enter to run it.
+
+──────────────────────────────────────────────────
+
+STEP 4 — THE 6 COMMANDS YOU NEED TODAY
+
+You do not need to memorise 100 commands. These 6 are enough for today:
+
+• pwd           — shows which folder you are currently inside
+• ls            — shows all files and folders inside the current folder
+• cd foldername — go inside a folder
+• cd ..         — go back to the folder above (one level up)
+• mkdir name    — create a new folder
+• touch name    — create a new empty file
+
+Let us practise all 6 right now.
 
 TRY IT NOW
 $ pwd
 ---
 
-This prints something like /Users/yourname on Mac or /c/Users/yourname on Windows. That is your current location — the same as what you see in your file explorer.
+You will see something like: /Users/yourname (Mac) or /c/Users/yourname (Windows)
+This is your current location — the same as your home folder in File Explorer.
 
 TRY IT NOW
 $ ls
 ---
 
-You will see a list of your files and folders. This is your home directory.
+You will see a list of your files and folders. These are the items inside your home folder.
 
 TRY IT NOW
 $ mkdir mini-lead-manager
@@ -2949,66 +2981,89 @@ $ cd mini-lead-manager
 $ pwd
 ---
 
-You just created a folder called mini-lead-manager and moved inside it. pwd confirms your new location.
+You created a new folder called mini-lead-manager and moved inside it.
+pwd will now show your location ending with /mini-lead-manager. That confirms it worked.
 
 TRY IT NOW
 $ touch notes.txt
 $ ls
 ---
 
-You created an empty file. ls confirms it exists.
+You created an empty file called notes.txt. ls shows it is now in the folder.
 
 TRY IT NOW
 $ cd ..
 $ pwd
 ---
 
-cd .. moved you back up one level to the folder above.
+cd .. moved you one level up. You are back in your home folder.
 
 ──────────────────────────────────────────────────
 
-WHAT IS GIT?
+STEP 5 — INSTALL GIT
 
-Git is version control software. It tracks every change you make to your code over time.
+Git is a tool that saves snapshots of your code over time.
 
-Imagine you are writing a 5,000 word document and you accidentally delete 1,000 words. Without version control, they are gone forever. With Git, you can go back to any previous saved version.
+Think of it like this: you are writing an important assignment. Normally if you accidentally delete everything and save, it is gone forever. Git prevents this. Every time you tell it to, Git saves a snapshot of your code. You can go back to any previous snapshot at any time.
 
-At every company in the world — small startup or big product company — developers use Git. It is not optional. It is how teams work together without breaking each other's code.
+Every company uses Git — Razorpay, Zerodha, Swiggy, startups, big companies. It is not optional. You will use it every single day in this program.
 
-The key idea: Git takes snapshots of your code. Each snapshot is called a commit. You decide when to take a snapshot and what message to attach to it. Those messages become the history of your project.
-
-──────────────────────────────────────────────────
-
-INSTALLING GIT
-
-On Mac, Git is usually already installed. Check by running:
+ON MAC — Check if Git is already installed:
 
 TRY IT NOW
 $ git --version
 ---
 
-If you see something like git version 2.39.0, you are good.
+If you see something like: git version 2.39.0 — Git is already installed. Go to Step 6.
+If you see "command not found" — install Git from git-scm.com.
 
-On Windows, go to git-scm.com, download the installer, and run it. During the install, choose "Git Bash" as the terminal. After install, open Git Bash and run git --version to confirm.
+ON WINDOWS — Download and install Git:
 
-──────────────────────────────────────────────────
-
-SETTING UP GIT — DO THIS ONCE
-
-Before Git can track your work, it needs to know your name and email. Run these two commands. Replace the values with your own name and email:
+1. Go to git-scm.com in your browser
+2. Click the Download button
+3. Open the downloaded file to start the installer
+4. During the install, make these choices:
+   - When it asks about the default editor → choose "Use Visual Studio Code as Git's default editor"
+   - When it asks about the terminal → choose "Git Bash"
+   - All other screens → leave everything as default and keep clicking Next
+5. Click Install
+6. After installing, close any open terminals and open Git Bash from the Start Menu
 
 TRY IT NOW
-$ git config --global user.name "Your Name"
-$ git config --global user.email "you@example.com"
+$ git --version
 ---
 
-This is a one-time setup on each computer. Git will attach your name and email to every commit you make.
+You should see: git version 2.xx.x
+If you see this, Git is installed correctly.
 
 ──────────────────────────────────────────────────
 
-YOUR FIRST GIT REPOSITORY
+STEP 6 — TELL GIT YOUR NAME AND EMAIL
 
-A repository (repo) is just a folder that Git is tracking. Let's create one.
+Git needs to know who is making the changes. This is a one-time setup. Run both commands. Use your real name and the email you will use for GitHub:
+
+TRY IT NOW
+$ git config --global user.name "Ravi Kumar"
+$ git config --global user.email "ravi@example.com"
+---
+
+Nothing prints after these commands. That is normal — it means they worked.
+
+To confirm your name was saved correctly:
+
+TRY IT NOW
+$ git config --global user.name
+---
+
+You will see your name printed. That confirms it is set.
+
+──────────────────────────────────────────────────
+
+STEP 7 — CREATE YOUR FIRST GIT REPOSITORY
+
+A repository (called a repo) is just a folder where Git is tracking your changes.
+
+Let us turn your mini-lead-manager folder into a Git repo:
 
 TRY IT NOW
 $ cd mini-lead-manager
@@ -3017,112 +3072,142 @@ $ git init
 
 You will see: Initialized empty Git repository in .../mini-lead-manager/.git/
 
-Git created a hidden .git folder inside your project. That folder is where Git stores all its data. You never touch it directly.
+Git created a hidden folder called .git inside your project. That is where Git stores all the snapshots. You never open or touch that folder. Just know it is there doing its job.
 
 ──────────────────────────────────────────────────
 
-THE GIT WORKFLOW — 4 STEPS YOU WILL DO EVERY DAY
+STEP 8 — THE GIT WORKFLOW (4 STEPS, EVERY DAY)
 
-Memorise this pattern. You will use it hundreds of times:
+Every time you finish some work, you save it using these 4 steps. Memorise this — you will do it hundreds of times:
 
-1. Make changes to your files
-2. git add — tell Git which changes to include in the next snapshot
-3. git commit — take the snapshot with a message describing what you did
-4. git push — upload the snapshot to GitHub so it is saved online
+  Step 1 — Make changes to your files
+  Step 2 — git add      → tell Git which files to include in the snapshot
+  Step 3 — git commit   → save the snapshot with a short message
+  Step 4 — git push     → upload the snapshot to GitHub (your online backup)
 
-Let's do all 4 steps right now.
+Let us do all 4 right now.
 
-Step 1 — Create a file to track:
+Step 1 — Create a file:
 
 TRY IT NOW
 $ touch README.md
 ---
 
-Step 2 — Check what Git sees:
+README.md is a standard file that describes your project. Every real project has one.
+
+Step 2 — See what Git noticed:
 
 TRY IT NOW
 $ git status
 ---
 
-Git tells you README.md is "untracked" — it sees the file, but it is not tracking it yet.
+You will see README.md listed under "Untracked files".
+This means Git sees the file but is not tracking it yet.
 
-Step 3 — Stage the file (tell Git to include it):
+Step 3 — Tell Git to include this file in the next snapshot:
 
 TRY IT NOW
 $ git add README.md
 ---
 
-Run git status again. Now it says "Changes to be committed". The file is staged and ready for the snapshot.
+Run git status again. README.md will now be under "Changes to be committed".
+That means it is ready to be saved.
 
-Step 4 — Take the snapshot (commit):
+Step 4 — Save the snapshot:
 
 TRY IT NOW
 $ git commit -m "Add README"
 ---
 
-The -m flag is your commit message. Keep messages short and specific.
-Bad: "stuff". Bad: "changes". Good: "Add README". Good: "Fix login bug".
+The -m means "message". After -m, write a short description of what you did.
 
-You just took your first Git snapshot. It is saved locally on your computer.
+Good commit messages: "Add README", "Fix login bug", "Add lead form"
+Bad commit messages: "stuff", "changes", "done", "asdfgh"
 
-──────────────────────────────────────────────────
-
-SETTING UP YOUR GITHUB ACCOUNT
-
-Git runs on your computer. GitHub is the website that stores your code online so the world can see it — and so you never lose it even if your laptop dies.
-
-1. Go to github.com and create a free account.
-2. Choose a professional username — this is your developer identity. Recruiters will see it. Use your real name or a clean version of it.
-3. Verify your email address.
+You just saved your first Git snapshot. It is stored on your computer.
 
 ──────────────────────────────────────────────────
 
-CONNECTING YOUR COMPUTER TO GITHUB WITH AN SSH KEY
+STEP 9 — CREATE YOUR GITHUB ACCOUNT
 
-To push code from your terminal to GitHub, you need to prove your computer is allowed to. We do this with an SSH key — think of it like a key card. Your computer holds the key, GitHub holds the lock.
+Git saves code on your computer. GitHub is a website that stores your code online.
 
-Step 1 — Generate the key pair:
+Think of it like this: Git is saving a file on your phone. GitHub is uploading it to Google Drive. Your code is safe online, accessible from anywhere, and visible to recruiters.
+
+If your laptop is stolen or breaks, your code is still safe on GitHub.
+
+Go to github.com and create a free account.
+
+When choosing a username — use your real name. Recruiters and companies will look at your GitHub profile.
+
+Good usernames: ravikumar-dev, priya-codes, venkat-fullstack, sai-krishna
+Bad usernames: coolguy123, techboy2024, ravi_cool_1998, xXcoderXx
+
+Verify your email address after signing up. GitHub will send you a verification email.
+
+──────────────────────────────────────────────────
+
+STEP 10 — CONNECT YOUR COMPUTER TO GITHUB (SSH KEY)
+
+To upload your code from your computer to GitHub, GitHub needs to verify that it is really you. We do this with something called an SSH key.
+
+Think of an SSH key like a fingerprint for your laptop. Your laptop's fingerprint is registered on GitHub. When you push code, GitHub recognises the fingerprint and allows it.
+
+Step 1 — Create the key:
 
 TRY IT NOW
-$ ssh-keygen -t ed25519 -C "you@example.com"
+$ ssh-keygen -t ed25519 -C "your-github-email@example.com"
 ---
 
-Press Enter three times (accept the default file location, and skip the passphrase for now).
+Use the same email you used for GitHub.
 
-This creates two files in your ~/.ssh/ folder:
-• id_ed25519 — your private key. Never share this with anyone.
-• id_ed25519.pub — your public key. This goes on GitHub.
+The terminal will ask 3 questions. Press Enter for all 3. Do not type anything — just press Enter each time.
 
-Step 2 — Copy your public key:
+You will see a pattern made of symbols printed on the screen. That is the fingerprint being created. This is normal.
+
+Step 2 — Copy your key:
 
 TRY IT NOW
 $ cat ~/.ssh/id_ed25519.pub
 ---
 
-Select everything that prints and copy it. It starts with ssh-ed25519 and ends with your email address.
+You will see one long line of text. It starts with ssh-ed25519 and ends with your email address.
+Select that entire line. Copy it with Ctrl+C (Windows) or Cmd+C (Mac).
 
-Step 3 — Add it to GitHub:
-Go to github.com → click your profile photo → Settings → SSH and GPG keys → New SSH key.
-Give it a title like "My Laptop". Paste what you copied. Click Add SSH key.
+Step 3 — Add your key to GitHub:
+• Go to github.com and log in
+• Click your profile photo in the top-right corner → Settings
+• In the left sidebar, click SSH and GPG keys
+• Click the green New SSH key button
+• Title: type "My Laptop"
+• Key: paste what you copied (Ctrl+V or Cmd+V)
+• Click Add SSH key
 
-Step 4 — Test the connection:
+Step 4 — Test it:
 
 TRY IT NOW
 $ ssh -T git@github.com
 ---
 
-If it says "Hi yourusername! You've successfully authenticated" — you are connected. If it says permission denied, check that you pasted the correct .pub key.
+If you see: Hi yourusername! You've successfully authenticated
+→ SSH is working. Move to Step 11.
+
+If you see: Permission denied (publickey)
+→ SSH is not set up correctly. This is a common issue. Continue to Step 11 using HTTPS links (explained there). Post a screenshot in Discord and a mentor will help you fix SSH. Do not get stuck here.
 
 ──────────────────────────────────────────────────
 
-PUSHING YOUR FIRST COMMIT TO GITHUB
+STEP 11 — PUSH YOUR CODE TO GITHUB
 
 Step 1 — Create a new repository on GitHub:
-Go to github.com → click the + icon at the top right → New repository.
-Name it mini-lead-manager. Set it to Public. Do NOT tick "Add a README file" — we already have one locally.
-Click Create repository.
+• Go to github.com
+• Click the + icon at the top-right → New repository
+• Repository name: mini-lead-manager
+• Visibility: Public
+• Do NOT tick "Add a README file" — we already created one on our computer
+• Click Create repository
 
-Step 2 — Link your local folder to GitHub and push:
+Step 2 — Connect your local folder to GitHub:
 
 TRY IT NOW
 $ git remote add origin git@github.com:yourusername/mini-lead-manager.git
@@ -3132,16 +3217,28 @@ $ git push -u origin main
 
 Replace yourusername with your actual GitHub username.
 
-If it worked, you will see output ending with:
-Branch 'main' set up to track remote branch 'main' from 'origin'.
+⚠️ If SSH is not working, use HTTPS instead:
+On the GitHub repository page, click the green Code button → click HTTPS → copy that URL.
+Then run:
+$ git remote add origin https://github.com/yourusername/mini-lead-manager.git
+$ git branch -M main
+$ git push -u origin main
 
-Now open github.com/yourusername/mini-lead-manager in your browser. Your README.md is there. Your first commit is live on GitHub.
+After a successful push, you will see a line ending with:
+  Branch 'main' set up to track remote branch 'main' from 'origin'.
+
+Now open github.com/yourusername/mini-lead-manager in your browser.
+Your README.md file is there. Your first commit is live on the internet.
 
 ──────────────────────────────────────────────────
 
-OPENING YOUR FIRST PULL REQUEST
+STEP 12 — YOUR FIRST PULL REQUEST
 
-A pull request (PR) is how developers propose changes. You create a separate branch, make changes on it, then open a PR to ask for those changes to be reviewed and merged. This is the most important workflow in professional development — you will do it every day at DevForge.
+In DevForge, you do not submit assignments by email or WhatsApp. You submit through a Pull Request on GitHub.
+
+A Pull Request (PR) is how you say: "I finished this work — please review it."
+
+In this program: AI reviews your code first, then your mentor reviews it and gives you a score. Every assignment goes through a PR. This is also exactly how developers at real companies submit their work.
 
 Step 1 — Create a new branch:
 
@@ -3149,20 +3246,33 @@ TRY IT NOW
 $ git checkout -b feat/add-about-section
 ---
 
-git checkout -b creates a new branch and switches to it. The name follows the convention: type/short-description. Common types: feat (new feature), fix (bug fix), chore (cleanup).
+A branch is like a separate copy of your project where you safely make changes. If you make a mistake on the branch, your main code is untouched.
 
-Step 2 — Add some content to your README. Open README.md in any text editor (Notepad, VS Code, anything) and paste this:
+You will see: Switched to a new branch 'feat/add-about-section'
+
+Branch names follow this pattern: type/short-description
+Common types: feat (new feature), fix (bug fix), docs (notes or documentation)
+
+Step 2 — Open the README in VS Code:
+
+TRY IT NOW
+$ code README.md
+---
+
+VS Code will open the file. Delete everything in it and paste this:
 
 CODE EXAMPLE
-# DevForge Practice
+# Mini Lead Manager
 
-This is my practice repository for the DevForge program.
+My first project — built during the DevForge full-stack program.
 
 ## About Me
 
-I am learning full-stack development — JavaScript, Node.js, React, and PostgreSQL.
-By Week 10, I will have 3 deployed applications on my GitHub.
+I am learning full-stack development: JavaScript, Node.js, React, and PostgreSQL.
+By Week 12, I will have 3 deployed applications on my GitHub.
 ---
+
+Save the file: Ctrl+S on Windows, Cmd+S on Mac.
 
 Step 3 — Commit the change:
 
@@ -3177,51 +3287,55 @@ TRY IT NOW
 $ git push -u origin feat/add-about-section
 ---
 
-Step 5 — Open the pull request:
-Go to your GitHub repository. You will see a yellow banner: "feat/add-about-section had recent pushes — Compare & pull request". Click that button.
+Step 5 — Open the Pull Request:
+• Go to github.com/yourusername/mini-lead-manager
+• You will see a yellow banner: "feat/add-about-section had recent pushes — Compare & pull request"
+• Click that button
+• Title: Add about section to README
+• Description: Added an About Me section with my learning goals.
+• Click Create pull request
 
-Write a clear title: Add about section to README
-Write a short description: Added an About Me section with learning goals.
-Click Create pull request.
-
-That is your first pull request. In the DevForge program, every piece of work you do will go through a PR. It gets reviewed, you fix any issues, and then it gets merged. This is exactly how real teams work.
+That is your first Pull Request. Every DevForge assignment works exactly like this.
 
 ──────────────────────────────────────────────────
 
 TODAY'S CHECKLIST
 
-Before you move to Day 2, go through each item below:
+Go through each item before moving to Day 2.
 
-☐ Terminal opens and pwd, ls, cd, mkdir, touch all work correctly
+☐ VS Code is installed — typing code . in the terminal opens a folder in VS Code
 ☐ Git is installed — git --version shows a version number
-☐ Name and email configured — git config --global user.name and user.email done
-☐ GitHub account created with a professional username
-☐ SSH key generated and added to GitHub — ssh -T git@github.com says "successfully authenticated"
-☐ mini-lead-manager repository created on GitHub
-☐ README.md committed and pushed — visible at github.com/yourusername/mini-lead-manager
-☐ First pull request opened with the feat/add-about-section branch
+☐ Name and email set — git config --global user.name prints your name
+☐ GitHub account created — username uses your real name (no numbers or underscores)
+☐ SSH connected — ssh -T git@github.com says "successfully authenticated"
+   (If SSH not working — that is okay. Post in Discord and continue to Day 2)
+☐ mini-lead-manager repository is visible on github.com
+☐ README.md is visible on GitHub after pushing
+☐ First Pull Request created with the feat/add-about-section branch
 
 All 8 checked? You are ready for Day 2.
-If any are not checked, finish them before moving forward. Day 2 builds directly on today.
+Stuck on one? Post a screenshot in Discord with your error message. A mentor will help. Do not move to Day 2 until the issue is resolved.
 
 ──────────────────────────────────────────────────
 
 COMMON ERRORS AND HOW TO FIX THEM
 
+'touch' is not recognized as a command
+You are in Windows Command Prompt instead of Git Bash. Close it. Open Git Bash from the Start Menu. Run the command again.
+
 Permission denied (publickey) when pushing
-Your SSH key is not set up correctly. Run ssh -T git@github.com to test. If it fails, make sure you added the id_ed25519.pub file (not the private one) to GitHub.
+SSH is not connected to GitHub. Use the HTTPS link instead (see Step 11). Post in Discord for help.
 
 fatal: remote origin already exists
-Run git remote remove origin first, then add it again with the correct URL.
+You already added a remote. Remove it first, then add it again:
+$ git remote remove origin
+Then run the git remote add origin command again.
 
 nothing to commit, working tree clean
-Git has nothing new to snapshot. You need to make a change to a file, then run git add and git commit again.
+Git has nothing to save. Make a change to a file first. Then git add and git commit again.
 
 Your branch is ahead of 'origin/main' by 1 commit
-This is not an error. It means you have local commits that haven't been pushed. Run git push.
-
-I accidentally committed to main instead of a branch
-Run git checkout -b feat/my-branch-name. Your commit moves with you to the new branch.
+This is not an error. Your commit is saved on your computer but not uploaded yet. Just run git push.
 `,
 
 // ─── WEEK 2 LESSONS ──────────────────────────────────────────────────────────
