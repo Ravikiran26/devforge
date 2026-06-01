@@ -17,88 +17,111 @@ async function main() {
   console.log('🌱 Seeding database...')
 
   // ── Cohorts ─────────────────────────────────────────────────────────────────
-  // Handle rename from old "Cohort 3" to "Batch 1"
-  await prisma.cohort.updateMany({
-    where: { name: 'Cohort 3' },
-    data: { name: 'Batch 1' },
-  })
+  let cohort3, cohort2
+  try {
+    await prisma.cohort.updateMany({
+      where: { name: 'Cohort 3' },
+      data: { name: 'Batch 1' },
+    })
 
-  const cohort3 = await prisma.cohort.upsert({
-    where: { name: 'Batch 1' },
-    update: {
-      startDate: new Date('2026-06-01'),
-      endDate: new Date('2026-08-24'),
-      maxStudents: 15,
-    },
-    create: {
-      name: 'Batch 1',
-      startDate: new Date('2026-06-01'),
-      endDate: new Date('2026-08-24'),
-      status: 'ACTIVE',
-      maxStudents: 15,
-    }
-  })
+    cohort3 = await prisma.cohort.upsert({
+      where: { name: 'Batch 1' },
+      update: {
+        startDate: new Date('2026-06-01'),
+        endDate: new Date('2026-08-24'),
+        maxStudents: 15,
+      },
+      create: {
+        name: 'Batch 1',
+        startDate: new Date('2026-06-01'),
+        endDate: new Date('2026-08-24'),
+        status: 'ACTIVE',
+        maxStudents: 15,
+      }
+    })
 
-  const cohort2 = await prisma.cohort.upsert({
-    where: { name: 'Cohort 2' },
-    update: {},
-    create: {
-      name: 'Cohort 2',
-      startDate: new Date('2026-02-02'),
-      endDate: new Date('2026-04-27'),
-      status: 'COMPLETED',
-      maxStudents: 20,
-    }
-  })
+    cohort2 = await prisma.cohort.upsert({
+      where: { name: 'Cohort 2' },
+      update: {},
+      create: {
+        name: 'Cohort 2',
+        startDate: new Date('2026-02-02'),
+        endDate: new Date('2026-04-27'),
+        status: 'COMPLETED',
+        maxStudents: 20,
+      }
+    })
 
-  console.log('✓ Cohorts seeded')
+    console.log(`✓ Cohorts seeded  (Batch 1: ${cohort3.id}, Cohort 2: ${cohort2.id})`)
+  } catch (e) {
+    console.error('✗ Cohorts failed:', e.message)
+    throw e
+  }
 
   // ── Admin user ───────────────────────────────────────────────────────────────
-  const adminPwd = await bcrypt.hash('Admin@123', 10)
-  await prisma.user.upsert({
-    where: { email: 'admin@devforge.com' },
-    update: {},
-    create: {
-      name: 'Ravi Kumar',
-      email: 'admin@devforge.com',
-      password: adminPwd,
-      role: 'ADMIN',
-    }
-  })
-
-  console.log('✓ Admin user seeded  →  admin@devforge.com / Admin@123')
+  try {
+    const adminPwd = await bcrypt.hash('Admin@123', 10)
+    await prisma.user.upsert({
+      where: { email: 'admin@devforge.com' },
+      update: {},
+      create: {
+        name: 'Ravi Kumar',
+        email: 'admin@devforge.com',
+        password: adminPwd,
+        role: 'ADMIN',
+      }
+    })
+    console.log('✓ Admin user seeded  →  admin@devforge.com / Admin@123')
+  } catch (e) {
+    console.error('✗ Admin user failed:', e.message)
+    throw e
+  }
 
   // ── Students ─────────────────────────────────────────────────────────────────
   const studentData = [
     { name:'Ravikiran',  email:'ravi@devforge.com',  college:'JNTU Hyderabad',  week:1, status:'ACTIVE',  plan:'LIVE_COHORT', cohortId: cohort3.id },
   ]
 
-  const pwd = await bcrypt.hash('Student@123', 10)
   const students = []
+  try {
+    const pwd = await bcrypt.hash('Student@123', 10)
 
-  for (const s of studentData) {
-    const user = await prisma.user.upsert({
-      where: { email: s.email },
-      update: {},
-      create: {
-        name: s.name, email: s.email, password: pwd, role: 'STUDENT',
-        student: {
+    for (const s of studentData) {
+      try {
+        const user = await prisma.user.upsert({
+          where: { email: s.email },
+          update: {},
           create: {
-            college: s.college, currentWeek: s.week, status: s.status,
-            plan: s.plan, cohortId: s.cohortId,
-          }
-        }
-      },
-      include: { student: true }
-    })
-    students.push(user.student)
+            name: s.name, email: s.email, password: pwd, role: 'STUDENT',
+            student: {
+              create: {
+                college: s.college, currentWeek: s.week, status: s.status,
+                plan: s.plan, cohortId: s.cohortId,
+              }
+            }
+          },
+          include: { student: true }
+        })
+        students.push(user.student)
+      } catch (e) {
+        console.error(`  ✗ Student "${s.email}" failed: ${e.message}`)
+        throw e
+      }
+    }
+    console.log(`✓ Students seeded  (${students.length} student/s)  →  password: Student@123`)
+  } catch (e) {
+    if (!e.message.includes('failed:')) console.error('✗ Students section failed:', e.message)
+    throw e
   }
 
-  console.log('✓ Students seeded  →  any student email / Student@123')
-
   // ── Lessons ──────────────────────────────────────────────────────────────────
-  await prisma.lessonProgress.deleteMany({})
-  await prisma.lesson.deleteMany({})
+  try {
+    await prisma.lessonProgress.deleteMany({})
+    await prisma.lesson.deleteMany({})
+  } catch (e) {
+    console.error('✗ Clearing lessons/progress failed:', e.message)
+    throw e
+  }
 
   const lessonsRaw = [
     // ── WEEK 1 — Git, JavaScript, APIs & Developer Workflow ──────────────────
@@ -127,6 +150,7 @@ async function main() {
     { lessonCode:'W4D2', week:4, title:'Day 2 — Protected Routes and Frontend Auth',            duration:'45 mins', status:'PUBLISHED', description: content['W4D2'] },
     { lessonCode:'W4D3', week:4, title:'Day 3 — Refresh Tokens and Role-Based Access',          duration:'45 mins', status:'PUBLISHED', description: content['W4D3'] },
     { lessonCode:'W4D4', week:4, title:'Day 4 — Restaurant Flow Kickoff',                       duration:'40 mins', status:'PUBLISHED', description: content['W4D4'] },
+    { lessonCode:'W4D5', week:4, title:'Day 5 — Week 4 Review + Restaurant Flow Repo Setup',   duration:'30 mins', status:'PUBLISHED' },
 
     // ── WEEK 5 — Project 1: Restaurant Flow (Backend + Payments) ─────────────
     { lessonCode:'W5L1', week:5, title:'Restaurant Flow — Project Kickoff',                    duration:'20 mins', status:'PUBLISHED', description: content['W5L1'] },
@@ -186,14 +210,21 @@ async function main() {
   ]
 
   const lessons = []
-  for (const l of lessonsRaw) {
-    const lesson = await prisma.lesson.create({
-      data: { ...l, cohortId: cohort3.id }
-    })
-    lessons.push(lesson)
+  try {
+    for (const l of lessonsRaw) {
+      try {
+        const lesson = await prisma.lesson.create({ data: { ...l, cohortId: cohort3.id } })
+        lessons.push(lesson)
+      } catch (e) {
+        console.error(`  ✗ Lesson ${l.lessonCode} ("${l.title}") failed: ${e.message}`)
+        throw e
+      }
+    }
+    console.log(`✓ Lessons seeded  (${lessons.length} lessons across 12 weeks)`)
+  } catch (e) {
+    if (!e.message.includes('failed:')) console.error('✗ Lessons section failed:', e.message)
+    throw e
   }
-
-  console.log(`✓ Lessons seeded  (${lessons.length} lessons across 12 weeks)`)
 
   // ── Tickets ──────────────────────────────────────────────────────────────────
   const ticketsRaw = [
@@ -589,66 +620,98 @@ Acceptance Criteria:
   ]
 
   // Remove old tickets not in the current ticket bank
-  const validCodes = ticketsRaw.map(t => t.ticketCode)
-  const oldTickets = await prisma.ticket.findMany({ where: { ticketCode: { notIn: validCodes } }, select: { id: true } })
-  if (oldTickets.length > 0) {
-    const oldIds = oldTickets.map(t => t.id)
-    await prisma.pRSubmission.deleteMany({ where: { ticketId: { in: oldIds } } })
-    await prisma.ticket.deleteMany({ where: { id: { in: oldIds } } })
+  try {
+    const validCodes = ticketsRaw.map(t => t.ticketCode)
+    const oldTickets = await prisma.ticket.findMany({ where: { ticketCode: { notIn: validCodes } }, select: { id: true, ticketCode: true } })
+    if (oldTickets.length > 0) {
+      console.log(`  ↳ Removing ${oldTickets.length} stale ticket(s): ${oldTickets.map(t => t.ticketCode).join(', ')}`)
+      const oldIds = oldTickets.map(t => t.id)
+      await prisma.pRSubmission.deleteMany({ where: { ticketId: { in: oldIds } } })
+      await prisma.ticket.deleteMany({ where: { id: { in: oldIds } } })
+    }
+  } catch (e) {
+    console.error('✗ Removing stale tickets failed:', e.message)
+    throw e
   }
 
   const tickets = []
-  for (const t of ticketsRaw) {
-    const { cohortId: _ignore, ...updateData } = t
-    const due = weekFriday(t.week)
-    const ticket = await prisma.ticket.upsert({
-      where: { ticketCode: t.ticketCode },
-      update: { ...updateData, dueDate: due },
-      create: { ...t, cohortId: cohort3.id, dueDate: due }
-    })
-    tickets.push(ticket)
+  try {
+    for (const t of ticketsRaw) {
+      try {
+        const { cohortId: _ignore, ...updateData } = t
+        const due = weekFriday(t.week)
+        const ticket = await prisma.ticket.upsert({
+          where: { ticketCode: t.ticketCode },
+          update: { ...updateData, dueDate: due },
+          create: { ...t, cohortId: cohort3.id, dueDate: due }
+        })
+        tickets.push(ticket)
+      } catch (e) {
+        console.error(`  ✗ Ticket ${t.ticketCode} ("${t.title}") failed: ${e.message}`)
+        throw e
+      }
+    }
+    console.log(`✓ Tickets seeded  (${tickets.length} tickets: RFC1-1→8, LBC1-1→8, CAC1-1→8)`)
+  } catch (e) {
+    if (!e.message.includes('failed:')) console.error('✗ Tickets section failed:', e.message)
+    throw e
   }
 
-  console.log('✓ Tickets seeded  (24 tickets: RFC1-1→8, LBC1-1→8, CAC1-1→8)')
-
-  // ── PR Submissions (none for Ravikiran — fresh start) ────────────────────────
-  const ravi = students[0]
-
+  // ── PR Submissions ────────────────────────────────────────────────────────────
   console.log('✓ PR submissions seeded  (Ravikiran starts fresh — 0 submissions)')
 
-  // ── Lesson progress for Ravikiran — none (fresh start) ───────────────────────
+  // ── Lesson progress ───────────────────────────────────────────────────────────
   console.log('✓ Lesson progress seeded  (Ravikiran starts fresh — 0 lessons watched)')
 
   // ── Announcements ────────────────────────────────────────────────────────────
   const announcementsRaw = [
-    { title:'Lead Bill Week 7 Sprint is Live!', body:"Hey Cohort 3! Your Week 7 tickets for Lead Bill are now live on the board — LB-001, LB-002, LB-003. Start with LB-001 (Express Server + Prisma Setup) first. Make sure your .env has DATABASE_URL before running db:push. PR deadline is Friday 11:59 PM.", audience:'Cohort 3', type:'SPRINT', pinned:true, cohortId:cohort3.id },
-    { title:'Live Session: GST Calculation Logic — Friday 6 PM', body:'Week 7 live session — we will implement same-state vs different-state GST logic together for LB-003. This is the trickiest part of Lead Bill. Join link in Discord 30 mins before. Attendance mandatory.', audience:'Cohort 3', type:'SESSION', pinned:true, cohortId:cohort3.id },
+    { title:'Lead Bill Week 7 Sprint is Live!', body:"Hey Batch 1! Your Week 7 tickets for Lead Bill are now live on the board — LBC1-1, LBC1-2, LBC1-3. Start with LBC1-1 (Express Server + Prisma Setup) first. Make sure your .env has DATABASE_URL before running db:push. PR deadline is Friday 11:59 PM.", audience:'Batch 1', type:'SPRINT', pinned:true, cohortId:cohort3.id },
+    { title:'Live Session: GST Calculation Logic — Friday 6 PM', body:'Week 7 live session — we will implement same-state vs different-state GST logic together for LBC1-3. This is the trickiest part of Lead Bill. Join link in Discord 30 mins before. Attendance mandatory.', audience:'Batch 1', type:'SESSION', pinned:true, cohortId:cohort3.id },
     { title:'Cohort 2 Graduates — Congratulations!', body:'Cohort 2 has officially wrapped up! 18 students completed all 3 projects. Average grade: 88%. Placement support begins next week. Alumni Discord channel now open.', audience:'All', type:'GENERAL', pinned:false, cohortId:null },
-    { title:'Restaurant Flow Done — Pin It on GitHub Now', body:"Great work on Restaurant Flow everyone! Before starting Lead Bill, add your RF live link to your GitHub README and LinkedIn. Recruiters will see it. Takes 10 minutes, worth it.", audience:'Cohort 3', type:'UPDATE', pinned:false, cohortId:cohort3.id },
+    { title:'Restaurant Flow Done — Pin It on GitHub Now', body:"Great work on Restaurant Flow everyone! Before starting Lead Bill, add your RFC1 live link to your GitHub README and LinkedIn. Recruiters will see it. Takes 10 minutes, worth it.", audience:'Batch 1', type:'UPDATE', pinned:false, cohortId:cohort3.id },
   ]
 
+  let announcementCount = 0
   for (const a of announcementsRaw) {
-    await prisma.announcement.create({ data: a }).catch(() => {})
+    try {
+      await prisma.announcement.create({ data: a })
+      announcementCount++
+    } catch (e) {
+      console.warn(`  ⚠ Announcement "${a.title}" skipped (already exists or failed): ${e.message}`)
+    }
   }
-
-  console.log('✓ Announcements seeded')
+  console.log(`✓ Announcements seeded  (${announcementCount} created, ${announcementsRaw.length - announcementCount} skipped)`)
 
   // ── Payments ─────────────────────────────────────────────────────────────────
   const paymentsRaw = [
     { txnId:'TXN-001', studentId:students[0].id, plan:'LIVE_COHORT', amount:7000, method:'UPI', status:'PAID' },
   ]
 
-  for (const p of paymentsRaw) {
-    await prisma.payment.upsert({ where: { txnId: p.txnId }, update: {}, create: p })
+  try {
+    for (const p of paymentsRaw) {
+      try {
+        await prisma.payment.upsert({ where: { txnId: p.txnId }, update: {}, create: p })
+      } catch (e) {
+        console.error(`  ✗ Payment ${p.txnId} failed: ${e.message}`)
+        throw e
+      }
+    }
+    console.log(`✓ Payments seeded  (${paymentsRaw.length} record/s)`)
+  } catch (e) {
+    if (!e.message.includes('failed:')) console.error('✗ Payments section failed:', e.message)
+    throw e
   }
 
-  console.log('✓ Payments seeded')
   console.log('\n✅ Seed complete!\n')
   console.log('   Admin:   admin@devforge.com  /  Admin@123')
   console.log('   Student: ravi@devforge.com   /  Student@123\n')
-  console.log('   Projects: Restaurant Flow (RF, weeks 5-6) | Lead Bill (LB, weeks 7-9) | ClientDesk AI (CA, weeks 10-11)\n')
+  console.log('   Projects: RFC1 — Restaurant Flow (weeks 5–6) | LBC1 — Lead Bill (weeks 7–9) | CAC1 — ClientDesk AI (weeks 10–11)\n')
 }
 
 main()
-  .catch(e => { console.error(e); process.exit(1) })
+  .catch(e => {
+    console.error('\n❌ Seed failed:', e.message)
+    console.error(e)
+    process.exit(1)
+  })
   .finally(() => prisma.$disconnect())
