@@ -31,3 +31,5 @@ If you are developing a production application, we recommend using TypeScript wi
   rahul@devforge.com   — Week 4, Active                                                                                                                                                                                      
   sneha@devforge.com   — Week 3, Active
   amit@devforge.com    — Week 4, Mentored      
+
+   DATABASE_URL="postgresql://postgres:UkTmCpltVxbEQGUcqphZHbWNPIhBGObZ@kodama.proxy.rlwy.net:29408/railway?sslmode=require" npm run db:seed 

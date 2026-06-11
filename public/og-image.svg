@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#090805" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" x="0" y="0" width="36" height="36" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#F59E0B" fill-opacity="0.12"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#090805"/>
+  <rect width="1200" height="630" fill="url(#dots)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Top border accent -->
+  <rect width="1200" height="3" fill="#F59E0B"/>
+
+  <!-- Logo mark -->
+  <rect x="64" y="56" width="40" height="40" fill="#F59E0B"/>
+  <text x="84" y="82" font-family="monospace" font-size="16" font-weight="800" fill="#000" text-anchor="middle">DF</text>
+
+  <!-- Brand name -->
+  <text x="116" y="83" font-family="monospace" font-size="20" font-weight="700" fill="#FDE68A" letter-spacing="1">DevForge</text>
+
+  <!-- Terminal prompt -->
+  <text x="64" y="160" font-family="monospace" font-size="16" fill="#F59E0B">$</text>
+  <text x="84" y="160" font-family="monospace" font-size="16" fill="#3D2E18">./enroll --start=today --track=fullstack</text>
+
+  <!-- Main headline -->
+  <text x="64" y="240" font-family="monospace" font-size="68" font-weight="700" fill="#FDE68A" letter-spacing="-2">Build 3 real products</text>
+  <text x="64" y="320" font-family="monospace" font-size="68" font-weight="700" fill="#F59E0B" letter-spacing="-2">in 12 weeks.</text>
+
+  <!-- Subheadline -->
+  <text x="64" y="388" font-family="sans-serif" font-size="22" fill="#B08A40" letter-spacing="0">65+ merged pull requests · 3 deployed apps · GitHub profile that gets you hired</text>
+
+  <!-- Divider -->
+  <rect x="64" y="424" width="1072" height="1" fill="#2A2015"/>
+
+  <!-- Stats row -->
+  <!-- Stat 1 -->
+  <text x="64" y="478" font-family="monospace" font-size="40" font-weight="700" fill="#F59E0B">65+</text>
+  <text x="64" y="506" font-family="monospace" font-size="13" fill="#3D2E18" letter-spacing="1">PULL REQUESTS</text>
+
+  <!-- Stat 2 -->
+  <text x="310" y="478" font-family="monospace" font-size="40" font-weight="700" fill="#F59E0B">3</text>
+  <text x="310" y="506" font-family="monospace" font-size="13" fill="#3D2E18" letter-spacing="1">PRODUCTS SHIPPED</text>
+
+  <!-- Stat 3 -->
+  <text x="556" y="478" font-family="monospace" font-size="40" font-weight="700" fill="#F59E0B">12</text>
+  <text x="556" y="506" font-family="monospace" font-size="13" fill="#3D2E18" letter-spacing="1">WEEKS</text>
+
+  <!-- Stat 4 -->
+  <text x="756" y="478" font-family="monospace" font-size="40" font-weight="700" fill="#F59E0B">&lt;24h</text>
+  <text x="756" y="506" font-family="monospace" font-size="13" fill="#3D2E18" letter-spacing="1">MENTOR FEEDBACK</text>
+
+  <!-- CTA pill right side -->
+  <rect x="900" y="440" width="336" height="56" rx="4" fill="#F59E0B"/>
+  <text x="1068" y="474" font-family="monospace" font-size="16" font-weight="700" fill="#000" text-anchor="middle" letter-spacing="1">ENROLL TODAY →</text>
+
+  <!-- Bottom domain -->
+  <text x="64" y="594" font-family="monospace" font-size="14" fill="#3D2E18">devforge.in</text>
+
+  <!-- Trust badges -->
+  <rect x="200" y="578" width="220" height="26" rx="3" fill="#100D08" stroke="#2A2015" stroke-width="1"/>
+  <text x="310" y="596" font-family="monospace" font-size="11" fill="#B08A40" text-anchor="middle">ECE / Mech / Any branch welcome</text>
+
+  <rect x="436" y="578" width="200" height="26" rx="3" fill="#100D08" stroke="#2A2015" stroke-width="1"/>
+  <text x="536" y="596" font-family="monospace" font-size="11" fill="#B08A40" text-anchor="middle">Real PRs, real feedback</text>
+
+  <rect x="652" y="578" width="176" height="26" rx="3" fill="#100D08" stroke="#2A2015" stroke-width="1"/>
+  <text x="740" y="596" font-family="monospace" font-size="11" fill="#B08A40" text-anchor="middle">No CS degree required</text>
+</svg>

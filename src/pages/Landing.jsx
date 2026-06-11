@@ -21,7 +21,8 @@ const C = {
   dim:     '#3D2E1888',
 }
 
-const PILOT_SEATS_LEFT = 15
+const PILOT_SEATS_LEFT = 12
+const WHATSAPP_NUMBER  = '919390545942'
 
 const glow  = (color = C.accent, size = 12) => `0 0 ${size}px ${color}55, 0 0 ${size * 2}px ${color}22`
 const fade  = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.7 } } }
@@ -139,6 +140,12 @@ function Navbar({ onApply }) {
           onMouseEnter={e => e.currentTarget.style.color = C.text}
           onMouseLeave={e => e.currentTarget.style.color = C.text3}
         >LOGIN</button>
+        <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%2C+I+want+to+know+more+about+DevForge`}
+          target="_blank" rel="noopener noreferrer"
+          style={{ fontSize: 12, fontWeight: 600, color: C.text3, fontFamily: 'JetBrains Mono,monospace', padding: '7px 16px', letterSpacing: '0.06em', border: `1px solid ${C.border2}`, textDecoration: 'none', transition: 'border-color 0.15s, color 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#25D366'; e.currentTarget.style.color = '#25D366' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = C.border2; e.currentTarget.style.color = C.text3 }}
+        >WHATSAPP</a>
         <button onClick={onApply}
           style={{ background: C.accent, border: `1px solid ${C.accent}`, cursor: 'pointer', fontSize: 12, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '8px 20px', letterSpacing: '0.08em', transition: 'box-shadow 0.15s, opacity 0.15s', boxShadow: glow() }}
           onMouseEnter={e => { e.currentTarget.style.opacity = '0.88' }}
@@ -279,14 +286,14 @@ function Hero({ onApply }) {
           <motion.span animate={{ opacity: [1, 0.2, 1] }} transition={{ repeat: Infinity, duration: 1.4 }}
             style={{ width: 7, height: 7, borderRadius: '50%', background: C.green, display: 'inline-block', boxShadow: glow(C.green) }}
           />
-          <span style={{ fontSize: 11, color: C.text3, letterSpacing: '0.1em' }}>BATCH 1 · JUNE 1 · {PILOT_SEATS_LEFT} SEATS · PRICE GOES UP AFTER THIS</span>
+          <span style={{ fontSize: 11, color: C.text3, letterSpacing: '0.1em' }}>{PILOT_SEATS_LEFT} FOUNDING SEATS · ENROLL TODAY · START THIS WEEK</span>
         </motion.div>
 
         {/* Prompt line */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.5 }}
           style={{ fontSize: 13, color: C.text3, fontFamily: 'JetBrains Mono,monospace', marginBottom: 16, letterSpacing: '0.04em' }}
         >
-          <span style={{ color: C.accent }}>$ </span>./enroll --cohort=3 --track=fullstack
+          <span style={{ color: C.accent }}>$ </span>./enroll --start=today --track=fullstack
         </motion.div>
 
         {/* Typewriter headline */}
@@ -305,7 +312,7 @@ function Hero({ onApply }) {
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 2.2 }}
           style={{ fontSize: 16, color: '#E8D5A3', lineHeight: 1.9, fontFamily: "'Inter', sans-serif", maxWidth: 560, margin: '0 auto 40px', textAlign: 'left' }}
         >
-          Merge 65+ real pull requests, ship 3 production-grade apps, and build a GitHub profile that holds up in a technical interview.
+          65+ merged pull requests. 3 deployed apps. A GitHub profile that gets you past the first screening call.
         </motion.p>
 
         {/* CTAs */}
@@ -318,18 +325,22 @@ function Hero({ onApply }) {
             onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.opacity = '1' }}
           >ENROLL NOW <ArrowRight size={14} /></button>
 
-          <a href="#projects"
-            style={{ fontSize: 13, fontWeight: 600, color: C.text3, fontFamily: 'JetBrains Mono,monospace', textDecoration: 'none', border: `1px solid ${C.border2}`, padding: '13px 28px', letterSpacing: '0.06em', transition: 'border-color 0.15s, color 0.15s' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.color = C.accent }}
+          <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%2C+I+want+to+know+more+about+DevForge`}
+            target="_blank" rel="noopener noreferrer"
+            style={{ fontSize: 13, fontWeight: 600, color: C.text3, fontFamily: 'JetBrains Mono,monospace', textDecoration: 'none', border: `1px solid ${C.border2}`, padding: '13px 28px', letterSpacing: '0.06em', transition: 'border-color 0.15s, color 0.15s', display: 'flex', alignItems: 'center', gap: 8 }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#25D366'; e.currentTarget.style.color = '#25D366' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = C.border2; e.currentTarget.style.color = C.text3 }}
-          >VIEW PROJECTS</a>
+          >
+            {WA_ICON}
+            TALK TO US
+          </a>
         </motion.div>
 
         {/* Trust */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 2.9 }}
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32 }}
         >
-          {['No CS degree', '12-week program', 'GitHub workflow'].map(b => (
+          {['ECE / Mech / Any branch', '12-week program', 'Real PRs, real feedback'].map(b => (
             <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
               <span style={{ color: C.green, fontSize: 11, fontFamily: 'JetBrains Mono,monospace', textShadow: glow(C.green, 6) }}>✓</span>
               <span style={{ fontSize: 12, color: C.text3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.04em' }}>{b}</span>
@@ -337,40 +348,43 @@ function Hero({ onApply }) {
           ))}
         </motion.div>
       </div>
+    </section>
+  )
+}
 
-      {/* Static portal preview */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 3.2 }}
-        style={{ width: '100%', maxWidth: 1060, padding: '48px 24px 0', position: 'relative', zIndex: 1 }}
-      >
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ fontSize: 10, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 10 }}>
-            <span style={{ color: C.accent }}>$ </span>cat ./student-portal.preview
-          </div>
-          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(20px, 3vw, 32px)', fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, margin: 0, textShadow: glow(C.text, 10) }}>
-            Your dev environment<span style={{ color: C.text3 }}> from day one.</span>
-          </h2>
-        </div>
-
-        {/* Window chrome */}
-        <div style={{
-          border: `1px solid ${C.border2}`,
-          borderRadius: 10,
-          overflow: 'hidden',
-          boxShadow: `0 0 0 1px ${C.border}, 0 32px 80px rgba(0,0,0,0.6), 0 0 60px ${C.accent}0D`,
-        }}>
-          {/* Title bar */}
-          <div style={{ height: 36, background: C.surface, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', flexShrink: 0 }}>
-            <div style={{ display: 'flex', gap: 6 }}>
-              {[C.red, C.accent, C.green].map((c, i) => <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c, opacity: 0.75 }} />)}
+// ─── Portal preview (extracted from Hero so Stats can sit above it) ───────────
+function PortalPreview() {
+  return (
+    <section style={{ padding: '64px 24px 0', background: C.bg, borderBottom: `1px solid ${C.border}` }}>
+      <div style={{ maxWidth: 1060, margin: '0 auto' }}>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
+          <div style={{ textAlign: 'center', marginBottom: 28 }}>
+            <div style={{ fontSize: 10, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 10 }}>
+              <span style={{ color: C.accent }}>$ </span>cat ./student-portal.preview
             </div>
-            <span style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>devforge — student-portal</span>
-            <span style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>week 5 / 12</span>
+            <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(20px, 3vw, 32px)', fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, margin: 0, textShadow: glow(C.text, 10) }}>
+              Your dev environment<span style={{ color: C.text3 }}> from day one.</span>
+            </h2>
           </div>
-          <div style={{ height: 480 }}>
-            <DashboardMockup embedded />
+          <div style={{
+            border: `1px solid ${C.border2}`,
+            borderRadius: 10,
+            overflow: 'hidden',
+            boxShadow: `0 0 0 1px ${C.border}, 0 32px 80px rgba(0,0,0,0.6), 0 0 60px ${C.accent}0D`,
+          }}>
+            <div style={{ height: 36, background: C.surface, borderBottom: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', gap: 6 }}>
+                {[C.red, C.accent, C.green].map((c, i) => <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c, opacity: 0.75 }} />)}
+              </div>
+              <span style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>devforge — student-portal</span>
+              <span style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>week 5 / 12</span>
+            </div>
+            <div style={{ height: 480 }}>
+              <DashboardMockup />
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </section>
   )
 }
@@ -427,6 +441,19 @@ function Stats() {
             </motion.div>
           ))}
         </div>
+
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}
+          style={{ marginTop: 56, paddingTop: 40, borderTop: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}
+        >
+          <p style={{ fontSize: 'clamp(15px,1.6vw,20px)', color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.65, maxWidth: 680, margin: 0 }}>
+            The only Indian program where your portfolio is built entirely through{' '}
+            <span style={{ color: C.accent, fontWeight: 600 }}>pull requests</span>{' '}
+            — the same workflow real companies use to hire.
+          </p>
+          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: C.text3, border: `1px solid ${C.border2}`, padding: '8px 16px', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
+            BUILD LIKE A DEVELOPER. GET HIRED LIKE ONE.
+          </div>
+        </motion.div>
       </div>
     </section>
   )
@@ -526,10 +553,10 @@ function Curriculum() {
 // ─── How it works ─────────────────────────────────────────────────────────────
 function HowItWorks() {
   const steps = [
-    { n:'01', title:'Enroll & get access',   desc:'Immediately access the student portal, all lessons, and the Week 1 starter repo.' },
+    { n:'01', title:'Enroll & start today',   desc:'Within 24 hours you get full access — student portal, all lessons, starter repo, and Discord. No waiting.' },
     { n:'02', title:'Build daily, PR daily', desc:'Every day you build a real feature and open a pull request against a real project.' },
     { n:'03', title:'Get feedback on every PR', desc:'Every PR gets reviewed for logic, naming, security, and structure. Fix, push, repeat.' },
-    { n:'04', title:'Ship & get placed',     desc:'3 deployed products, 65+ merged PRs, and a structured job application process.' },
+    { n:'04', title:'Ship & interview',       desc:'Leave with 3 deployed products, 65+ merged PRs, and a structured approach to job applications. No guarantee — but real proof.' },
   ]
   return (
     <section style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
@@ -563,7 +590,7 @@ function WhoIsThisFor() {
     { icon: '✓', label: 'Students who want to skip internship queues', desc: 'Ship 3 real apps and show them instead of applying blind.' },
   ]
   const notFits = [
-    { icon: '✕', label: 'Complete beginners with no JavaScript exposure', desc: 'Learn JS basics first — variables, functions, arrays. Then join.' },
+    { icon: '✕', label: 'Complete beginners with no JavaScript exposure', desc: 'Try freeCodeCamp first — variables, functions, arrays. Then come back.' },
     { icon: '✕', label: 'Anyone looking for live classes or recorded lectures', desc: 'This is not a course. It is a work environment.' },
   ]
   return (
@@ -593,7 +620,7 @@ function WhoIsThisFor() {
             </div>
           </div>
           <div>
-            <div style={{ fontSize: 9, color: C.red, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow(C.red, 6) }}>NOT A FIT (YET)</div>
+            <div style={{ fontSize: 9, color: C.red, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow(C.red, 6) }}>NOT THE RIGHT FIT</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {notFits.map((f, i) => (
                 <motion.div key={f.label} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.08 }}
@@ -619,7 +646,7 @@ function Pricing({ onApply }) {
   const plans = [
     {
       id: 'LIVE_COHORT',
-      name: 'Core',
+      name: 'Builder',
       price: '₹7,000',
       badge: null,
       tagline: 'Build real products. Ship real code.',
@@ -632,25 +659,25 @@ function Pricing({ onApply }) {
         { title: 'Discord community access',             sub: 'Ask questions, share PRs, get unblocked by peers.' },
         { title: 'Lifetime content access',              sub: 'Curriculum updates go to your account forever.' },
       ],
-      cta: 'ENROLL — CORE',
+      cta: 'ENROLL — BUILDER',
       accent: C.text3,
       recommended: false,
     },
     {
       id: 'MENTORED',
-      name: 'Career',
+      name: 'Builder + Placement Prep',
       price: '₹12,000',
       badge: 'MOST POPULAR',
       tagline: 'Build + get placement-ready.',
-      desc: 'Everything in Core, plus resume preparation, LinkedIn setup, job strategy, and a live 1:1 mock interview.',
+      desc: 'Everything in Builder, plus resume preparation, LinkedIn setup, job strategy, and a live 1:1 mock interview.',
       features: [
-        { title: 'Everything in Core',               sub: 'Full curriculum, AI reviews, mentor grading, certificate, lifetime access.' },
+        { title: 'Everything in Builder',             sub: 'Full curriculum, AI reviews, mentor grading, certificate, lifetime access.' },
         { title: 'Resume writing & review',          sub: 'Write a developer resume that gets past the first filter. We review it.' },
         { title: 'LinkedIn profile preparation',     sub: 'Headline, about section, and featured projects set up for recruiters.' },
         { title: 'Job application strategy session', sub: 'Which companies, what order, when and how to follow up.' },
         { title: '1:1 mock interview (45 min)',      sub: 'Live interview with a working developer. Written feedback included.' },
       ],
-      cta: 'ENROLL — CAREER',
+      cta: 'ENROLL — BUILDER+',
       accent: C.accent,
       recommended: true,
     },
@@ -664,14 +691,14 @@ function Pricing({ onApply }) {
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
             <div>
               <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 12px', textShadow: glow(C.text, 8) }}>
-                Batch 1 pricing.<br /><span style={{ color: C.text3 }}>No fake discounts.</span>
+                Founding price.<br /><span style={{ color: C.text3 }}>No fake discounts.</span>
               </h2>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: `1px solid ${C.accent}44`, padding: '7px 14px', fontFamily: 'JetBrains Mono,monospace' }}>
                 <motion.span animate={{ opacity: [1,0.3,1] }} transition={{ repeat: Infinity, duration: 1.4 }}
                   style={{ width: 6, height: 6, borderRadius: '50%', background: C.accent, display: 'inline-block', boxShadow: glow() }}
                 />
                 <span style={{ fontSize: 10, color: C.accent, letterSpacing: '0.1em' }}>
-                  15 founding seats · price goes up after Batch 1
+                  {PILOT_SEATS_LEFT} seats at this price · goes up after seat 12
                 </span>
               </div>
             </div>
@@ -707,7 +734,7 @@ function Pricing({ onApply }) {
                     <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: C.text3 }}>one-time</span>
                   </div>
                   <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace', marginTop: 6 }}>
-                    Batch 2 price: <span style={{ color: C.text2 }}>{p.recommended ? '₹18,000' : '₹12,000'}</span>
+                    After seat 12: <span style={{ color: C.text2 }}>{p.recommended ? '₹18,000' : '₹12,000'}</span>
                   </div>
                 </div>
 
@@ -744,8 +771,23 @@ function Pricing({ onApply }) {
         </div>
 
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginTop: 28, textAlign: 'center' }}>
-          <p style={{ fontSize: 11, color: C.text3, fontFamily: 'JetBrains Mono,monospace', lineHeight: 1.7 }}>
+          <p style={{ fontSize: 11, color: C.text3, fontFamily: 'JetBrains Mono,monospace', lineHeight: 1.7, marginBottom: 10 }}>
             7-day full refund if you haven't opened your first PR · <span style={{ color: C.text2 }}>support@devforge.in</span>
+          </p>
+          <p style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace', marginBottom: 14, opacity: 0.7 }}>
+            No live classes. No certificate mill. No placement guarantee. Just 12 weeks of real work.
+          </p>
+          <p style={{ fontSize: 11, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>
+            Not sure which plan is right for you?{' '}
+            <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%2C+can+you+help+me+choose+between+Builder+and+Builder+%2B+Placement+Prep%3F`}
+              target="_blank" rel="noopener noreferrer"
+              style={{ color: C.accent, textDecoration: 'none' }}>WhatsApp us →</a>
+          </p>
+          <p style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace', marginTop: 10, opacity: 0.7 }}>
+            Enrolling 5+ students from the same college?{' '}
+            <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%2C+I%27m+a+college+coordinator+and+want+to+discuss+group+enrollment+for+DevForge`}
+              target="_blank" rel="noopener noreferrer"
+              style={{ color: C.text2, textDecoration: 'none' }}>Ask about group rates →</a>
           </p>
         </motion.div>
       </div>
@@ -808,7 +850,7 @@ function Outcomes() {
 function FAQ() {
   const [open, setOpen] = useState(null)
   const items = [
-    { q: 'When does Batch 1 start?', a: 'Batch 1 starts June 1, 2026. Once enrolled, you get immediate access to Week 1 lessons, the starter repo, and the Discord community.' },
+    { q: 'When do I get access after enrolling?', a: 'Within 24 hours of enrollment you get full access — Week 1 lessons, the starter repo, the Jira board, and the Discord community. You start at your own pace. No waiting for a batch or a cohort.' },
     { q: 'Do I need a CS degree?', a: 'No. Most students are engineering graduates from non-CS branches or working professionals. What matters is commitment and 3–4 focused hours daily.' },
     { q: 'What programming knowledge is required?', a: 'You should know basic JavaScript — variables, functions, arrays, loops. If you can write a function that filters an array, you are ready.' },
     { q: 'How is this different from YouTube tutorials?', a: 'Tutorials teach you to watch. This program teaches you to build. Every day you open a real pull request that gets reviewed. You cannot fake your way through that.' },
@@ -816,6 +858,10 @@ function FAQ() {
     { q: 'What is the refund policy?', a: 'Full refund within 7 days if you haven\'t opened your first pull request. No questions asked. After that, no refunds — you\'ve started building.' },
     { q: 'What laptop or setup do I need?', a: 'Any laptop made after 2015 works — Windows, Mac, or Linux. You need Node.js, Git, and VS Code installed. We send a setup guide on enrollment day. No paid tools required.' },
     { q: 'What happens after the program?', a: 'You leave with 3 deployed products, 65+ merged PRs, and a structured job application process. Discord access is lifetime.' },
+    { q: 'How does the AI code review work?', a: 'Every pull request you open is automatically reviewed by an AI trained on the project rubric. It checks for logic correctness, naming conventions, security issues, and code structure. You see feedback within minutes. Your mentor then grades it within 24 hours.' },
+    { q: 'Will I build alone or with other students?', a: 'You build independently — there are no group projects. The Discord community is active and students often review each other\'s PRs informally. But your portfolio is 100% your own work.' },
+    { q: 'Is this for freshers or experienced developers?', a: 'Primarily for freshers (0–1 years). Experienced developers switching tracks also find it useful for building GitHub-based proof of full-stack work. If you have 2+ years of experience, Weeks 1–4 may feel slow.' },
+    { q: 'Is the program in English or Hindi?', a: 'All lesson content and mentor feedback is in English. WhatsApp and Discord conversations are mixed — use whichever you\'re comfortable with.' },
   ]
   return (
     <section style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}` }}>
@@ -843,6 +889,14 @@ function FAQ() {
             </AnimatePresence>
           </div>
         ))}
+        <div style={{ marginTop: 32, textAlign: 'center' }}>
+          <p style={{ fontSize: 12, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>
+            Still have a question?{' '}
+            <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%2C+I+have+a+question+about+DevForge`}
+              target="_blank" rel="noopener noreferrer"
+              style={{ color: C.accent, textDecoration: 'none' }}>Ask on WhatsApp →</a>
+          </p>
+        </div>
       </div>
     </section>
   )
@@ -855,7 +909,7 @@ function CTA({ onApply }) {
       <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 400, background: `radial-gradient(ellipse, ${C.accent}14 0%, transparent 65%)`, pointerEvents: 'none' }} />
       <div style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
-          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20 }}><span style={{ color: C.accent }}>$ </span>./apply --cohort=3</div>
+          <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20 }}><span style={{ color: C.accent }}>$ </span>./apply --start=today</div>
           <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(32px,5vw,58px)', fontWeight: 700, color: C.text, margin: '0 0 20px', lineHeight: 1.05, textShadow: glow(C.text, 12) }}>
             Your GitHub should<br /><span style={{ color: C.accent, textShadow: glow() }}>speak for itself.</span>
           </h2>
@@ -866,10 +920,146 @@ function CTA({ onApply }) {
             style={{ background: C.accent, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '16px 52px', letterSpacing: '0.1em', transition: 'box-shadow 0.2s, transform 0.15s' }}
             onMouseEnter={e => { e.currentTarget.style.boxShadow = `${glow(C.accent, 28)}, 0 0 60px ${C.accent}33`; e.currentTarget.style.transform = 'scale(1.03)' }}
             onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'scale(1)' }}
-          >APPLY FOR BATCH 1 →</button>
+          >START BUILDING TODAY →</button>
         </motion.div>
       </div>
     </section>
+  )
+}
+
+// ─── College / TPO Section ───────────────────────────────────────────────────
+function CollegeSection() {
+  const outcomes = [
+    '3 deployed full-stack applications — live URLs, not local projects',
+    '65+ merged pull requests on public GitHub repositories',
+    'Hands-on experience with Node.js, React, PostgreSQL, CI/CD, and AI APIs',
+  ]
+  const offerings = [
+    'Group discount for 5+ enrollments from the same institution',
+    'Free 45-min demo session for your students (online)',
+    'Certificate of completion on institutional letterhead (on request)',
+    'Dedicated WhatsApp group for college coordinators',
+  ]
+  return (
+    <section style={{ padding: '80px 48px', borderBottom: `1px solid ${C.border}`, background: `${C.accent}05` }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginBottom: 48 }}>
+          <div style={{ fontSize: 9, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>./devforge --audience=college --mode=partnership</div>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(22px,3vw,36px)', fontWeight: 700, color: C.text, margin: '0 0 16px', textShadow: glow(C.text, 8) }}>
+            For College Coordinators <span style={{ color: C.accent }}>&amp; TPOs</span>
+          </h2>
+          <p style={{ fontSize: 15, color: C.text2, lineHeight: 1.85, fontFamily: "'Inter', sans-serif", maxWidth: 620 }}>
+            Companies have raised the bar for freshers. Resumes without proof of work get filtered before a human reads them. DevForge prepares students the way companies actually hire — through pull requests, deployed projects, and a GitHub history that survives a technical screen.
+          </p>
+        </motion.div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48 }}>
+          <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
+            <div style={{ fontSize: 9, color: C.green, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow(C.green, 6) }}>WHAT YOUR STUDENTS LEAVE WITH</div>
+            {outcomes.map((o, i) => (
+              <div key={i} style={{ display: 'flex', gap: 12, padding: '13px 0', borderBottom: i < outcomes.length - 1 ? `1px solid ${C.border}` : 'none' }}>
+                <span style={{ color: C.green, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, flexShrink: 0, marginTop: 2, textShadow: glow(C.green, 4) }}>✓</span>
+                <span style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.65 }}>{o}</span>
+              </div>
+            ))}
+          </motion.div>
+
+          <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: 0.1 }}>
+            <div style={{ fontSize: 9, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow() }}>WHAT WE OFFER FOR COLLEGE PARTNERSHIPS</div>
+            {offerings.map((o, i) => (
+              <div key={i} style={{ display: 'flex', gap: 12, padding: '13px 0', borderBottom: i < offerings.length - 1 ? `1px solid ${C.border}` : 'none' }}>
+                <span style={{ color: C.accent, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, flexShrink: 0, marginTop: 2, textShadow: glow() }}>→</span>
+                <span style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.65 }}>{o}</span>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+        <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginTop: 44, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <a
+            href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%2C+I%27m+a+college+coordinator+and+want+to+discuss+DevForge+for+our+students`}
+            target="_blank" rel="noopener noreferrer"
+            style={{ background: C.accent, color: '#000', fontFamily: 'JetBrains Mono,monospace', fontSize: 12, fontWeight: 700, padding: '12px 28px', letterSpacing: '0.08em', textDecoration: 'none', display: 'inline-block', transition: 'opacity 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+          >BOOK A COLLEGE DEMO →</a>
+          <span style={{ fontSize: 12, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>or</span>
+          <a
+            href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%2C+I%27m+a+college+coordinator+and+want+to+discuss+DevForge+for+our+students`}
+            target="_blank" rel="noopener noreferrer"
+            style={{ color: C.accent, fontFamily: 'JetBrains Mono,monospace', fontSize: 12, fontWeight: 600, textDecoration: 'none', border: `1px solid ${C.border2}`, padding: '11px 24px', letterSpacing: '0.06em', transition: 'border-color 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = C.border2 }}
+          >WHATSAPP THE TEAM</a>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+// ─── WhatsApp Floating Button ─────────────────────────────────────────────────
+const WA_ICON = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+)
+
+function WhatsAppFloat() {
+  const [visible, setVisible]   = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640)
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 400)
+    const onResize = () => setIsMobile(window.innerWidth < 640)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onResize, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onResize)
+    }
+  }, [])
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.a
+          key="wa-float"
+          href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%2C+I+want+to+know+more+about+DevForge`}
+          target="_blank" rel="noopener noreferrer"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 0.2 }}
+          style={{
+            position: 'fixed',
+            bottom: isMobile ? 80 : 28,
+            right: isMobile ? 16 : 28,
+            zIndex: 200,
+            background: '#25D366',
+            color: '#fff',
+            padding: isMobile ? '12px' : '11px 18px',
+            borderRadius: isMobile ? '50%' : 6,
+            width: isMobile ? 48 : 'auto',
+            height: isMobile ? 48 : 'auto',
+            fontFamily: 'JetBrains Mono,monospace',
+            fontWeight: 700,
+            fontSize: 11,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            boxShadow: '0 4px 24px rgba(37,211,102,0.5)',
+            textDecoration: 'none',
+            letterSpacing: '0.06em',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.opacity = '0.9' }}
+          onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+        >
+          {WA_ICON}
+          {!isMobile && 'WHATSAPP US'}
+        </motion.a>
+      )}
+    </AnimatePresence>
   )
 }
 
@@ -879,15 +1069,15 @@ function Footer() {
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Terms of Service', href: '/terms' },
     { label: 'Refund Policy', href: '/refund' },
-    { label: 'support@sprintforge.in', href: 'mailto:support@sprintforge.in' },
+    { label: 'support@devforge.in', href: 'mailto:support@devforge.in' },
   ]
   return (
     <footer style={{ padding: '36px 48px', borderTop: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <div style={{ width: 22, height: 22, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: glow() }}>
-          <span style={{ fontSize: 9, fontWeight: 800, color: '#000', fontFamily: 'JetBrains Mono,monospace' }}>SF</span>
+          <span style={{ fontSize: 9, fontWeight: 800, color: '#000', fontFamily: 'JetBrains Mono,monospace' }}>DF</span>
         </div>
-        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, fontSize: 13, color: C.text3 }}>SprintForge</span>
+        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, fontSize: 13, color: C.text3 }}>DevForge</span>
       </div>
       <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
         {links.map(l => (
@@ -897,7 +1087,7 @@ function Footer() {
           >{l.label}</a>
         ))}
       </div>
-      <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>© 2026 SprintForge</div>
+      <div style={{ fontSize: 10, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>© 2026 DevForge</div>
     </footer>
   )
 }
@@ -924,8 +1114,8 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
   const [error, setError]       = useState('')
 
   const PLAN_OPTIONS = [
-    { value: 'LIVE_COHORT', label: 'Core — ₹7,000'                              },
-    { value: 'MENTORED',    label: 'Career (Resume + Mock Interview) — ₹12,000' },
+    { value: 'LIVE_COHORT', label: 'Builder — ₹7,000'                                         },
+    { value: 'MENTORED',    label: 'Builder + Placement Prep (Resume + Mock Interview) — ₹12,000' },
   ]
 
   const handleSubmit = async (e) => {
@@ -1039,9 +1229,9 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
             </div>
           ) : (
             <>
-              <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 8, textShadow: glow() }}>APPLY FOR BATCH 1</div>
+              <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 8, textShadow: glow() }}>GET STARTED TODAY</div>
               <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 22, fontWeight: 700, color: C.text, margin: '0 0 6px' }}>Reserve your seat</h2>
-              <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>Batch 1 starts June 1 · {PILOT_SEATS_LEFT} seats remaining · price goes up after Batch 1</p>
+              <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>Access within 24 hours · {PILOT_SEATS_LEFT} seats at this price · no waiting</p>
 
               {error && (
                 <div style={{ fontSize: 12, color: C.red, fontFamily: "'Inter', sans-serif", padding: '8px 12px', border: `1px solid ${C.red}44`, marginBottom: 14 }}>{error}</div>
@@ -1078,7 +1268,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
                   onMouseLeave={e => e.currentTarget.style.boxShadow = glow()}
                 >{loading ? 'RESERVING SEAT...' : 'RESERVE SEAT →'}</button>
                 <p style={{ fontSize: 10, color: C.text3, fontFamily: "'Inter', sans-serif", textAlign: 'center', margin: 0 }}>
-                  Early access · Batch 1 starts June 1 · Limited seats
+                  Enroll today · access within 24 hours · {PILOT_SEATS_LEFT} seats at this price
                 </p>
               </form>
             </>
@@ -1104,17 +1294,20 @@ export default function Landing() {
       <ScrollProgress />
       <Navbar onApply={openModal} />
       <Hero onApply={openModal} />
-      <ToolsBar />
       <Stats />
+      <PortalPreview />
+      <ToolsBar />
       <Projects />
       <Curriculum />
       <HowItWorks />
       <WhoIsThisFor />
       <Pricing onApply={openModal} />
       <Outcomes />
+      <CollegeSection />
       <FAQ />
       <CTA onApply={openModal} />
       <Footer />
+      <WhatsAppFloat />
       {showModal && <ApplyModal onClose={() => setShowModal(false)} initialPlan={selectedPlan} />}
     </div>
   )
