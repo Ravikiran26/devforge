@@ -153,10 +153,11 @@ model PRSubmission {
   submittedAt DateTime @default(now())
   reviewedAt  DateTime?
 
-  aiReview     String?
-  aiReviewedAt DateTime?
-  verdict      String?
-  reviewError  String?
+  aiReview        String?
+  aiReviewedAt    DateTime?
+  verdict         String?
+  reviewError     String?
+  submissionCount Int      @default(0)
 
   @@unique([studentId, ticketId])
 }

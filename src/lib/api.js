@@ -1,18 +1,21 @@
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
 
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: BASE,
+  withCredentials: true, // sends the httpOnly refreshToken cookie automatically
 })
 
-// Attach token to every request
+// Attach access token to every request
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
 
-// On 401 → try refresh, retry once, else logout
+// On 401 → silent refresh via httpOnly cookie, retry once, else logout
 let refreshing = false
 let queue = []
 
@@ -33,14 +36,9 @@ api.interceptors.response.use(
 
     refreshing = true
     try {
-      const { refreshToken, setTokens, logout } = useAuthStore.getState()
-      if (!refreshToken) { logout(); return Promise.reject(err) }
-
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/refresh`,
-        { refreshToken }
-      )
-      setTokens(data.accessToken, refreshToken)
+      // Cookie is sent automatically — no token in request body
+      const { data } = await axios.post(`${BASE}/auth/refresh`, {}, { withCredentials: true })
+      useAuthStore.getState().setTokens(data.accessToken)
       queue.forEach(({ resolve }) => resolve())
       queue = []
       original.headers.Authorization = `Bearer ${data.accessToken}`

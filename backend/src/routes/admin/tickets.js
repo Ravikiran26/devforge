@@ -107,4 +107,18 @@ router.get('/:id/submissions', async (req, res) => {
   }
 })
 
+// POST /api/admin/submissions/:id/reset  — unlock a student's submission attempts
+router.post('/submissions/:id/reset', async (req, res) => {
+  try {
+    const submission = await prisma.pRSubmission.update({
+      where: { id: parseInt(req.params.id) },
+      data: { submissionCount: 0, status: 'IN_REVIEW', verdict: null, aiReview: null, aiReviewedAt: null, reviewError: null },
+    })
+    res.json({ ok: true, submission })
+  } catch (err) {
+    if (err.code === 'P2025') return res.status(404).json({ error: 'Submission not found' })
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
 module.exports = router

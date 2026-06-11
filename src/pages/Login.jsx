@@ -242,7 +242,7 @@ function LoginForm() {
     setLoading(true); setError('')
     try {
       const { data } = await api.post('/auth/login', form)
-      setAuth(data.user, data.accessToken, data.refreshToken)
+      setAuth(data.user, data.accessToken)
       navigate(data.user.role === 'ADMIN' ? '/admin' : '/dashboard', { replace: true })
     } catch (err) {
       setError(err.response?.data?.error || 'Invalid email or password.')

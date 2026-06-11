@@ -36,7 +36,7 @@ export default function OnboardingTour({ onComplete }) {
   const navigate = useNavigate()
   const { user } = useAuthStore()
 
-  const { accessToken, refreshToken, setAuth } = useAuthStore()
+  const { accessToken, setAuth } = useAuthStore()
 
   const completeMutation = useMutation({
     mutationFn: () => api.post('/student/profile/onboarding/complete'),
@@ -46,7 +46,7 @@ export default function OnboardingTour({ onComplete }) {
           ...user,
           student: { ...(user.student || {}), onboardingCompleted: true },
         }
-        setAuth(updatedUser, accessToken, refreshToken)
+        setAuth(updatedUser, accessToken)
       }
       onComplete?.()
     },

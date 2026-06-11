@@ -7,6 +7,14 @@ const { authenticate } = require('../middleware/auth')
 
 const router = express.Router()
 
+const REFRESH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict',
+  path: '/api/auth',
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+}
+
 function signAccess(payload) {
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '15m' })
 }
@@ -56,8 +64,9 @@ router.post('/register', [
       }
     })
 
+    res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS)
     res.status(201).json({
-      accessToken, refreshToken,
+      accessToken,
       user: { id: user.id, name: user.name, email: user.email, role: user.role }
     })
   } catch (err) {
@@ -98,8 +107,9 @@ router.post('/login', [
       }
     })
 
+    res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS)
     res.json({
-      accessToken, refreshToken,
+      accessToken,
       user: {
         id: user.id, name: user.name, email: user.email, role: user.role,
         student: user.student
@@ -113,30 +123,33 @@ router.post('/login', [
 
 // POST /api/auth/refresh
 router.post('/refresh', async (req, res) => {
-  const { refreshToken } = req.body
-  if (!refreshToken) return res.status(400).json({ error: 'Refresh token required' })
+  const refreshToken = req.cookies?.refreshToken
+  if (!refreshToken) return res.status(401).json({ error: 'No refresh token' })
 
   try {
     const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET)
 
     const stored = await prisma.refreshToken.findUnique({ where: { token: refreshToken } })
     if (!stored || stored.expiresAt < new Date()) {
+      res.clearCookie('refreshToken', REFRESH_COOKIE_OPTIONS)
       return res.status(401).json({ error: 'Refresh token invalid or expired' })
     }
 
     const newAccess = signAccess({ userId: payload.userId, role: payload.role })
     res.json({ accessToken: newAccess })
   } catch {
+    res.clearCookie('refreshToken', REFRESH_COOKIE_OPTIONS)
     res.status(401).json({ error: 'Invalid refresh token' })
   }
 })
 
 // POST /api/auth/logout
 router.post('/logout', async (req, res) => {
-  const { refreshToken } = req.body
+  const refreshToken = req.cookies?.refreshToken
   if (refreshToken) {
     await prisma.refreshToken.deleteMany({ where: { token: refreshToken } }).catch(() => {})
   }
+  res.clearCookie('refreshToken', REFRESH_COOKIE_OPTIONS)
   res.json({ message: 'Logged out' })
 })
 

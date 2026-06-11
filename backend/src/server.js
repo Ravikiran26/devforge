@@ -12,6 +12,7 @@ if (process.env.SENTRY_DSN) {
 const express = require('express')
 const cors = require('cors')
 const helmet = require('helmet')
+const cookieParser = require('cookie-parser')
 const rateLimit = require('express-rate-limit')
 
 const { authenticate, requireAdmin } = require('./middleware/auth')
@@ -55,6 +56,7 @@ app.use(cors({
   },
   credentials: true,
 }))
+app.use(cookieParser())
 app.use(express.json())
 
 // 100 requests per 15 minutes per IP

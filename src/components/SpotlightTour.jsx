@@ -185,7 +185,7 @@ export default function SpotlightTour({ onComplete }) {
   })
   const [rect, setRect]   = useState(null)
   const navigate          = useNavigate()
-  const { user, accessToken, refreshToken, setAuth } = useAuthStore()
+  const { user, accessToken, setAuth } = useAuthStore()
 
   const current = STEPS[step]
   const isLast  = step === STEPS.length - 1
@@ -202,7 +202,6 @@ export default function SpotlightTour({ onComplete }) {
         setAuth(
           { ...user, student: { ...(user.student || {}), onboardingCompleted: true } },
           accessToken,
-          refreshToken,
         )
       }
       finishTour()

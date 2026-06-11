@@ -77,11 +77,25 @@ router.post('/:id/submit', [
       return res.status(403).json({ error: 'Ticket not in your cohort' })
     }
 
+    const existing = await prisma.pRSubmission.findUnique({
+      where: { studentId_ticketId: { studentId: student.id, ticketId } },
+    })
+
+    if (existing?.submissionCount >= 3) {
+      return res.status(429).json({
+        error: 'You have used all 3 attempts for this ticket. Contact your mentor to unlock another attempt.',
+      })
+    }
+
     // Save submission + reset any previous AI review
     const submission = await prisma.pRSubmission.upsert({
       where: { studentId_ticketId: { studentId: student.id, ticketId } },
-      update: { prUrl, status: 'IN_REVIEW', verdict: null, aiReview: null, aiReviewedAt: null, reviewError: null },
-      create: { studentId: student.id, ticketId, prUrl, status: 'IN_REVIEW' },
+      update: {
+        prUrl, status: 'IN_REVIEW', verdict: null, aiReview: null,
+        aiReviewedAt: null, reviewError: null,
+        submissionCount: { increment: 1 },
+      },
+      create: { studentId: student.id, ticketId, prUrl, status: 'IN_REVIEW', submissionCount: 1 },
     })
 
     // Move ticket to IN_REVIEW
