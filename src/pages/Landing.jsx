@@ -24,7 +24,7 @@ const C = {
 const PILOT_SEATS_LEFT = 12
 const WHATSAPP_NUMBER  = '919390545942'
 
-const glow  = (color = C.accent, size = 12) => `0 0 ${size}px ${color}55, 0 0 ${size * 2}px ${color}22`
+const glow  = (color = C.accent, size = 12) => `0 0 ${Math.round(size * 0.6)}px ${color}22, 0 0 ${size}px ${color}0D`
 const fade  = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.7 } } }
 const viewportOnce = { once: true, margin: '-40px' }
 
@@ -81,7 +81,7 @@ function Cursor() {
       <motion.span
         animate={{ opacity: [1, 0, 1] }}
         transition={{ repeat: Infinity, duration: 1, ease: 'steps(1)' }}
-        style={{ display: 'inline-block', width: 10, height: '1em', background: C.accent, marginLeft: 3, verticalAlign: 'text-bottom', boxShadow: glow() }}
+        style={{ display: 'inline-block', width: 10, height: '1em', background: C.accent, marginLeft: 3, verticalAlign: 'text-bottom' }}
       />
       <style>{`@keyframes scanPulse{0%,100%{opacity:.6}50%{opacity:1}}`}</style>
     </>
@@ -92,7 +92,7 @@ function Cursor() {
 function ScrollProgress() {
   const { scrollYProgress } = useScroll()
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1])
-  return <motion.div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 2, background: C.accent, scaleX, transformOrigin: 'left', zIndex: 100, boxShadow: glow() }} />
+  return <motion.div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 2, background: C.accent, scaleX, transformOrigin: 'left', zIndex: 100 }} />
 }
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
@@ -119,7 +119,7 @@ function Navbar({ onApply }) {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 26, height: 26, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: glow() }}>
+        <div style={{ width: 26, height: 26, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ fontSize: 10, fontWeight: 800, color: '#000', fontFamily: 'JetBrains Mono,monospace' }}>DF</span>
         </div>
         <span style={{ fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, fontSize: 15, color: C.text, letterSpacing: '0.04em' }}>DevForge</span>
@@ -147,7 +147,7 @@ function Navbar({ onApply }) {
           onMouseLeave={e => { e.currentTarget.style.borderColor = C.border2; e.currentTarget.style.color = C.text3 }}
         >WHATSAPP</a>
         <button onClick={onApply}
-          style={{ background: C.accent, border: `1px solid ${C.accent}`, cursor: 'pointer', fontSize: 12, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '8px 20px', letterSpacing: '0.08em', transition: 'box-shadow 0.15s, opacity 0.15s', boxShadow: glow() }}
+          style={{ background: C.accent, border: `1px solid ${C.accent}`, cursor: 'pointer', fontSize: 12, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '8px 20px', letterSpacing: '0.08em', transition: 'opacity 0.15s' }}
           onMouseEnter={e => { e.currentTarget.style.opacity = '0.88' }}
           onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
         >APPLY →</button>
@@ -170,9 +170,9 @@ function DashboardMockup() {
           {/* Welcome */}
           <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.accent}`, padding: '12px 14px' }}>
             <div style={{ fontSize: 9, color: C.text3, marginBottom: 4 }}>{'>'} ./devforge --week=5 --project=billing-saas</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 8, textShadow: glow(C.text, 8) }}>Welcome back, Ravikiran</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 8 }}>Welcome back, Ravikiran</div>
             <div style={{ height: 2, background: C.border, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: '50%', background: C.accent, boxShadow: glow() }} />
+              <div style={{ height: '100%', width: '50%', background: C.accent }} />
             </div>
             <div style={{ fontSize: 9, color: C.text3, marginTop: 4 }}>50% complete · 5 weeks remaining</div>
           </div>
@@ -182,7 +182,7 @@ function DashboardMockup() {
             {[{ l: 'PRS MERGED', v: '24', c: C.green }, { l: 'LESSONS', v: '18', c: C.accent }, { l: 'AVG GRADE', v: '91', c: C.text2 }].map(s => (
               <div key={s.l} style={{ background: C.surface, padding: '10px 12px', borderTop: `2px solid ${s.c}` }}>
                 <div style={{ fontSize: 8, color: C.text3, marginBottom: 4, letterSpacing: '0.1em' }}>{s.l}</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: s.c, textShadow: glow(s.c, 8) }}>{s.v}</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: s.c }}>{s.v}</div>
               </div>
             ))}
           </div>
@@ -216,7 +216,7 @@ function DashboardMockup() {
               </div>
             ))}
             <div style={{ marginTop: 10, height: 2, background: C.border }}>
-              <div style={{ height: '100%', width: '66%', background: C.accent, boxShadow: glow() }} />
+              <div style={{ height: '100%', width: '66%', background: C.accent }} />
             </div>
             <div style={{ fontSize: 9, color: C.accent, marginTop: 3 }}>2/3 done</div>
           </div>
@@ -257,15 +257,15 @@ function Hero({ onApply }) {
       {/* Scanline texture */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
-        backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.28) 3px, rgba(0,0,0,0.28) 4px)`,
-        opacity: 0.85,
+        backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.10) 3px, rgba(0,0,0,0.10) 4px)`,
+        opacity: 0.5,
       }} />
 
-      {/* Amber glow orb — stronger */}
+      {/* Amber glow orb */}
       <div style={{
         position: 'absolute', top: -140, left: '50%', transform: 'translateX(-50%)',
         width: 1000, height: 640, borderRadius: '50%',
-        background: `radial-gradient(ellipse, ${C.accent}30 0%, ${C.accent}0A 45%, transparent 68%)`,
+        background: `radial-gradient(ellipse, ${C.accent}14 0%, ${C.accent}04 45%, transparent 68%)`,
         pointerEvents: 'none', zIndex: 0,
       }} />
 
@@ -283,9 +283,7 @@ function Hero({ onApply }) {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.3 }}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 10, border: `1px solid ${C.border2}`, padding: '6px 16px', marginBottom: 40, fontFamily: 'JetBrains Mono,monospace' }}
         >
-          <motion.span animate={{ opacity: [1, 0.2, 1] }} transition={{ repeat: Infinity, duration: 1.4 }}
-            style={{ width: 7, height: 7, borderRadius: '50%', background: C.green, display: 'inline-block', boxShadow: glow(C.green) }}
-          />
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: C.green, display: 'inline-block', opacity: 0.85 }} />
           <span style={{ fontSize: 11, color: C.text3, letterSpacing: '0.1em' }}>{PILOT_SEATS_LEFT} FOUNDING SEATS · ENROLL TODAY · START THIS WEEK</span>
         </motion.div>
 
@@ -298,10 +296,10 @@ function Hero({ onApply }) {
 
         {/* Typewriter headline */}
         <div style={{ marginBottom: 32, minHeight: 160 }}>
-          <h1 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(32px, 4.8vw, 64px)', fontWeight: 700, color: C.text, lineHeight: 1.1, margin: '0 0 6px', letterSpacing: '-0.02em', textShadow: glow(C.text, 16), whiteSpace: 'nowrap' }}>
+          <h1 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(32px, 4.8vw, 64px)', fontWeight: 700, color: C.text, lineHeight: 1.1, margin: '0 0 6px', letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
             {line1}{line1.length < 'Build 3 real products'.length && <Cursor />}
           </h1>
-          <h1 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(32px, 4.8vw, 64px)', fontWeight: 700, color: C.accent, lineHeight: 1.1, margin: 0, letterSpacing: '-0.02em', textShadow: glow() }}>
+          <h1 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(32px, 4.8vw, 64px)', fontWeight: 700, color: C.accent, lineHeight: 1.1, margin: 0, letterSpacing: '-0.02em' }}>
             {line1.length >= 'Build 3 real products'.length && (
               <>{line2}{line2.length < 'in 12 weeks.'.length && <Cursor />}</>
             )}
@@ -342,7 +340,7 @@ function Hero({ onApply }) {
         >
           {['ECE / Mech / Any branch', '12-week program', 'Real PRs, real feedback'].map(b => (
             <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-              <span style={{ color: C.green, fontSize: 11, fontFamily: 'JetBrains Mono,monospace', textShadow: glow(C.green, 6) }}>✓</span>
+              <span style={{ color: C.green, fontSize: 11, fontFamily: 'JetBrains Mono,monospace' }}>✓</span>
               <span style={{ fontSize: 12, color: C.text3, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.04em' }}>{b}</span>
             </div>
           ))}
@@ -362,7 +360,7 @@ function PortalPreview() {
             <div style={{ fontSize: 10, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 10 }}>
               <span style={{ color: C.accent }}>$ </span>cat ./student-portal.preview
             </div>
-            <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(20px, 3vw, 32px)', fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, margin: 0, textShadow: glow(C.text, 10) }}>
+            <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(20px, 3vw, 32px)', fontWeight: 700, color: C.text, letterSpacing: '-0.01em', lineHeight: 1.2, margin: 0 }}>
               Your dev environment<span style={{ color: C.text3 }}> from day one.</span>
             </h2>
           </div>
@@ -433,7 +431,7 @@ function Stats() {
               transition={{ delay: i * 0.1 }}
               style={{ paddingRight: i < 3 ? 44 : 0, paddingLeft: i > 0 ? 44 : 0, borderRight: i < 3 ? `1px solid ${C.border}` : 'none' }}
             >
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 64, fontWeight: 700, letterSpacing: '-0.04em', color: C.accent, lineHeight: 1, marginBottom: 12, textShadow: glow(C.accent, 20) }}>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 64, fontWeight: 700, letterSpacing: '-0.04em', color: C.accent, lineHeight: 1, marginBottom: 12 }}>
                 {s.value}
               </div>
               <div style={{ fontSize: 13, fontWeight: 600, color: C.text, fontFamily: "'Inter', sans-serif", marginBottom: 4 }}>{s.label}</div>
@@ -471,7 +469,7 @@ function Projects() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginBottom: 56 }}>
           <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>ls ./projects/</div>
-          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, letterSpacing: '-0.02em', color: C.text, margin: 0, textShadow: glow(C.text, 8) }}>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, letterSpacing: '-0.02em', color: C.text, margin: 0 }}>
             3 real products.<br /><span style={{ color: C.text3 }}>All on your GitHub.</span>
           </h2>
         </motion.div>
@@ -481,7 +479,7 @@ function Projects() {
             <motion.div key={p.num} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.12 }}>
               <ScanCard style={{ padding: '32px', borderRight: i < 2 ? `1px solid ${C.border}` : 'none', borderTop: `2px solid ${p.color}`, height: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: p.color, fontWeight: 700, letterSpacing: '0.12em', textShadow: glow(p.color, 6) }}>{p.tag}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: p.color, fontWeight: 700, letterSpacing: '0.12em' }}>{p.tag}</span>
                   <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: C.text3 }}>{p.weeks}</span>
                 </div>
                 <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 28, fontWeight: 700, color: C.text3, marginBottom: 8, letterSpacing: '-0.01em' }}>[{p.num}]</div>
@@ -524,7 +522,7 @@ function Curriculum() {
       <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '260px 1fr', gap: 80 }}>
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ position: 'sticky', top: 80 }}>
           <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>cat ./curriculum.md</div>
-          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 32, fontWeight: 700, color: C.text, margin: '0 0 16px', lineHeight: 1.15, textShadow: glow(C.text, 8) }}>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 32, fontWeight: 700, color: C.text, margin: '0 0 16px', lineHeight: 1.15 }}>
             12 weeks.<br /><span style={{ color: C.text3 }}>Real skills.</span>
           </h2>
           <p style={{ fontSize: 13, color: C.text2, lineHeight: 1.75, fontFamily: "'Inter', sans-serif" }}>
@@ -563,14 +561,14 @@ function HowItWorks() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
           <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>./how-it-works --explain</div>
-          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 52px', textShadow: glow(C.text, 8) }}>The process is the product.</h2>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 52px' }}>The process is the product.</h2>
         </motion.div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 0 }}>
           {steps.map((s, i) => (
             <motion.div key={s.n} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.1 }}
               style={{ paddingRight: i < 3 ? 36 : 0, paddingLeft: i > 0 ? 36 : 0, borderRight: i < 3 ? `1px solid ${C.border}` : 'none' }}
             >
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 42, fontWeight: 800, color: C.accent, marginBottom: 20, textShadow: glow(C.accent, 10), opacity: 0.9 }}>{s.n}</div>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 42, fontWeight: 800, color: C.accent, marginBottom: 20, opacity: 0.9 }}>{s.n}</div>
               <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: 17, fontWeight: 700, color: C.text, margin: '0 0 12px', letterSpacing: '-0.01em' }}>{s.title}</h3>
               <p style={{ fontSize: 14, color: C.text2, lineHeight: 1.8, fontFamily: "'Inter', sans-serif", margin: 0 }}>{s.desc}</p>
             </motion.div>
@@ -598,19 +596,19 @@ function WhoIsThisFor() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginBottom: 52 }}>
           <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>./check-fit --honest</div>
-          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: 0, textShadow: glow(C.text, 8) }}>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: 0 }}>
             Who this is for.
           </h2>
         </motion.div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48 }}>
           <div>
-            <div style={{ fontSize: 9, color: C.green, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow(C.green, 6) }}>GOOD FIT</div>
+            <div style={{ fontSize: 9, color: C.green, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20 }}>GOOD FIT</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {fits.map((f, i) => (
                 <motion.div key={f.label} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.08 }}
                   style={{ display: 'flex', gap: 14, padding: '16px 0', borderBottom: i < fits.length - 1 ? `1px solid ${C.border}` : 'none' }}
                 >
-                  <span style={{ color: C.green, fontFamily: 'JetBrains Mono,monospace', fontSize: 12, flexShrink: 0, marginTop: 2, textShadow: glow(C.green, 6) }}>{f.icon}</span>
+                  <span style={{ color: C.green, fontFamily: 'JetBrains Mono,monospace', fontSize: 12, flexShrink: 0, marginTop: 2 }}>{f.icon}</span>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: C.text, fontFamily: "'Inter', sans-serif", marginBottom: 4 }}>{f.label}</div>
                     <div style={{ fontSize: 12, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.65 }}>{f.desc}</div>
@@ -620,7 +618,7 @@ function WhoIsThisFor() {
             </div>
           </div>
           <div>
-            <div style={{ fontSize: 9, color: C.red, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow(C.red, 6) }}>NOT THE RIGHT FIT</div>
+            <div style={{ fontSize: 9, color: C.red, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20 }}>NOT THE RIGHT FIT</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {notFits.map((f, i) => (
                 <motion.div key={f.label} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.08 }}
@@ -690,13 +688,11 @@ function Pricing({ onApply }) {
           <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>cat ./pricing.json</div>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
             <div>
-              <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 12px', textShadow: glow(C.text, 8) }}>
+              <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 12px' }}>
                 Founding price.<br /><span style={{ color: C.text3 }}>No fake discounts.</span>
               </h2>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: `1px solid ${C.accent}44`, padding: '7px 14px', fontFamily: 'JetBrains Mono,monospace' }}>
-                <motion.span animate={{ opacity: [1,0.3,1] }} transition={{ repeat: Infinity, duration: 1.4 }}
-                  style={{ width: 6, height: 6, borderRadius: '50%', background: C.accent, display: 'inline-block', boxShadow: glow() }}
-                />
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: C.accent, display: 'inline-block', opacity: 0.85 }} />
                 <span style={{ fontSize: 10, color: C.accent, letterSpacing: '0.1em' }}>
                   {PILOT_SEATS_LEFT} seats at this price · goes up after seat 12
                 </span>
@@ -717,7 +713,7 @@ function Pricing({ onApply }) {
               }}>
                 <div style={{ height: 20, marginBottom: 14 }}>
                   {p.badge && (
-                    <span style={{ fontSize: 9, fontWeight: 700, color: p.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', textShadow: p.recommended ? glow() : 'none' }}>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: p.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace' }}>
                       {p.badge}
                     </span>
                   )}
@@ -728,7 +724,7 @@ function Pricing({ onApply }) {
 
                 <div style={{ marginBottom: 20 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                    <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 40, fontWeight: 700, color: p.recommended ? C.accent : C.text, textShadow: p.recommended ? glow() : 'none', lineHeight: 1 }}>
+                    <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 40, fontWeight: 700, color: p.recommended ? C.accent : C.text, lineHeight: 1 }}>
                       {p.price}
                     </span>
                     <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: C.text3 }}>one-time</span>
@@ -743,7 +739,7 @@ function Pricing({ onApply }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28, flex: 1 }}>
                   {p.features.map(f => (
                     <div key={f.title} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                      <span style={{ color: p.accent, fontSize: 10, fontFamily: 'JetBrains Mono,monospace', flexShrink: 0, marginTop: 2, textShadow: p.recommended ? glow() : 'none' }}>✓</span>
+                      <span style={{ color: p.accent, fontSize: 10, fontFamily: 'JetBrains Mono,monospace', flexShrink: 0, marginTop: 2 }}>✓</span>
                       <div>
                         <div style={{ fontSize: 12, fontWeight: 600, color: C.text, fontFamily: "'Inter', sans-serif", marginBottom: 2 }}>{f.title}</div>
                         <div style={{ fontSize: 11, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.5 }}>{f.sub}</div>
@@ -822,7 +818,7 @@ function Outcomes() {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginBottom: 52 }}>
           <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>./what-you-leave-with --after=12weeks</div>
-          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: 0, textShadow: glow(C.text, 8) }}>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: 0 }}>
             What you leave with.
           </h2>
         </motion.div>
@@ -830,9 +826,9 @@ function Outcomes() {
           {outcomes.map((o, i) => (
             <motion.div key={o.label} variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: i * 0.1 }}>
               <ScanCard style={{ padding: '36px 32px', borderRight: i < 2 ? `1px solid ${C.border}` : 'none', height: '100%' }}>
-                <div style={{ fontSize: 8, fontWeight: 700, color: C.accent, letterSpacing: '0.16em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow() }}>{o.label}</div>
+                <div style={{ fontSize: 8, fontWeight: 700, color: C.accent, letterSpacing: '0.16em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, }}>{o.label}</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 16 }}>
-                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 48, fontWeight: 800, color: C.text, lineHeight: 1, textShadow: glow(C.text, 8) }}>{o.stat}</span>
+                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 48, fontWeight: 800, color: C.text, lineHeight: 1 }}>{o.stat}</span>
                   <span style={{ fontSize: 11, color: C.text3, fontFamily: 'JetBrains Mono,monospace' }}>{o.unit}</span>
                 </div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: C.text2, fontFamily: "'Inter', sans-serif", marginBottom: 12, letterSpacing: '-0.01em' }}>{o.title}</div>
@@ -868,14 +864,14 @@ function FAQ() {
       <div style={{ maxWidth: 760, margin: '0 auto' }}>
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
           <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>./faq --all</div>
-          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 40px', textShadow: glow(C.text, 8) }}>Common questions.</h2>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 700, color: C.text, margin: '0 0 40px' }}>Common questions.</h2>
         </motion.div>
         {items.map((item, i) => (
           <div key={item.q} style={{ borderBottom: `1px solid ${C.border}` }}>
             <button onClick={() => setOpen(open === i ? null : i)}
               style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
             >
-              <span style={{ fontSize: 14, fontWeight: 600, color: open === i ? C.accent : C.text2, fontFamily: "'Inter', sans-serif", transition: 'color 0.15s', textShadow: open === i ? glow() : 'none' }}>{item.q}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: open === i ? C.accent : C.text2, fontFamily: "'Inter', sans-serif", transition: 'color 0.15s' }}>{item.q}</span>
               <motion.span animate={{ rotate: open === i ? 45 : 0 }} transition={{ duration: 0.2 }}
                 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 18, color: C.text3, display: 'inline-block', flexShrink: 0, marginLeft: 16 }}
               >+</motion.span>
@@ -910,16 +906,16 @@ function CTA({ onApply }) {
       <div style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
           <div style={{ fontSize: 9, color: C.text3, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20 }}><span style={{ color: C.accent }}>$ </span>./apply --start=today</div>
-          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(32px,5vw,58px)', fontWeight: 700, color: C.text, margin: '0 0 20px', lineHeight: 1.05, textShadow: glow(C.text, 12) }}>
-            Your GitHub should<br /><span style={{ color: C.accent, textShadow: glow() }}>speak for itself.</span>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(32px,5vw,58px)', fontWeight: 700, color: C.text, margin: '0 0 20px', lineHeight: 1.05 }}>
+            Your GitHub should<br /><span style={{ color: C.accent }}>speak for itself.</span>
           </h2>
           <p style={{ fontSize: 14, color: C.text2, lineHeight: 1.8, fontFamily: "'Inter', sans-serif", marginBottom: 40 }}>
             65+ merged PRs, 3 deployed products, and code your interviewers can actually open.
           </p>
           <button onClick={onApply}
             style={{ background: C.accent, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '16px 52px', letterSpacing: '0.1em', transition: 'box-shadow 0.2s, transform 0.15s' }}
-            onMouseEnter={e => { e.currentTarget.style.boxShadow = `${glow(C.accent, 28)}, 0 0 60px ${C.accent}33`; e.currentTarget.style.transform = 'scale(1.03)' }}
-            onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'scale(1)' }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'scale(1.02)' }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)' }}
           >START BUILDING TODAY →</button>
         </motion.div>
       </div>
@@ -945,7 +941,7 @@ function CollegeSection() {
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} style={{ marginBottom: 48 }}>
           <div style={{ fontSize: 9, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 16 }}><span style={{ color: C.accent }}>$ </span>./devforge --audience=college --mode=partnership</div>
-          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(22px,3vw,36px)', fontWeight: 700, color: C.text, margin: '0 0 16px', textShadow: glow(C.text, 8) }}>
+          <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 'clamp(22px,3vw,36px)', fontWeight: 700, color: C.text, margin: '0 0 16px' }}>
             For College Coordinators <span style={{ color: C.accent }}>&amp; TPOs</span>
           </h2>
           <p style={{ fontSize: 15, color: C.text2, lineHeight: 1.85, fontFamily: "'Inter', sans-serif", maxWidth: 620 }}>
@@ -955,20 +951,20 @@ function CollegeSection() {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48 }}>
           <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce}>
-            <div style={{ fontSize: 9, color: C.green, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow(C.green, 6) }}>WHAT YOUR STUDENTS LEAVE WITH</div>
+            <div style={{ fontSize: 9, color: C.green, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20 }}>WHAT YOUR STUDENTS LEAVE WITH</div>
             {outcomes.map((o, i) => (
               <div key={i} style={{ display: 'flex', gap: 12, padding: '13px 0', borderBottom: i < outcomes.length - 1 ? `1px solid ${C.border}` : 'none' }}>
-                <span style={{ color: C.green, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, flexShrink: 0, marginTop: 2, textShadow: glow(C.green, 4) }}>✓</span>
+                <span style={{ color: C.green, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, flexShrink: 0, marginTop: 2 }}>✓</span>
                 <span style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.65 }}>{o}</span>
               </div>
             ))}
           </motion.div>
 
           <motion.div variants={fade} initial="hidden" whileInView="visible" viewport={viewportOnce} transition={{ delay: 0.1 }}>
-            <div style={{ fontSize: 9, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20, textShadow: glow() }}>WHAT WE OFFER FOR COLLEGE PARTNERSHIPS</div>
+            <div style={{ fontSize: 9, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 20 }}>WHAT WE OFFER FOR COLLEGE PARTNERSHIPS</div>
             {offerings.map((o, i) => (
               <div key={i} style={{ display: 'flex', gap: 12, padding: '13px 0', borderBottom: i < offerings.length - 1 ? `1px solid ${C.border}` : 'none' }}>
-                <span style={{ color: C.accent, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, flexShrink: 0, marginTop: 2, textShadow: glow() }}>→</span>
+                <span style={{ color: C.accent, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, flexShrink: 0, marginTop: 2 }}>→</span>
                 <span style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.65 }}>{o}</span>
               </div>
             ))}
@@ -1074,7 +1070,7 @@ function Footer() {
   return (
     <footer style={{ padding: '36px 48px', borderTop: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 22, height: 22, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: glow() }}>
+        <div style={{ width: 22, height: 22, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ fontSize: 9, fontWeight: 800, color: '#000', fontFamily: 'JetBrains Mono,monospace' }}>DF</span>
         </div>
         <span style={{ fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, fontSize: 13, color: C.text3 }}>DevForge</span>
@@ -1179,27 +1175,27 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
         onClick={e => { if (e.target === e.currentTarget) onClose() }}
       >
         <motion.div initial={{ opacity: 0, y: 28, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 28 }} transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          style={{ background: C.surface, border: `1px solid ${C.border2}`, borderTop: `2px solid ${C.accent}`, width: 480, padding: '36px', position: 'relative', boxShadow: glow(C.accent, 24), maxHeight: '90vh', overflowY: 'auto' }}
+          style={{ background: C.surface, border: `1px solid ${C.border2}`, borderTop: `2px solid ${C.accent}`, width: 480, padding: '36px', position: 'relative', boxShadow: '0 20px 60px rgba(0,0,0,0.5)', maxHeight: '90vh', overflowY: 'auto' }}
         >
           <button onClick={onClose} style={{ position: 'absolute', top: 14, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: C.text3, fontSize: 20, fontFamily: 'JetBrains Mono,monospace', lineHeight: 1 }}>×</button>
 
           {step === 'done' ? (
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em', textShadow: glow(C.green) }}>✓ ACCOUNT CREATED</div>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em' }}>✓ ACCOUNT CREATED</div>
               <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 12 }}>You're in. Seat locked.</div>
               <p style={{ fontSize: 13, color: C.text2, fontFamily: "'Inter', sans-serif", lineHeight: 1.8, marginBottom: 24 }}>
                 Your account is ready. Log in with <strong style={{ color: C.accent }}>{form.email}</strong> and the password you just set.
               </p>
               <button
                 onClick={() => navigate('/login')}
-                style={{ background: C.accent, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '12px 32px', letterSpacing: '0.08em', boxShadow: glow(), width: '100%' }}
+                style={{ background: C.accent, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '12px 32px', letterSpacing: '0.08em', width: '100%' }}
               >
                 GO TO LOGIN →
               </button>
             </div>
           ) : step === 'password' ? (
             <div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em', textShadow: glow(C.green) }}>✓ SEAT RESERVED</div>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: C.green, marginBottom: 16, letterSpacing: '0.08em' }}>✓ SEAT RESERVED</div>
               <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: C.text, margin: '0 0 6px' }}>Set your password</h2>
               <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>
                 Create a password for <strong style={{ color: C.accent }}>{form.email}</strong> — you'll use this to log in.
@@ -1215,13 +1211,13 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
                       type="password" value={val} placeholder="Min. 8 characters"
                       onChange={e => { setError(''); setter(e.target.value) }}
                       style={inputStyle}
-                      onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = glow() }}
+                      onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}18` }}
                       onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = 'none' }}
                     />
                   </div>
                 ))}
                 <button type="submit" disabled={loading}
-                  style={{ background: C.accent, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '13px', letterSpacing: '0.1em', marginTop: 6, opacity: loading ? 0.7 : 1, boxShadow: glow() }}
+                  style={{ background: C.accent, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '13px', letterSpacing: '0.1em', marginTop: 6, opacity: loading ? 0.7 : 1 }}
                 >
                   {loading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT & LOGIN →'}
                 </button>
@@ -1229,7 +1225,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
             </div>
           ) : (
             <>
-              <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 8, textShadow: glow() }}>GET STARTED TODAY</div>
+              <div style={{ fontSize: 9, fontWeight: 700, color: C.accent, letterSpacing: '0.14em', fontFamily: 'JetBrains Mono,monospace', marginBottom: 8 }}>GET STARTED TODAY</div>
               <h2 style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 22, fontWeight: 700, color: C.text, margin: '0 0 6px' }}>Reserve your seat</h2>
               <p style={{ fontSize: 12, color: C.text3, fontFamily: "'Inter', sans-serif", margin: '0 0 24px', lineHeight: 1.6 }}>Access within 24 hours · {PILOT_SEATS_LEFT} seats at this price · no waiting</p>
 
@@ -1249,7 +1245,7 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
                     <input type={type} value={form[key]} placeholder={placeholder}
                       onChange={e => { const v = e.target.value; setError(''); setForm(prev => ({ ...prev, [key]: v })) }}
                       style={inputStyle}
-                      onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = glow() }}
+                      onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}18` }}
                       onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = 'none' }}
                     />
                   </div>
@@ -1263,9 +1259,9 @@ function ApplyModal({ onClose, initialPlan = 'LIVE_COHORT' }) {
                   </select>
                 </div>
                 <button type="submit" disabled={loading}
-                  style={{ background: C.accent, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '13px', letterSpacing: '0.1em', marginTop: 6, transition: 'box-shadow 0.2s, opacity 0.15s', opacity: loading ? 0.7 : 1, boxShadow: glow() }}
-                  onMouseEnter={e => { if (!loading) e.currentTarget.style.boxShadow = glow(C.accent, 20) }}
-                  onMouseLeave={e => e.currentTarget.style.boxShadow = glow()}
+                  style={{ background: C.accent, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 700, color: '#000', fontFamily: 'JetBrains Mono,monospace', padding: '13px', letterSpacing: '0.1em', marginTop: 6, transition: 'opacity 0.15s', opacity: loading ? 0.7 : 1 }}
+                  onMouseEnter={e => { if (!loading) e.currentTarget.style.opacity = '0.88' }}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                 >{loading ? 'RESERVING SEAT...' : 'RESERVE SEAT →'}</button>
                 <p style={{ fontSize: 10, color: C.text3, fontFamily: "'Inter', sans-serif", textAlign: 'center', margin: 0 }}>
                   Enroll today · access within 24 hours · {PILOT_SEATS_LEFT} seats at this price

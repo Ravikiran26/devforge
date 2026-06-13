@@ -95,7 +95,7 @@ function FirstMission({ week, navigate }) {
         <div style={{ flex:1 }}>
           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
             <div style={{ background:`${C.accent}22`, border:`1px solid ${C.accent}44`, padding:'3px 10px', display:'flex', alignItems:'center', gap:6 }}>
-              <span style={{ width:6, height:6, borderRadius:'50%', background:C.accent, boxShadow:`0 0 6px ${C.accent}`, animation:'pulse 1.5s infinite' }}/>
+              <span style={{ width:6, height:6, borderRadius:'50%', background:C.accent }}/>
               <span style={{ fontSize:9, fontWeight:800, color:C.accent, letterSpacing:'0.12em', fontFamily:'JetBrains Mono,monospace' }}>YOUR FIRST MISSION</span>
             </div>
           </div>
@@ -164,7 +164,7 @@ function HeroBanner({ student, weekPct, firstName }) {
 
       <div style={{ position:'relative', zIndex:1, flex:1 }}>
         <div style={{ display:'inline-flex', alignItems:'center', gap:8, border:`1px solid ${C.border2}`, padding:'4px 14px', marginBottom:16, fontFamily:'JetBrains Mono, monospace', fontSize:10, fontWeight:700, color:C.text3, letterSpacing:'0.1em' }}>
-          <span style={{ width:6, height:6, background:C.green, borderRadius:'50%', boxShadow:`0 0 6px ${C.green}` }}/>
+          <span style={{ width:6, height:6, background:C.green, borderRadius:'50%' }}/>
           {student.cohort ? student.cohort.replace(/cohort/i, 'Batch') : 'Batch 3'} · {formatPlan(student.plan)}
         </div>
 
@@ -182,7 +182,7 @@ function HeroBanner({ student, weekPct, firstName }) {
 
         <div style={{ display:'flex', alignItems:'center', gap:14 }}>
           <div style={{ position:'relative', width:220, height:5, background:C.border, overflow:'hidden' }}>
-            <div style={{ position:'absolute', inset:0, width:`${weekPct}%`, background:`linear-gradient(90deg, ${C.accent}, ${C.cyan})`, transition:'width 0.8s ease', boxShadow:`0 0 8px ${C.accent}88` }}/>
+            <div style={{ position:'absolute', inset:0, width:`${weekPct}%`, background:`linear-gradient(90deg, ${C.accent}, ${C.cyan})`, transition:'width 0.8s ease' }}/>
           </div>
           <span style={{ fontSize:11, fontWeight:700, color:C.accent, fontFamily:'JetBrains Mono,monospace', whiteSpace:'nowrap' }}>
             {student.currentWeek} / {TOTAL_WEEKS}
@@ -212,7 +212,7 @@ function ProgressRing({ pct, size = 96 }) {
   const circ = 2 * Math.PI * r
   const dash = (pct / 100) * circ
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ filter:`drop-shadow(0 0 8px ${C.accent}55)` }}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={C.border} strokeWidth={6}/>
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={C.accent} strokeWidth={6} strokeDasharray={`${dash} ${circ}`} strokeDashoffset={circ/4} strokeLinecap="round" style={{ transition:'stroke-dasharray 0.8s ease' }}/>
       <text x={size/2} y={size/2-4} textAnchor="middle" fontSize={15} fontWeight={700} fill={C.text} fontFamily="Inter,sans-serif">{pct}%</text>
@@ -275,7 +275,7 @@ function TicketCard({ ticket: t }) {
       </div>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-          <span style={{ width:6, height:6, borderRadius:'50%', background:s.dot, boxShadow:`0 0 4px ${s.dot}` }}/>
+          <span style={{ width:6, height:6, borderRadius:'50%', background:s.dot }}/>
           <span style={{ fontSize:11, fontWeight:600, color:s.color, fontFamily:"'Inter', sans-serif" }}>{s.label}</span>
         </div>
         <span style={{ fontSize:10, color:C.text3, fontFamily:'JetBrains Mono,monospace', border:`1px solid ${C.border}`, padding:'2px 7px' }}>{t.storyPoints} pts</span>
@@ -315,7 +315,7 @@ function ActivePRs({ tickets }) {
     <div style={{ background:C.surface, border:`1px solid ${C.border}`, overflow:'hidden' }}>
       <div style={{ padding:'14px 20px', borderBottom:`1px solid ${C.border}`, background:C.surface2, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <span style={{ width:8, height:8, borderRadius:'50%', background:tickets.length ? C.accent : C.text3, boxShadow: tickets.length ? `0 0 6px ${C.accent}` : 'none', animation: tickets.length ? 'pulse 1.5s infinite' : 'none' }}/>
+          <span style={{ width:8, height:8, borderRadius:'50%', background:tickets.length ? C.accent : C.text3 }}/>
           <span style={{ fontSize:12, fontWeight:700, color:C.text, fontFamily:"'Inter', sans-serif" }}>Active PRs</span>
         </div>
         <span style={{ fontSize:11, fontWeight:700, color:C.accent, fontFamily:'JetBrains Mono,monospace', border:`1px solid ${C.border2}`, padding:'1px 8px' }}>{tickets.length}</span>

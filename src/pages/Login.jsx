@@ -21,7 +21,7 @@ const C = {
   purple:  '#A78BFA',
 }
 
-const glow = (color, size = 10) => `0 0 ${size}px ${color}44, 0 0 ${size * 2}px ${color}18`
+const glow = (color, size = 10) => `0 0 ${Math.round(size * 0.5)}px ${color}20`
 
 // ─── PR Review Terminal Card ───────────────────────────────────────────────────
 function PRReviewCard() {
@@ -76,7 +76,7 @@ function PRReviewCard() {
         {/* Score + checks */}
         <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: 12, marginBottom: 12 }}>
           <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 4, padding: '10px 8px', textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: C.green, lineHeight: 1, textShadow: glow(C.green) }}>91</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: C.green, lineHeight: 1 }}>91</div>
             <div style={{ fontSize: 8, color: C.text3, marginTop: 3, letterSpacing: '0.08em' }}>/ 100</div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
@@ -165,14 +165,13 @@ function BrandPanel() {
       {/* Logo row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 28, height: 28, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: glow(C.accent) }}>
+          <div style={{ width: 28, height: 28, background: C.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', fontFamily: 'JetBrains Mono,monospace' }}>DF</span>
           </div>
           <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: 15, color: C.text, letterSpacing: '-0.02em' }}>DevForge</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, border: `1px solid ${C.green}44`, padding: '4px 10px', borderRadius: 20 }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.green, boxShadow: glow(C.green, 6),
-            animation: 'pulse 2s ease-in-out infinite' }} />
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.green }} />
           <span style={{ fontSize: 10, color: C.green, fontFamily: 'JetBrains Mono,monospace', letterSpacing: '0.08em' }}>BATCH 1 ACTIVE</span>
         </div>
       </div>
@@ -295,7 +294,7 @@ function LoginForm() {
           background: `${C.green}0F`, border: `1px solid ${C.green}33`,
           padding: '8px 12px', borderRadius: 6, marginBottom: 24,
         }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.green, flexShrink: 0, animation: 'pulse 2s ease-in-out infinite' }} />
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.green, flexShrink: 0 }} />
           <span style={{ fontSize: 11, color: C.green, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
             Batch 1 is active — Week 1 in progress
           </span>
@@ -320,7 +319,7 @@ function LoginForm() {
               placeholder="you@example.com"
               autoComplete="email"
               style={inputStyle}
-              onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = glow(C.accent, 8) }}
+              onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}18` }}
               onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = 'none' }}
             />
           </div>
@@ -337,7 +336,7 @@ function LoginForm() {
                 placeholder="••••••••"
                 autoComplete="current-password"
                 style={{ ...inputStyle, paddingRight: 44 }}
-                onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = glow(C.accent, 8) }}
+                onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}18` }}
                 onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = 'none' }}
               />
               <button
@@ -358,8 +357,7 @@ function LoginForm() {
               fontFamily: "'Inter', sans-serif", letterSpacing: '0.06em',
               border: 'none', cursor: loading ? 'not-allowed' : 'pointer', borderRadius: 4,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              transition: 'opacity 0.15s, box-shadow 0.2s', marginTop: 4,
-              boxShadow: loading ? 'none' : glow(C.accent, 12),
+              transition: 'opacity 0.15s', marginTop: 4,
             }}
             onMouseEnter={e => { if (!loading) e.currentTarget.style.opacity = '0.88' }}
             onMouseLeave={e => e.currentTarget.style.opacity = '1'}
